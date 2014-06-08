@@ -1,0 +1,121 @@
+import SCons.Defaults
+import SCons
+from SCons.Util import unique
+import stat
+import os
+import sys
+import subprocess
+import glob
+import shutil
+from copy import deepcopy
+
+baseDir = os.path.abspath("../")
+sys.path.append(baseDir) 
+
+from CTSNGlobals import *
+commonPath = getCommonPath(baseDir)
+sys.path.append(commonPath)
+ 
+from Globals import *
+from SethCommonGlobals import *
+from SConstructGlobals import *
+
+#Make common environment
+projectName = "CTSN_Gateway"
+targetFlags = DOXYGEN_TARGET | CPP_CHECK_TARGET | TESTING_TARGET | PROJECT_TARGET | EXE_TARGET
+envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
+
+###
+# Files to compile
+###
+
+###include paths:
+systemPaths = []
+
+#Put any additional include paths you need here.
+includePaths = [includeDir, getDateVersionPath(commonPath)]
+testIncludePaths = [os.path.join(testDir, includeDir)]
+
+###Source Files
+dateVersionFile = (os.path.join(srcDir, 'GatewayDateVersion.cpp'))
+mainFile = os.path.join(srcDir, "main.cpp")
+
+sourceFiles = filterSourceFiles(getFilesInPathRecursivelyWithExtension(srcDir, '.cpp'), 
+                                [dateVersionFile, mainFile])
+sourceTestFiles = getFilesInPathRecursivelyWithExtension(testDir, '.cpp') + [getTestMain(commonPath)]
+coverageFiles = deepcopy(sourceFiles + [dateVersionFile])
+
+###Libs
+debugLibs = []
+releaseLibs = [] 
+testLibs = debugLibs
+
+###LibPath
+debugLibPath = []
+releaseLibPath = []
+testLibPath = debugLibPath
+
+Help(getHelpMessage(envBase))
+
+###
+# Environment creation
+###
+
+def addFlags(env):
+    for p in systemPaths:
+        env.Append(CCFLAGS = ['-isystem', p])
+
+#Debug Environment
+debugEnvironment = createDebugEnvironment(envBase, includePaths, debugLibs, debugLibPath)
+addFlags(debugEnvironment)
+
+#Release Environment
+releaseEnvironment = createReleaseEnvironment(envBase, includePaths, releaseLibs, releaseLibPath)
+addFlags(releaseEnvironment)
+
+#Unit test environment
+testEnvironment = createUnitTestEnvironment(envBase, includePaths + testIncludePaths, testLibs, testLibPath)
+addFlags(testEnvironment)
+
+#Doxygen
+doxygenFiles = [dateVersionFile] + sourceFiles + sourceTestFiles + glob.glob(os.path.join(includeDir, "*h")) + glob.glob(os.path.join(testDir, includeDir, "*h"))
+
+###
+# Targets
+###
+
+(debugTarget, runDebugTarget) = createExe(debugEnvironment, "CTSNGateway-d", 
+                                          getCompiledObjectsWithDateVersionObject(debugEnvironment, sourceFiles + [mainFile], dateVersionFile, ARGUMENTS))
+
+(releaseTarget, runReleaseTarget)  = createExe(releaseEnvironment, "CTSNGateway", 
+                                               getCompiledObjectsWithDateVersionObject(releaseEnvironment, sourceFiles + [mainFile], dateVersionFile, ARGUMENTS))
+
+(unitTestTarget, runTestTarget) = createUnitTestExe(testEnvironment,
+                                                    getCompiledObjectsWithDateVersionObject(testEnvironment,
+                                                                                            sourceFiles + sourceTestFiles,
+                                                                                            dateVersionFile,
+                                                                                            ARGUMENTS),
+                                                    coverageFiles)
+
+otherIncludeFiles = [os.path.join(getCppUTestPath(commonPath), includeDir), os.path.join(getGMockPath(commonPath), includeDir)] + systemPaths
+doxygenTarget = createDoxygenTarget(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, 'CTSN Gateway')
+
+cppCheckTarget = createCppCheckTarget(releaseEnvironment, coverageFiles)
+
+(netBeansTarget, vsTarget, CodeBlocksTarget) = createProjectTargets(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, "CTSNGateway")
+
+Alias(DEBUG_ALIAS, debugTarget)
+Alias(RUN_DEBUG_ALIAS, runDebugTarget)
+Alias(RELEASE_ALIAS, releaseTarget)
+Alias(RUN_RELEASE_ALIAS, runReleaseTarget)
+Alias(CREATE_LIB_ALIAS, [debugTarget, releaseTarget])
+Alias(DOXYGEN_ALIAS, doxygenTarget)
+Alias(CPP_CHECK_ALIAS, cppCheckTarget)
+Alias(UNIT_TEST_ALIAS, unitTestTarget)
+Alias(RUN_TEST_ALIAS, [unitTestTarget, cppCheckTarget, runTestTarget])
+
+Alias (NIGHTLY_ALIAS, [debugTarget, releaseTarget, doxygenTarget, cppCheckTarget, runTestTarget, netBeansTarget, vsTarget, CodeBlocksTarget])
+Alias (DELTA_ALIAS, [debugTarget, releaseTarget, cppCheckTarget, runTestTarget])
+
+Default([RUN_TEST_ALIAS])
+

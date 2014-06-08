@@ -79,4 +79,5 @@ vsproject
 *~
 *.pdb
 *.idb
+*.target
 Doxyfile
