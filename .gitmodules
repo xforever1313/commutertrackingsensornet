@@ -1,0 +1,3 @@
+[submodule "sethcommon"]
+	path = sethcommon
+	url = git@bitbucket.org:xforever1313/sethcommon
