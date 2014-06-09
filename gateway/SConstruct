@@ -10,12 +10,12 @@ import shutil
 from copy import deepcopy
 
 baseDir = os.path.abspath("../")
-sys.path.append(baseDir) 
+sys.path.append(baseDir)
 
 from CTSNGlobals import *
 commonPath = getCommonPath(baseDir)
 sys.path.append(commonPath)
- 
+
 from Globals import *
 from SethCommonGlobals import *
 from SConstructGlobals import *
@@ -33,26 +33,33 @@ envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, A
 systemPaths = []
 
 #Put any additional include paths you need here.
-includePaths = [includeDir, getDateVersionPath(commonPath)]
-testIncludePaths = [os.path.join(testDir, includeDir)]
+includePaths = [includeDir, getDateVersionPath(commonPath),
+                os.path.join(getOSPath(commonPath), includeDir),
+                os.path.join(getCommonClassesPath(commonPath), includeDir)]
+
+testIncludePaths = [os.path.join(testDir, includeDir),
+                    os.path.join(getCommonClassesPath(commonPath), testDir, includeDir)]
 
 ###Source Files
 dateVersionFile = (os.path.join(srcDir, 'GatewayDateVersion.cpp'))
 mainFile = os.path.join(srcDir, "main.cpp")
 
-sourceFiles = filterSourceFiles(getFilesInPathRecursivelyWithExtension(srcDir, '.cpp'), 
+sourceFiles = filterSourceFiles(getFilesInPathRecursivelyWithExtension(srcDir, '.cpp'),
                                 [dateVersionFile, mainFile])
 sourceTestFiles = getFilesInPathRecursivelyWithExtension(testDir, '.cpp') + [getTestMain(commonPath)]
 coverageFiles = deepcopy(sourceFiles + [dateVersionFile])
 
 ###Libs
-debugLibs = []
-releaseLibs = [] 
+debugLibs = ['CommonClasses-d', 'SethOS-d']
+releaseLibs = ['CommonClasses', 'SethOS']
 testLibs = debugLibs
 
 ###LibPath
-debugLibPath = []
-releaseLibPath = []
+debugLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
+                os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE'])]
+releaseLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
+                  os.path.join(getCommonClassesPath(commonPath), envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
+
 testLibPath = debugLibPath
 
 Help(getHelpMessage(envBase))
@@ -84,10 +91,10 @@ doxygenFiles = [dateVersionFile] + sourceFiles + sourceTestFiles + glob.glob(os.
 # Targets
 ###
 
-(debugTarget, runDebugTarget) = createExe(debugEnvironment, "CTSNGateway-d", 
+(debugTarget, runDebugTarget) = createExe(debugEnvironment, "CTSNGateway-d",
                                           getCompiledObjectsWithDateVersionObject(debugEnvironment, sourceFiles + [mainFile], dateVersionFile, ARGUMENTS))
 
-(releaseTarget, runReleaseTarget)  = createExe(releaseEnvironment, "CTSNGateway", 
+(releaseTarget, runReleaseTarget)  = createExe(releaseEnvironment, "CTSNGateway",
                                                getCompiledObjectsWithDateVersionObject(releaseEnvironment, sourceFiles + [mainFile], dateVersionFile, ARGUMENTS))
 
 (unitTestTarget, runTestTarget) = createUnitTestExe(testEnvironment,

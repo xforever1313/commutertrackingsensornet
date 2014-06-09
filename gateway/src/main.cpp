@@ -1,8 +1,9 @@
-#include <iostream>
-
-#include "gateway/GatewayDateVersion.h"
+#include "gateway/Gateway.h"
+#include "io/ConsoleLogger.h"
+#include "io/InputReader.h"
 
 int main() {
-    std::cout << CTSN::Gateway::DateVersion::getVersionNumber() << std::endl;
-    return 0;
+    Common::IO::ConsoleLogger::out.writeLine("Welcome to the CTSN Gateway Node!");
+    Gateway::Gateway gateway;
+    gateway.start();
 }
