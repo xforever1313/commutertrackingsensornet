@@ -43,6 +43,30 @@ TEST(PiUartTest, openFail) {
     }
 }
 
+TEST(PiUartTest, sendPass) {
+    MockLinux::writeReturn = 0;
+    try {
+        m_uut->open("somefile");
+        m_uut->send("somestr");
+    }
+    catch (const std::runtime_error &e) {
+        std::string message = std::string("Unexpected Exception: ") + e.what();
+        FAIL_TEST(message.c_str());
+    }
+}
+
+TEST(PiUartTest, sendFailTxFail) {
+    MockLinux::writeReturn = -1;
+    try {
+        m_uut->open("somefile");
+        m_uut->send("somestr");
+        FAIL_TEST("Exception not thrown");
+    }
+    catch (const std::runtime_error &e) {
+        CHECK_EQUAL(std::string(e.what()), Gateway::PiUart::SEND_ERROR_MESSAGE);
+    }
+}
+
 TEST(PiUartTest, sendFailNotOpened) {
     try {
         m_uut->send("somestr");
@@ -50,6 +74,31 @@ TEST(PiUartTest, sendFailNotOpened) {
     }
     catch (const std::runtime_error &e) {
         CHECK_EQUAL(std::string(e.what()), Gateway::PiUart::NOT_OPEN_ERROR_MESSAGE);
+    }
+}
+
+TEST(PiUartTest, recvPass) {
+    MockLinux::readReturn = 0;
+    try {
+        m_uut->open("somefile");
+        std::string msg = m_uut->recv();
+        CHECK_EQUAL(msg, "");
+    }
+    catch (const std::runtime_error &e) {
+        std::string message = std::string("Unexpected Exception: ") + e.what();
+        FAIL_TEST(message.c_str());
+    }
+}
+
+TEST(PiUartTest, recvFailRxFail) {
+    MockLinux::readReturn = -1;
+    try {
+        m_uut->open("somefile");
+        std::string msg = m_uut->recv();
+        FAIL_TEST("Exception not thrown");
+    }
+    catch (const std::runtime_error &e) {
+        CHECK_EQUAL(std::string(e.what()), Gateway::PiUart::RECV_ERROR_MESSAGE);
     }
 }
 

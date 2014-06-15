@@ -27,6 +27,7 @@ const std::string PiUart::NOT_OPEN_ERROR_MESSAGE = "You did not open the file!";
 const std::string PiUart::OPEN_ERROR_MESSAGE = "Unable to open UART.  Ensure it is not in use by another application.";
 const std::string PiUart::SEND_ERROR_MESSAGE = "Unable to send message";
 const std::string PiUart::RECV_ERROR_MESSAGE = "Unable to recv message";
+const size_t PiUart::BUFFER_SIZE = 255;
 
 PiUart::PiUart() :
     m_uartFile(PiUart::NOT_OPEN)
@@ -87,15 +88,31 @@ void PiUart::send (const std::string &str) {
         throw std::runtime_error(NOT_OPEN_ERROR_MESSAGE);
     }
     else {
+        int byteCount = Linux::write(m_uartFile, str.data(), str.size());
 
+        // write returns 0 if no bytes were written, or less than zero if an error occured.
+        if (byteCount < 0) {
+            throw std::runtime_error(SEND_ERROR_MESSAGE);
+        }
     }
 }
 
 std::string PiUart::recv() {
+    std::string ret;
     if (m_uartFile == PiUart::NOT_OPEN) {
         throw std::runtime_error(NOT_OPEN_ERROR_MESSAGE);
     }
-    return "";
+    else {
+        char buffer [BUFFER_SIZE + 1];
+        int bytesRead = Linux::read(m_uartFile, buffer, BUFFER_SIZE);
+        if (bytesRead < 0) {
+            throw std::runtime_error(RECV_ERROR_MESSAGE);
+        }
+        buffer[bytesRead] = '\0';
+        ret = buffer;
+    }
+
+    return ret;
 }
 
 void PiUart::close() {
