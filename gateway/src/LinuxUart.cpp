@@ -17,32 +17,32 @@
 
 #include <string>
 
-#include "gateway/PiUart.h"
+#include "gateway/Uart.h"
 
 namespace Gateway {
 
 struct sigaction saio;
 
-const std::string PiUart::NOT_OPEN_ERROR_MESSAGE = "You did not open the file!";
-const std::string PiUart::OPEN_ERROR_MESSAGE = "Unable to open UART.  Ensure it is not in use by another application.";
-const std::string PiUart::SEND_ERROR_MESSAGE = "Unable to send message";
-const std::string PiUart::RECV_ERROR_MESSAGE = "Unable to recv message";
-const size_t PiUart::BUFFER_SIZE = 255;
+const std::string Uart::NOT_OPEN_ERROR_MESSAGE = "You did not open the file!";
+const std::string Uart::OPEN_ERROR_MESSAGE = "Unable to open UART.  Ensure it is not in use by another application.";
+const std::string Uart::SEND_ERROR_MESSAGE = "Unable to send message";
+const std::string Uart::RECV_ERROR_MESSAGE = "Unable to recv message";
+const size_t Uart::BUFFER_SIZE = 255;
 
-PiUart::PiUart() :
-    m_uartFile(PiUart::NOT_OPEN)
+Uart::Uart() :
+    m_uartFile(Uart::NOT_OPEN)
 {
 }
 
-PiUart::~PiUart() {
+Uart::~Uart() {
     close();
 }
 
 
-void PiUart::open (const std::string &file) {
-    if (m_uartFile == PiUart::NOT_OPEN) {
+void Uart::open (const std::string &file) {
+    if (m_uartFile == Uart::NOT_OPEN) {
         m_uartFile = Linux::open(file.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-        if (m_uartFile == PiUart::NOT_OPEN) {
+        if (m_uartFile == Uart::NOT_OPEN) {
             throw std::runtime_error(OPEN_ERROR_MESSAGE);
         }
         else {
@@ -83,8 +83,8 @@ void PiUart::open (const std::string &file) {
     }
 }
 
-void PiUart::send (const std::string &str) {
-    if (m_uartFile == PiUart::NOT_OPEN) {
+void Uart::send (const std::string &str) {
+    if (m_uartFile == Uart::NOT_OPEN) {
         throw std::runtime_error(NOT_OPEN_ERROR_MESSAGE);
     }
     else {
@@ -97,9 +97,9 @@ void PiUart::send (const std::string &str) {
     }
 }
 
-std::string PiUart::recv() {
+std::string Uart::recv() {
     std::string ret;
-    if (m_uartFile == PiUart::NOT_OPEN) {
+    if (m_uartFile == Uart::NOT_OPEN) {
         throw std::runtime_error(NOT_OPEN_ERROR_MESSAGE);
     }
     else {
@@ -115,9 +115,9 @@ std::string PiUart::recv() {
     return ret;
 }
 
-void PiUart::close() {
-    if (m_uartFile != PiUart::NOT_OPEN) {
-        m_uartFile = PiUart::NOT_OPEN;
+void Uart::close() {
+    if (m_uartFile != Uart::NOT_OPEN) {
+        m_uartFile = Uart::NOT_OPEN;
     }
 }
 

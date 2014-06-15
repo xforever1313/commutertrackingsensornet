@@ -8,11 +8,11 @@
 
 namespace Gateway {
 
-class PiUart : public UartInterface
+class Uart : public UartInterface
 {
     public:
-        PiUart();
-        ~PiUart();
+        Uart();
+        ~Uart();
 
         /**
          * \throw Runtime error if can not open

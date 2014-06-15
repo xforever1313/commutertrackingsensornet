@@ -5,7 +5,7 @@
 #define protected public
 
 #include "MockLinux.h"
-#include "gateway/PiUart.h"
+#include "gateway/Uart.h"
 
 TEST_GROUP(PiUartTest) {
     TEST_SETUP() {
@@ -14,15 +14,15 @@ TEST_GROUP(PiUartTest) {
         MockLinux::writeReturn = 0;
         MockLinux::closeReturn = 0;
 
-        m_uut = new Gateway::PiUart();
-        CHECK_EQUAL(m_uut->m_uartFile, Gateway::PiUart::NOT_OPEN);
+        m_uut = new Gateway::Uart();
+        CHECK_EQUAL(m_uut->m_uartFile, Gateway::Uart::NOT_OPEN);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
     }
 
-    Gateway::PiUart *m_uut;
+    Gateway::Uart *m_uut;
 };
 
 TEST(PiUartTest, openTestPass) {
@@ -33,13 +33,13 @@ TEST(PiUartTest, openTestPass) {
 }
 
 TEST(PiUartTest, openFail) {
-    MockLinux::openReturn = Gateway::PiUart::NOT_OPEN;
+    MockLinux::openReturn = Gateway::Uart::NOT_OPEN;
     try {
         m_uut->open("somefile");
         FAIL_TEST("Exception not thrown");
     }
     catch (const std::runtime_error &e) {
-        CHECK_EQUAL(std::string(e.what()), Gateway::PiUart::OPEN_ERROR_MESSAGE);
+        CHECK_EQUAL(std::string(e.what()), Gateway::Uart::OPEN_ERROR_MESSAGE);
     }
 }
 
@@ -63,7 +63,7 @@ TEST(PiUartTest, sendFailTxFail) {
         FAIL_TEST("Exception not thrown");
     }
     catch (const std::runtime_error &e) {
-        CHECK_EQUAL(std::string(e.what()), Gateway::PiUart::SEND_ERROR_MESSAGE);
+        CHECK_EQUAL(std::string(e.what()), Gateway::Uart::SEND_ERROR_MESSAGE);
     }
 }
 
@@ -73,7 +73,7 @@ TEST(PiUartTest, sendFailNotOpened) {
         FAIL_TEST("Exception not thrown");
     }
     catch (const std::runtime_error &e) {
-        CHECK_EQUAL(std::string(e.what()), Gateway::PiUart::NOT_OPEN_ERROR_MESSAGE);
+        CHECK_EQUAL(std::string(e.what()), Gateway::Uart::NOT_OPEN_ERROR_MESSAGE);
     }
 }
 
@@ -98,7 +98,7 @@ TEST(PiUartTest, recvFailRxFail) {
         FAIL_TEST("Exception not thrown");
     }
     catch (const std::runtime_error &e) {
-        CHECK_EQUAL(std::string(e.what()), Gateway::PiUart::RECV_ERROR_MESSAGE);
+        CHECK_EQUAL(std::string(e.what()), Gateway::Uart::RECV_ERROR_MESSAGE);
     }
 }
 
@@ -108,7 +108,7 @@ TEST(PiUartTest, recvFailNotOpened) {
         FAIL_TEST("Exception not thrown");
     }
     catch (const std::runtime_error &e) {
-        CHECK_EQUAL(std::string(e.what()), Gateway::PiUart::NOT_OPEN_ERROR_MESSAGE);
+        CHECK_EQUAL(std::string(e.what()), Gateway::Uart::NOT_OPEN_ERROR_MESSAGE);
     }
 }
 
@@ -117,5 +117,5 @@ TEST(PiUartTest, closeTest) {
 
     m_uut->close();
 
-    CHECK_EQUAL(m_uut->m_uartFile, Gateway::PiUart::NOT_OPEN);
+    CHECK_EQUAL(m_uut->m_uartFile, Gateway::Uart::NOT_OPEN);
 }
