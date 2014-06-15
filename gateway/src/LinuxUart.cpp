@@ -3,11 +3,6 @@
     namespace Linux = MockLinux;
 #else
     #define Linux //Override the Linux namespace to the global namespace
-
-    void uart_signal_handler(int status) {
-
-    }
-
 #endif
 
 #include <fcntl.h>          //Used for UART
@@ -29,8 +24,9 @@ const std::string Uart::SEND_ERROR_MESSAGE = "Unable to send message";
 const std::string Uart::RECV_ERROR_MESSAGE = "Unable to recv message";
 const size_t Uart::BUFFER_SIZE = 255;
 
-Uart::Uart() :
-    m_uartFile(Uart::NOT_OPEN)
+Uart::Uart(const std::function<void(int)> &recvISR) :
+    m_uartFile(Uart::NOT_OPEN),
+    m_recvISR(recvISR)
 {
 }
 
@@ -53,7 +49,7 @@ void Uart::open (const std::string &file) {
                 fcntl(m_uartFile, F_SETFL,  O_ASYNC );
 
                 //Make signal:
-                saio.sa_handler = uart_signal_handler;
+                saio.sa_handler = m_recvISR.target<void(int)>();
                 saio.sa_flags = 0;
                 saio.sa_restorer = nullptr;
                 sigaction(SIGIO,&saio, nullptr);

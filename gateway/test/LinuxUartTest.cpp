@@ -7,6 +7,10 @@
 #include "MockLinux.h"
 #include "gateway/Uart.h"
 
+void MockInterrupt(int) {
+
+}
+
 TEST_GROUP(PiUartTest) {
     TEST_SETUP() {
         MockLinux::openReturn = 0;
@@ -14,7 +18,7 @@ TEST_GROUP(PiUartTest) {
         MockLinux::writeReturn = 0;
         MockLinux::closeReturn = 0;
 
-        m_uut = new Gateway::Uart();
+        m_uut = new Gateway::Uart(MockInterrupt);
         CHECK_EQUAL(m_uut->m_uartFile, Gateway::Uart::NOT_OPEN);
     }
 

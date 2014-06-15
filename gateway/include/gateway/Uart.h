@@ -1,6 +1,7 @@
 #ifndef PIUART_H
 #define PIUART_H
 
+#include <functional>
 #include <stdexcept>
 #include <string>
 
@@ -11,7 +12,12 @@ namespace Gateway {
 class Uart : public UartInterface
 {
     public:
-        Uart();
+        /**
+         * \param interrupt - a pointer to a function when there
+         *                    is data on the uart's receive
+         *
+         */
+        Uart(const std::function<void(int)> &recvISR);
         ~Uart();
 
         /**
@@ -35,6 +41,8 @@ class Uart : public UartInterface
         void close() override;
 
     private:
+        Uart() = delete;
+
         static const int NOT_OPEN = -1;
         static const std::string NOT_OPEN_ERROR_MESSAGE;
         static const std::string OPEN_ERROR_MESSAGE;
@@ -43,6 +51,7 @@ class Uart : public UartInterface
         static const size_t BUFFER_SIZE;
 
         int m_uartFile;
+        std::function<void(int)> m_recvISR;
 };
 
 }
