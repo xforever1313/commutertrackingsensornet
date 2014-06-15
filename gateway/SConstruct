@@ -58,7 +58,7 @@ testLibs = debugLibs
 debugLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
                 os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE'])]
 releaseLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
-                  os.path.join(getCommonClassesPath(commonPath), envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
+                  os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
 
 testLibPath = debugLibPath
 
