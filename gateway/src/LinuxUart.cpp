@@ -24,7 +24,7 @@ const std::string Uart::SEND_ERROR_MESSAGE = "Unable to send message";
 const std::string Uart::RECV_ERROR_MESSAGE = "Unable to recv message";
 const size_t Uart::BUFFER_SIZE = 255;
 
-Uart::Uart(const std::function<void(int)> &recvISR) :
+Uart::Uart(const RecvISR &recvISR) :
     m_uartFile(Uart::NOT_OPEN),
     m_recvISR(recvISR)
 {
@@ -49,7 +49,7 @@ void Uart::open (const std::string &file) {
                 fcntl(m_uartFile, F_SETFL,  O_ASYNC );
 
                 //Make signal:
-                saio.sa_handler = m_recvISR.target<void(int)>();
+                saio.sa_handler = m_recvISR;
                 saio.sa_flags = 0;
                 saio.sa_restorer = nullptr;
                 sigaction(SIGIO,&saio, nullptr);
@@ -100,7 +100,7 @@ std::string Uart::recv() {
     }
     else {
         char buffer [BUFFER_SIZE + 1];
-        int bytesRead = Linux::read(m_uartFile, buffer, BUFFER_SIZE);
+        int bytesRead = Linux::read(m_uartFile, static_cast<void*>(buffer), BUFFER_SIZE);
         if (bytesRead < 0) {
             throw std::runtime_error(RECV_ERROR_MESSAGE);
         }

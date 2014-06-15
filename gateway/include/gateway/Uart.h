@@ -7,6 +7,8 @@
 
 #include "gateway/UartInterface.h"
 
+typedef void(*RecvISR)(int);
+
 namespace Gateway {
 
 class Uart : public UartInterface
@@ -17,7 +19,7 @@ class Uart : public UartInterface
          *                    is data on the uart's receive
          *
          */
-        Uart(const std::function<void(int)> &recvISR);
+        Uart(const RecvISR &recvISR);
         ~Uart();
 
         /**
@@ -51,7 +53,7 @@ class Uart : public UartInterface
         static const size_t BUFFER_SIZE;
 
         int m_uartFile;
-        std::function<void(int)> m_recvISR;
+        RecvISR m_recvISR;
 };
 
 }

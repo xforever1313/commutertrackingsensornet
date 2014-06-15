@@ -4,6 +4,6 @@
 
 int main() {
     Common::IO::ConsoleLogger::out.writeLine("Welcome to the CTSN Gateway Node!");
-    Gateway::Gateway gateway;
+    Gateway::Gateway &gateway = Gateway::Gateway::getInstance();
     gateway.start();
 }

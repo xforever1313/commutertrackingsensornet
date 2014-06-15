@@ -10,6 +10,8 @@
 #include "MockEventExecutor.h"
 
 TEST_GROUP(Gateway) {
+
+    /*
     TEST_SETUP() {
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_outputLogger = new Common::IO::StringLogger;
@@ -30,6 +32,7 @@ TEST_GROUP(Gateway) {
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     Common::IO::StringLogger *m_outputLogger; //Used to swallow output
     Gateway::Gateway *m_uut;
+    */
 };
 
 
@@ -37,6 +40,8 @@ TEST_GROUP(Gateway) {
  * \brief Ensures the class exits when exit is selected.
  * \todo When more tests come in, move this to test teardown so the thing exits.
  */
+
+ /*
 TEST(Gateway, exit) {
     std::stringstream input("0");
     m_uut->m_input = &input;
@@ -44,3 +49,4 @@ TEST(Gateway, exit) {
     m_uut->start();
     //Method should exit for test to pass.
 }
+*/
