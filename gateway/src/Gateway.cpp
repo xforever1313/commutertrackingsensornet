@@ -40,11 +40,10 @@ void Gateway::start() {
         m_uart->open("/dev/ttyAMA0");
         m_recvThread->start();
 
-
+        /*
         std::string input = "";
         std::string promptMessage = "\nEnter a number:\n\t1.  Uart Tx\n\t0.  Exit\n>";
 
-        /*
         while (input != "0"){
             input = Common::IO::InputReader::PromptForInput(promptMessage, *m_input, *m_output);
 
@@ -57,7 +56,7 @@ void Gateway::start() {
         }
         */
 
-        m_eventExecutor->addEvent(std::shared_ptr<Common::EventInterface>(new UartTxEvent("Uart test!", m_uart)));
+        m_eventExecutor->addEvent(std::shared_ptr<Common::EventInterface>(new UartTxEvent("Uart test!  My name is seth and I am cool!", m_uart)));
 
         while(true);
 
