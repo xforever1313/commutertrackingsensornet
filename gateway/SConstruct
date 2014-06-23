@@ -44,9 +44,18 @@ testIncludePaths = [os.path.join(testDir, includeDir),
 dateVersionFile = (os.path.join(srcDir, 'GatewayDateVersion.cpp'))
 mainFile = os.path.join(srcDir, "main.cpp")
 
-sourceFiles = filterSourceFiles(getFilesInPathRecursivelyWithExtension(srcDir, '.cpp'),
+sourceFiles = filterSourceFiles(glob.glob(os.path.join(srcDir, '*.cpp')),
                                 [dateVersionFile, mainFile])
-sourceTestFiles = getFilesInPathRecursivelyWithExtension(testDir, '.cpp') + [getTestMain(commonPath)]
+sourceTestFiles = glob.glob(os.path.join(testDir, '*.cpp')) + [getTestMain(commonPath)] + \
+                  glob.glob(os.path.join(testDir, srcDir, '*.cpp'))
+
+if (sys.platform == "win32"):
+    sourceFiles += glob.glob(os.path.join(srcDir, 'windows/*.cpp'))
+    sourceTestFiles += glob.glob(os.path.join(testDir, 'windows/*.cpp'))
+else:
+    sourceFiles += glob.glob(os.path.join(srcDir, 'linux/*.cpp'))
+    sourceTestFiles += glob.glob(os.path.join(testDir, 'linux/*.cpp'))
+
 coverageFiles = deepcopy(sourceFiles + [dateVersionFile])
 
 ###Libs

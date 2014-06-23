@@ -11,8 +11,7 @@ typedef void(*RecvISR)(int);
 
 namespace Gateway {
 
-class Uart : public UartInterface
-{
+class Uart : public UartInterface {
     public:
         /**
          * \param interrupt - a pointer to a function when there
