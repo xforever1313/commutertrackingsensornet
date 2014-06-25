@@ -1,4 +1,4 @@
-#ifndef EMAILER_INTERFACE_H
+#ifndef EMAILER_INTERFACE_H_
 #define EMAILER_INTERFACE_H_
 
 #include <string>
@@ -9,7 +9,7 @@ class EmailerInterface {
     public:
         virtual ~EmailerInterface() {}
 
-        virtual std::string send() = 0;
+        virtual const std::string send() = 0;
 };
 
 }

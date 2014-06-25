@@ -35,7 +35,8 @@ systemPaths = []
 #Put any additional include paths you need here.
 includePaths = [includeDir, getDateVersionPath(commonPath),
                 os.path.join(getOSPath(commonPath), includeDir),
-                os.path.join(getCommonClassesPath(commonPath), includeDir)]
+                os.path.join(getCommonClassesPath(commonPath), includeDir),
+		baseDir]
 
 testIncludePaths = [os.path.join(testDir, includeDir),
                     os.path.join(getCommonClassesPath(commonPath), testDir, includeDir)]

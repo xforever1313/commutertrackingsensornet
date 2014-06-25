@@ -27,13 +27,15 @@ class Emailer : public EmailerInterface {
          * \throws std::runtime_error if command cannot be executed
          * \return string from the output of the call to curl.
          */
-        std::string send() override;
+        const std::string send() override;
 
     private:
         static const std::string POST_URL; ///< Url to post to
         static const std::string FROM;     ///< Who the message is from
 
         Emailer() = delete;
+
+        const std::string getCurlCommand() const;
 
         std::map <std::string, std::string> m_addresses;
         std::string m_subject;
