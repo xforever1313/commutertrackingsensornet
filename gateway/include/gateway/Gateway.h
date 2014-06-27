@@ -21,6 +21,8 @@ class Gateway {
 
         Gateway();
         Gateway(const Gateway &other) = delete;
+        
+        void sendEmail();
 
         Common::EventExecutorInterface *m_eventExecutor;
         std::istream *m_input;

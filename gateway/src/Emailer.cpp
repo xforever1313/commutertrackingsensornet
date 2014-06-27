@@ -32,17 +32,16 @@ const std::string Emailer::getCurlCommand() const {
         command += address.second + " <" + address.first + ">, ";
     }
 
-    command += "\" -F subject = \"" + m_subject + "\" -F text=\"" + m_message + "\"";
+    command += "\" -F subject=\"" + m_subject + "\" -F text=\"" + m_message + "\"";
 
     return command;
 }
 
 const std::string Emailer::send() {
     std::string ret;
-    FILE *f = popen("ls -l", "r");
-
-    printf(getCurlCommand().c_str());
-
+    
+    FILE *f = popen(getCurlCommand().c_str(), "r");
+    
     if (f == nullptr) {
         throw std::runtime_error("EMAIL ERROR: Could not execute curl!");
     }
