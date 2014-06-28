@@ -23,6 +23,7 @@ class Gateway {
         Gateway(const Gateway &other) = delete;
         
         void sendEmail();
+        void sendTextMessage();
 
         Common::EventExecutorInterface *m_eventExecutor;
         std::istream *m_input;

@@ -10,7 +10,7 @@
 
 namespace Gateway {
 
-class TextMessageEvent : Common::EventInterface {
+class TextMessageEvent : public Common::EventInterface {
     public:
         enum Provider {
             ATT = 1,
