@@ -1,0 +1,15 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>CTSN Status</title>
+</head>
+<body>
+    <center>
+        <h1>CTSN Status:</h1>
+        <!--#include file="status.txt"-->
+        <br/>
+        <p>Note: If the above status appears incomplete, try refreshing the page </p>
+    </center>
+</body>
+</html>
+

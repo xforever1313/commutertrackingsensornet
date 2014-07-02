@@ -15,3 +15,6 @@ Instructions:
     This will run the updater every 5 minutes, and do a clone of the repo every hour, in case there's a change.
     
 4. Wherever the server's "root directory" is, add a symlink from the root, and point it to ~/www/ctsnstatus, so its viewable to from the webpage.
+5. Read the instructions here to configure apache for SSI:
+    https://help.ubuntu.com/community/ServerSideIncludes
+

@@ -3,11 +3,17 @@ import sys
 sys.path.append('../')
 
 from CTSNSharedGlobals import *
+from Globals import *
 
 curlProc = subprocess.Popen(['curl', '--get', CTSN_DOMAIN], stdout = subprocess.PIPE, stderr=subprocess.PIPE)
 status = curlProc.communicate()[0]
 
 if (status == ""):
-    print "SERVER DOWN!"
+    status = "Down"
 else:
-    print "SERVER UP!"
+    status = "Ok"
+
+outputFile = open(statusFile, "w")
+outputFile.write(status)
+outputFile.close()
+
