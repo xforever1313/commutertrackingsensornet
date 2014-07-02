@@ -30,9 +30,6 @@ class Emailer : public EmailerInterface {
         const std::string send() override;
 
     private:
-        static const std::string POST_URL; ///< Url to post to
-        static const std::string FROM;     ///< Who the message is from
-
         Emailer() = delete;
 
         const std::string getCurlCommand() const;

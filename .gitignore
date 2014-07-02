@@ -82,3 +82,4 @@ vsproject
 *.target
 Doxyfile
 /Keys.py
+/CTSNSharedGlobals.py

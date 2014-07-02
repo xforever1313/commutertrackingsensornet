@@ -3,13 +3,11 @@
 #include <stdexcept>
 #include <string>
 
+#include "CTSNSharedGlobals.py"
 #include "gateway/Emailer.h"
 #include "Keys.py"
 
 namespace Gateway {
-
-const std::string Emailer::POST_URL = "https://api.mailgun.net/v2/seth.thenaterhood.com/messages";
-const std::string Emailer::FROM = "CTSN <postmaster@seth.thenaterhood.com>";
 
 Emailer::Emailer(const std::map <std::string, std::string> &addresses,
                  const std::string &subject, const std::string &message) :
@@ -25,8 +23,8 @@ Emailer::~Emailer() {
 
 const std::string Emailer::getCurlCommand() const {
     std::string command = "curl -s --user \"";
-    command += MAILGUN_KEY + "\" https://api.mailgun.net/v2/seth.thenaterhood.com/messages ";
-    command += "-F from=\"CTSN <postmaster@seth.thenaterhood.com>\" -F to=\"";
+    command += MAILGUN_KEY + "\" " + EMAIL_POST_URL + " ";
+    command += "-F from=\"" + FROM_EMAIL + "\" -F to=\"";
 
     for (auto &address : m_addresses) {
         command += address.second + " <" + address.first + ">, ";
