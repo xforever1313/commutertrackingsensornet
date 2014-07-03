@@ -5,15 +5,20 @@ sys.path.append('../')
 from CTSNSharedGlobals import *
 from Globals import *
 
-curlProc = subprocess.Popen(['curl', '--get', CTSN_DOMAIN], stdout = subprocess.PIPE, stderr=subprocess.PIPE)
-status = curlProc.communicate()[0]
+curlProc = subprocess.Popen(['curl', '-sL', '-w', '%{http_code}', CTSN_DOMAIN, "-o", "/dev/null"], 
+                            stdout = subprocess.PIPE, stderr=subprocess.PIPE)
+status = int(curlProc.communicate()[0])
 
-if (status == ""):
-    status = "Down"
+if (status == 200):
+    statusStr = "Ok"
+elif (status == 503):
+    statusStr = "Down for maintenance"
+elif (status == 404):
+    statusStr = "Website Down"
 else:
-    status = "Ok"
+    statusStr = "Down"
 
 outputFile = open(statusFile, "w")
-outputFile.write(status)
+outputFile.write(statusStr)
 outputFile.close()
 
