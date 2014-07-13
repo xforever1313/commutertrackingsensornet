@@ -108,8 +108,13 @@ void Gateway::sendTextMessage() {
 void Gateway::start() {
 
     try {
-        m_uart->open("/dev/ttyAMA0");
-        m_recvThread->start();
+        try {
+            m_uart->open("/dev/ttyAMA0");
+            m_recvThread->start();
+        }
+        catch(const std::runtime_error &e) {
+            m_output->writeLine(e.what());
+        }
 
         std::string input = "";
         std::string promptMessage = "\nEnter a number:\n\t1.  Uart Tx\n\t2.  Send Email\n\t3.  Send Text Message\n\t0.  Exit\n>";
@@ -139,6 +144,9 @@ void Gateway::start() {
     catch (const std::runtime_error &e) {
         m_output->writeLine(e.what());
     }
+
+    m_recvThread->kill();
+    m_uart->close();
 }
 
 }

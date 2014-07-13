@@ -46,14 +46,9 @@ bool UartRecvThread::isAlive() {
 
 void UartRecvThread::run() {
     do {
-        m_dataSemaphore.wait();
-        std::string message;
         try {
-            std::string subMessage;
-            do {
-                subMessage = m_uart->recv();
-                message += subMessage;
-            } while (subMessage != "");
+            m_dataSemaphore.wait();
+            std::string message = m_uart->recv();
 
             m_outLogger.writeLine(MESSAGE_PREFIX + message);
         }

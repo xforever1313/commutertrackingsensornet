@@ -44,18 +44,11 @@ TEST(UartRecvThreadTest, killTest) {
 
 TEST(UartRecvThreadTest, runSuccessTest) {
     std::string str1 = "Hello ";
-    std::string str2 = "world!";
 
     testing::InSequence dummy;
 
     EXPECT_CALL(*m_mockUart, recv())
         .WillOnce(testing::Return(str1));
-
-    EXPECT_CALL(*m_mockUart, recv())
-        .WillOnce(testing::Return(str2));
-
-    EXPECT_CALL(*m_mockUart, recv())
-        .WillOnce(testing::Return(""));
 
     m_uut->start();
     m_uut->dataReady();
@@ -64,7 +57,7 @@ TEST(UartRecvThreadTest, runSuccessTest) {
 
     // Ensure we got the right message
     CHECK_EQUAL(m_outputLogger->getString(), Gateway::UartRecvThread::MESSAGE_PREFIX + \
-                                             str1 + str2 + "\n");
+                                             str1 + "\n");
 
     // Ensure no errors
     CHECK_EQUAL(m_errorLogger->getString(), "");

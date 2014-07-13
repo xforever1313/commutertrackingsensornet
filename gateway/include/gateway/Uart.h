@@ -39,6 +39,10 @@ class Uart : public UartInterface {
          * \return A string of up to 255 characters.  Returns empty string when there is nothing left to read.
          */
         std::string recv() override;
+
+        /**
+         * \brief closes the Uart
+         */
         void close() override;
 
     private:

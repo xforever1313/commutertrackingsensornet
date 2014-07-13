@@ -18,6 +18,11 @@ class UartRecvThread : public OS::SThread {
         UartRecvThread(UartInterface *uart,
                        Common::IO::LoggerBase &outLogger = Common::IO::ConsoleLogger::out,
                        Common::IO::LoggerBase &errorLogger = Common::IO::ConsoleLogger::err);
+
+        /**
+         * \brief Destructor - kills and joins the thread.
+         * \warning Ensure the Uart is CLOSED before destruction, or a deadlock will occur.
+         */
         ~UartRecvThread();
 
         /**

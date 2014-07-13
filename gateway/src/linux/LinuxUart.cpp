@@ -9,6 +9,7 @@
 #include <sys/signal.h>     //Used for interrupt
 #include <termios.h>        //Used for UART
 #include <unistd.h>         //Used for UART
+#include <iostream>
 
 #include <string>
 
@@ -37,7 +38,7 @@ Uart::~Uart() {
 
 void Uart::open (const std::string &file) {
     if (m_uartFile == Uart::NOT_OPEN) {
-        m_uartFile = Linux::open(file.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+        m_uartFile = Linux::open(file.c_str(), O_RDWR | O_NOCTTY | O_NDELAY); //ReadWrite, ??, non-blocking
         if (m_uartFile == Uart::NOT_OPEN) {
             throw std::runtime_error(OPEN_ERROR_MESSAGE);
         }
@@ -66,7 +67,7 @@ void Uart::open (const std::string &file) {
                 //  PARODD - Odd parity (else even)
                 struct termios options;
                 tcgetattr(m_uartFile, &options);
-                options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;     //<Set baud rate
+                options.c_cflag = B115200 | CS8 | CLOCAL | CREAD;     //<Set baud rate
                 options.c_iflag = IGNPAR;
                 options.c_oflag = 0;
                 options.c_lflag = 0;
@@ -113,6 +114,7 @@ std::string Uart::recv() {
 
 void Uart::close() {
     if (m_uartFile != Uart::NOT_OPEN) {
+        Linux::close(m_uartFile);
         m_uartFile = Uart::NOT_OPEN;
     }
 }
