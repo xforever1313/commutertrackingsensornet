@@ -9,6 +9,7 @@
 #include "gateway/UartRecvThread.h"
 #include "gateway/UartTxEvent.h"
 #include "io/InputReader.h"
+#include "SMutex.h"
 
 namespace Gateway {
 
@@ -26,11 +27,13 @@ Gateway::Gateway() :
     m_input(&std::cin),
     m_output(&Common::IO::ConsoleLogger::out),
     m_uart(new Uart(RxSignal)),
-    m_recvThread(new UartRecvThread(m_uart))
+    m_recvThread(new UartRecvThread(m_uart)),
+    m_isShutdown(false)
 {
 }
 
 Gateway::~Gateway() {
+    shutdown();
     delete m_recvThread;
     delete m_uart;
     delete m_eventExecutor;
@@ -119,7 +122,7 @@ void Gateway::start() {
         std::string input = "";
         std::string promptMessage = "\nEnter a number:\n\t1.  Uart Tx\n\t2.  Send Email\n\t3.  Send Text Message\n\t0.  Exit\n>";
 
-        while (input != "0"){
+        while (!isShutdown()){
             if (m_input->fail()) {
                 m_input->clear();
                 input = Common::IO::InputReader::PromptForInput("\n>", *m_input, *m_output);
@@ -139,6 +142,9 @@ void Gateway::start() {
             else if ((input == "3") && !m_input->fail()) {
                 sendTextMessage();
             }
+            else if ((input == "0") && (!m_input->fail())) {
+                shutdown();
+            }
         }
     }
     catch (const std::runtime_error &e) {
@@ -147,6 +153,23 @@ void Gateway::start() {
 
     m_recvThread->kill();
     m_uart->close();
+}
+
+void Gateway::shutdown() {
+    m_shutdownMutex.lock();
+    m_isShutdown = true;
+    m_shutdownMutex.unlock();
+
+    //Kill CIN
+    std::cin.setstate(std::ios_base::eofbit);
+}
+
+bool Gateway::isShutdown() {
+    bool ret;
+    m_shutdownMutex.lock();
+    ret = m_isShutdown;
+    m_shutdownMutex.unlock();
+    return ret;
 }
 
 }

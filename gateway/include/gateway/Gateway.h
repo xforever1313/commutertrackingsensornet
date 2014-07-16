@@ -4,13 +4,15 @@
 #include <istream>
 
 #include "EventExecutorInterface.h"
+#include "gateway/ShutdownInterface.h"
 #include "gateway/UartInterface.h"
 #include "gateway/UartRecvThread.h"
 #include "io/LoggerBase.h"
+#include "SMutex.h"
 
 namespace Gateway {
 
-class Gateway {
+class Gateway : public ShutdownInterface {
     public:
         static Gateway &getInstance();
         virtual ~Gateway();
@@ -21,9 +23,11 @@ class Gateway {
 
         Gateway();
         Gateway(const Gateway &other) = delete;
-        
+
         void sendEmail();
         void sendTextMessage();
+        void shutdown() override;
+        bool isShutdown();
 
         Common::EventExecutorInterface *m_eventExecutor;
         std::istream *m_input;
@@ -31,6 +35,9 @@ class Gateway {
 
         UartInterface *m_uart;
         UartRecvThread *m_recvThread;
+
+        OS::SMutex m_shutdownMutex;
+        bool m_isShutdown;
 };
 
 }
