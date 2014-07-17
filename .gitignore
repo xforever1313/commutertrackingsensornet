@@ -81,5 +81,5 @@ vsproject
 *.idb
 *.target
 Doxyfile
-/Keys.py
-/CTSNSharedGlobals.py
+/Secrets.py
+

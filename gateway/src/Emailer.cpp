@@ -5,7 +5,7 @@
 
 #include "CTSNSharedGlobals.py"
 #include "gateway/Emailer.h"
-#include "Keys.py"
+#include "Secrets.py"
 
 namespace Gateway {
 
@@ -16,7 +16,7 @@ Emailer::Emailer(const std::map <std::string, std::string> &addresses,
     m_message(message)
 {
 }
- 
+
 
 Emailer::~Emailer() {
 }
@@ -37,9 +37,9 @@ const std::string Emailer::getCurlCommand() const {
 
 const std::string Emailer::send() {
     std::string ret;
-    
+
     FILE *f = popen(getCurlCommand().c_str(), "r");
-    
+
     if (f == nullptr) {
         throw std::runtime_error("EMAIL ERROR: Could not execute curl!");
     }
