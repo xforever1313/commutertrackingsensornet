@@ -6,11 +6,13 @@
 #define protected public
 
 #include "CTSNSharedGlobals.py"
+#include "gateway/BadClientHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "MockHTTPServerRequest.h"
 #include "MockShutdown.h"
+#include "Secrets.py"
 
 TEST_GROUP(HTTPRequestFactoryTest) {
     TEST_SETUP() {
@@ -32,6 +34,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
 
 TEST(HTTPRequestFactoryTest, createShutdownTest) {
     m_request->setURI(SHUTDOWN_URI);
+    m_request->set("user-agent", USER_AGENT);
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<Gateway::ShutdownHTTPRequestHandler*>(handler) != nullptr);
@@ -40,8 +43,26 @@ TEST(HTTPRequestFactoryTest, createShutdownTest) {
 
 TEST(HTTPRequestFactoryTest, notFoundTest) {
     m_request->setURI("herpaderp");
+    m_request->set("user-agent", USER_AGENT);
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<Gateway::NotFoundHTTPRequestHandler*>(handler) != nullptr);
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, badClientTestBadUserAgent) {
+    m_request->setURI(SHUTDOWN_URI);
+    m_request->set("user-agent", "Firefox");
+
+    Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
+    CHECK(dynamic_cast<Gateway::BadClientHTTPRequestHandler*>(handler) != nullptr);
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, badClientTestNoUserAgent) {
+    m_request->setURI(SHUTDOWN_URI);
+
+    Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
+    CHECK(dynamic_cast<Gateway::BadClientHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }
