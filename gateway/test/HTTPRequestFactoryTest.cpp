@@ -7,6 +7,7 @@
 
 #include "CTSNSharedGlobals.py"
 #include "gateway/HTTPRequestFactory.h"
+#include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "MockHTTPServerRequest.h"
 #include "MockShutdown.h"
@@ -19,6 +20,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
     }
 
     TEST_TEARDOWN() {
+        delete m_uut;
         delete m_shutdown;
         delete m_request;
     }
@@ -33,5 +35,13 @@ TEST(HTTPRequestFactoryTest, createShutdownTest) {
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<Gateway::ShutdownHTTPRequestHandler*>(handler) != nullptr);
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, notFoundTest) {
+    m_request->setURI("herpaderp");
+
+    Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
+    CHECK(dynamic_cast<Gateway::NotFoundHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }

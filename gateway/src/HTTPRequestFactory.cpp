@@ -4,7 +4,9 @@
 
 #include "CTSNSharedGlobals.py"
 #include "gateway/HTTPRequestFactory.h"
+#include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
+#include "Secrets.py"
 
 namespace Gateway {
 
@@ -24,7 +26,10 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     if (request.getURI() == SHUTDOWN_URI) {
         return new ShutdownHTTPRequestHandler(m_shutdown);
     }
-    return nullptr;
+
+    else {
+        return new NotFoundHTTPRequestHandler();
+    }
 }
 
 }
