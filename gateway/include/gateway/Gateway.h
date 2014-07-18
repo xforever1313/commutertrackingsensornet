@@ -2,6 +2,7 @@
 #define GATEWAY_H
 
 #include <istream>
+#include <Poco/Net/HTTPServer.h>
 
 #include "EventExecutorInterface.h"
 #include "gateway/ShutdownInterface.h"
@@ -38,6 +39,8 @@ class Gateway : public ShutdownInterface {
 
         OS::SMutex m_shutdownMutex;
         bool m_isShutdown;
+
+        Poco::Net::HTTPServer *m_server;
 };
 
 }

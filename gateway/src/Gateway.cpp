@@ -28,7 +28,8 @@ Gateway::Gateway() :
     m_output(&Common::IO::ConsoleLogger::out),
     m_uart(new Uart(RxSignal)),
     m_recvThread(new UartRecvThread(m_uart)),
-    m_isShutdown(false)
+    m_isShutdown(false),
+    m_server(nullptr)
 {
 }
 
