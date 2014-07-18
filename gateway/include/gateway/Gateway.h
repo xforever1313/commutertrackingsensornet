@@ -25,6 +25,7 @@ class Gateway : public ShutdownInterface {
         Gateway();
         Gateway(const Gateway &other) = delete;
 
+        void initHTTPServer();
         void sendEmail();
         void sendTextMessage();
         void shutdown() override;
@@ -40,6 +41,7 @@ class Gateway : public ShutdownInterface {
         OS::SMutex m_shutdownMutex;
         bool m_isShutdown;
 
+        Poco::Net::ServerSocket *m_socket;
         Poco::Net::HTTPServer *m_server;
 };
 
