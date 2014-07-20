@@ -39,6 +39,7 @@ Gateway::Gateway() :
 Gateway::~Gateway() {
     shutdown();
     delete m_server;
+    delete m_socket;
     delete m_recvThread;
     delete m_uart;
     delete m_eventExecutor;
