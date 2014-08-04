@@ -1,4 +1,5 @@
 #include <Poco/Net/HTTPResponse.h>
+#include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <string>
@@ -8,11 +9,22 @@
 namespace Gateway {
 
 BaseHTTPRequestHandler::BaseHTTPRequestHandler() {
-    //ctor
 }
 
 BaseHTTPRequestHandler::~BaseHTTPRequestHandler() {
-    //dtor
+}
+
+void BaseHTTPRequestHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
+
+    if (request.getMethod() == Poco::Net::HTTPRequest::HTTP_GET) {
+        handleGetRequest(request, response);
+    }
+    else if (request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST) {
+        handlePostRequest(request, response);
+    }
+    else {
+        sendBadRequestResponse(response);
+    }
 }
 
 void BaseHTTPRequestHandler::sendSuccessResponse(Poco::Net::HTTPServerResponse &response, const std::string &message /*= "ACK"*/) {

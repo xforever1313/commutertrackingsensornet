@@ -14,10 +14,12 @@ class ShutdownHTTPRequestHandler : public BaseHTTPRequestHandler {
         ShutdownHTTPRequestHandler(ShutdownInterface *shutdown);
         ~ShutdownHTTPRequestHandler();
 
-        void handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
+        void handlePostRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
+        void handleGetRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
 
     private:
-        static const std::string MESSAGE;
+        static const std::string POST_MESSAGE;
+        static const std::string GET_MESSAGE;
 
         ShutdownHTTPRequestHandler() = delete;
 

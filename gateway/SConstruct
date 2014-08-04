@@ -39,7 +39,8 @@ includePaths = [includeDir, getDateVersionPath(commonPath),
 		baseDir]
 
 testIncludePaths = [os.path.join(testDir, includeDir),
-                    os.path.join(getCommonClassesPath(commonPath), testDir, includeDir)]
+                    os.path.join(getCommonClassesPath(commonPath), testDir, includeDir),
+                    os.path.join(getOSPath(commonPath), testDir, includeDir)]
 
 ###Source Files
 dateVersionFile = (os.path.join(srcDir, 'GatewayDateVersion.cpp'))
@@ -73,6 +74,11 @@ releaseLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'],
 testLibPath = debugLibPath
 
 Help(getHelpMessage(envBase))
+
+###
+# Test outputs
+###
+createTestOutputFolder(envBase)
 
 ###
 # Environment creation

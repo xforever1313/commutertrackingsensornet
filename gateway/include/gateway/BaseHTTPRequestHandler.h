@@ -10,8 +10,24 @@ namespace Gateway {
 
 class BaseHTTPRequestHandler : public Poco::Net::HTTPRequestHandler {
     public:
+        /**
+         * \brief overrides the required method from parent class.  This will call handleGetRequest or handlePostRequest respectfully
+         */
+        void handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
+
+    protected:
         BaseHTTPRequestHandler();
         virtual ~BaseHTTPRequestHandler();
+
+        /**
+         * \brief Called when a post request comes through
+         */
+        virtual void handlePostRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) = 0;
+
+        /**
+         * \brief Called when a get request comes through
+         */
+        virtual void handleGetRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) = 0;
 
         /**
          * \brief Sends back message with status 200.

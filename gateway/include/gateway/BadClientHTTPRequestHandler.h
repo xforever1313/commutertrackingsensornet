@@ -14,10 +14,13 @@ class BadClientHTTPRequestHandler : public BaseHTTPRequestHandler {
         BadClientHTTPRequestHandler();
         ~BadClientHTTPRequestHandler();
 
-        void handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
+        void handlePostRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
+        void handleGetRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
 
     private:
         static const std::string MESSAGE;
+
+        void handleHTTPRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response);
 };
 
 }

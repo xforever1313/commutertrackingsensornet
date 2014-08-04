@@ -16,7 +16,15 @@ NotFoundHTTPRequestHandler::~NotFoundHTTPRequestHandler() {
 
 }
 
-void NotFoundHTTPRequestHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
+void NotFoundHTTPRequestHandler::handleGetRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
+    handleHTTPRequest(request, response);
+}
+
+void NotFoundHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
+    handleHTTPRequest(request, response);
+}
+
+void NotFoundHTTPRequestHandler::handleHTTPRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
     sendNotFoundResponse(response, MESSAGE);
 }
 

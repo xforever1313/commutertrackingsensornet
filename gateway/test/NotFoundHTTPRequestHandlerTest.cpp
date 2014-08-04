@@ -26,7 +26,18 @@ TEST_GROUP(NotFoundHTTPRequestHandlerTest) {
     Gateway::NotFoundHTTPRequestHandler *m_uut;
 };
 
-TEST(NotFoundHTTPRequestHandlerTest, handleRequestTest) {
+TEST(NotFoundHTTPRequestHandlerTest, handlePostRequestTest) {
+    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
+
+    m_uut->handleRequest(*m_request, *m_response);
+
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::NotFoundHTTPRequestHandler::MESSAGE);
+    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+}
+
+TEST(NotFoundHTTPRequestHandlerTest, handleGetRequestTest) {
+    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_GET);
+
     m_uut->handleRequest(*m_request, *m_response);
 
     CHECK_EQUAL(m_response->m_response.str(), Gateway::NotFoundHTTPRequestHandler::MESSAGE);

@@ -30,10 +30,21 @@ TEST_GROUP(ShutdownHTTPRequestHandlerTest) {
     Gateway::ShutdownHTTPRequestHandler *m_uut;
 };
 
-TEST(ShutdownHTTPRequestHandlerTest, handleRequestTest) {
+TEST(ShutdownHTTPRequestHandlerTest, handlePostRequestTest) {
+    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
+
     EXPECT_CALL(*m_shutdown, shutdown());
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::ShutdownHTTPRequestHandler::MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::ShutdownHTTPRequestHandler::POST_MESSAGE);
+    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);
+}
+
+TEST(ShutdownHTTPRequestHandlerTest, handleGetRequestTest) {
+    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_GET);
+
+    m_uut->handleRequest(*m_request, *m_response);
+
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::ShutdownHTTPRequestHandler::GET_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);
 }

@@ -26,7 +26,18 @@ TEST_GROUP(BadClientHTTPRequestHandlerTest) {
     Gateway::BadClientHTTPRequestHandler *m_uut;
 };
 
-TEST(BadClientHTTPRequestHandlerTest, handleRequestTest) {
+TEST(BadClientHTTPRequestHandlerTest, handleGetRequestTest) {
+    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_GET);
+
+    m_uut->handleRequest(*m_request, *m_response);
+
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::BadClientHTTPRequestHandler::MESSAGE);
+    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_FORBIDDEN);
+}
+
+TEST(BadClientHTTPRequestHandlerTest, handlePostRequestTest) {
+    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
+
     m_uut->handleRequest(*m_request, *m_response);
 
     CHECK_EQUAL(m_response->m_response.str(), Gateway::BadClientHTTPRequestHandler::MESSAGE);

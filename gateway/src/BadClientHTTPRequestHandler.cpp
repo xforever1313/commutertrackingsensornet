@@ -16,7 +16,15 @@ BadClientHTTPRequestHandler::~BadClientHTTPRequestHandler() {
 
 }
 
-void BadClientHTTPRequestHandler::handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
+void BadClientHTTPRequestHandler::handleGetRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
+    handleHTTPRequest(request, response);
+}
+
+void BadClientHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
+    handleHTTPRequest(request, response);
+}
+
+void BadClientHTTPRequestHandler::handleHTTPRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
     sendForbiddenResponse(response, MESSAGE);
 }
 

@@ -4,20 +4,15 @@
 #define private public
 #define protected public
 
-#include "gateway/BaseHTTPRequestHandler.h"
+#include "MockHTTPRequestHandler.h"
+#include "MockHTTPServerRequest.h"
 #include "MockHTTPServerResponse.h"
-
-class BaseHTTPRequestHandlerImpl : public Gateway::BaseHTTPRequestHandler {
-    public:
-        void handleRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override {
-            //This is just here to implement the abstract class.
-        }
-};
 
 TEST_GROUP(BaseHTTPRequestHandlerTest) {
     TEST_SETUP() {
+        m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>;
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>;
-        m_uut = new BaseHTTPRequestHandlerImpl;
+        m_uut = new Gateway::MockHTTPRequestHandler;
         m_expectedMessage = "This is a server response!";
 
     }
@@ -25,12 +20,44 @@ TEST_GROUP(BaseHTTPRequestHandlerTest) {
     TEST_TEARDOWN() {
         delete m_uut;
         delete m_response;
+        delete m_request;
     }
 
+    testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<MockPoco::Net::MockHTTPServerResponse> *m_response;
-    Gateway::BaseHTTPRequestHandler *m_uut;
+    Gateway::MockHTTPRequestHandler *m_uut; ///< Mock is used to override the abstract functions
     std::string m_expectedMessage;
 };
+
+
+TEST(BaseHTTPRequestHandlerTest, handleGetRequestCalledTest){
+    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_GET);
+
+    m_uut->handleRequest(*m_request, *m_response);
+
+    CHECK(m_uut->m_getCalled);
+    CHECK(!m_uut->m_postCalled);
+}
+
+
+TEST(BaseHTTPRequestHandlerTest, handlePostRequestCalledTest){
+    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
+
+    m_uut->handleRequest(*m_request, *m_response);
+
+    CHECK(!m_uut->m_getCalled);
+    CHECK(m_uut->m_postCalled);
+}
+
+TEST(BaseHTTPRequestHandlerTest, handleInvalidMethodTest){
+    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_PUT);
+
+    m_uut->handleRequest(*m_request, *m_response);
+
+    CHECK(!m_uut->m_getCalled);
+    CHECK(!m_uut->m_postCalled);
+    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+}
 
 TEST(BaseHTTPRequestHandlerTest, sendSuccessResponseTest) {
     m_uut->sendSuccessResponse(*m_response, m_expectedMessage);
