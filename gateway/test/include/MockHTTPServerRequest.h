@@ -4,6 +4,7 @@
 #include <gmock/gmock.h>
 #include <Poco/Net/HTTPServerParams.h>
 #include <Poco/Net/HTTPServerRequest.h>
+#include <sstream>
 
 namespace MockPoco {
 namespace Net {
@@ -12,7 +13,9 @@ class MockHTTPServerRequest : public Poco::Net::HTTPServerRequest {
     public:
         virtual ~MockHTTPServerRequest() {}
 
-        MOCK_METHOD0(stream, std::istream&(void));
+        std::istream &stream() override {
+            return m_ss;
+        }
 
         MOCK_CONST_METHOD0(expectContinue, bool(void));
 
@@ -23,6 +26,8 @@ class MockHTTPServerRequest : public Poco::Net::HTTPServerRequest {
         MOCK_CONST_METHOD0(serverParams, Poco::Net::HTTPServerParams&(void));
 
         MOCK_CONST_METHOD0(response, Poco::Net::HTTPServerResponse&(void));
+
+        std::stringstream m_ss;
 };
 
 }

@@ -1,10 +1,17 @@
+#include <Poco/Exception.h>
+#include <Poco/Net/HTMLForm.h>
+#include <Poco/Net/HTTPServerRequest.h>
+#include <Poco/Net/HTTPServerResponse.h>
+
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "gateway/ShutdownInterface.h"
 
 namespace Gateway {
 
-const std::string ShutdownHTTPRequestHandler::POST_MESSAGE = "Shutting down gateway...";
-const std::string ShutdownHTTPRequestHandler::GET_MESSAGE = "Form data:\n shutdown=true\tShut down the gateway";
+const std::string ShutdownHTTPRequestHandler::POST_TRUE_MESSAGE = "Shutting down gateway...";
+const std::string ShutdownHTTPRequestHandler::POST_FALSE_MESSAGE = "Gateway will not shutdown.";
+const std::string ShutdownHTTPRequestHandler::GET_MESSAGE = "Form data:\n\tshutdown=true\tShut down the gateway";
+const std::string ShutdownHTTPRequestHandler::SHUTDOWN_FORM_DATA = "shutdown";
 
 ShutdownHTTPRequestHandler::ShutdownHTTPRequestHandler(ShutdownInterface *shutdown) :
     m_shutdown(shutdown)
@@ -15,8 +22,20 @@ ShutdownHTTPRequestHandler::~ShutdownHTTPRequestHandler() {
 }
 
 void ShutdownHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {
-    m_shutdown->shutdown();
-    sendSuccessResponse(response, POST_MESSAGE);
+
+    try {
+        Poco::Net::HTMLForm form(request, request.stream());
+        if (form[SHUTDOWN_FORM_DATA] == "true") {
+            m_shutdown->shutdown();
+            sendSuccessResponse(response, POST_TRUE_MESSAGE);
+        }
+        else {
+            sendSuccessResponse(response, POST_FALSE_MESSAGE);
+        }
+    }
+    catch (const Poco::NotFoundException &e) {
+        sendBadRequestResponse(response);
+    }
 }
 
 void ShutdownHTTPRequestHandler::handleGetRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) {

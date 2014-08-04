@@ -18,8 +18,10 @@ class ShutdownHTTPRequestHandler : public BaseHTTPRequestHandler {
         void handleGetRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
 
     private:
-        static const std::string POST_MESSAGE;
+        static const std::string POST_TRUE_MESSAGE;
+        static const std::string POST_FALSE_MESSAGE;
         static const std::string GET_MESSAGE;
+        static const std::string SHUTDOWN_FORM_DATA;
 
         ShutdownHTTPRequestHandler() = delete;
 
