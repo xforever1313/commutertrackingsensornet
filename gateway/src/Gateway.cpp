@@ -51,7 +51,7 @@ void Gateway::initHTTPServer() {
     params->setMaxThreads(2);
 
     m_socket = new Poco::Net::ServerSocket(GATEWAY_COMMAND_PORT);
-    m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this), *m_socket, params);
+    m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this, m_eventExecutor, m_uart), *m_socket, params);
 }
 
 void Gateway::sendEmail() {

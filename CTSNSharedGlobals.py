@@ -6,7 +6,7 @@
 #ifdef PYTHON
 ''''
 #endif
-const short 
+const short
 #ifdef PYTHON
 \''''
 #endif
@@ -16,7 +16,7 @@ GATEWAY_COMMAND_PORT = 9009;
 #ifdef PYTHON
 ''''
 #endif
-const std::string 
+const std::string
 #ifdef PYTHON
 \''''
 #endif
@@ -31,6 +31,16 @@ const std::string
 \''''
 #endif
 SHUTDOWN_URI = "/shutdown";
+
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+UART_TX_URI = "/uarttx";
 
 #endif
 

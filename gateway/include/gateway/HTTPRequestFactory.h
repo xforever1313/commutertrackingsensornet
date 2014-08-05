@@ -5,13 +5,15 @@
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
 #include <string>
 
-#include "ShutdownInterface.h"
+#include "EventExecutorInterface.h"
+#include "gateway/ShutdownInterface.h"
+#include "gateway/UartInterface.h"
 
 namespace Gateway {
 
 class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
     public:
-        HTTPRequestFactory(ShutdownInterface *shutdown);
+        HTTPRequestFactory(ShutdownInterface *shutdown, Common::EventExecutorInterface *eventExecutor, UartInterface *uart);
         ~HTTPRequestFactory();
 
         Poco::Net::HTTPRequestHandler *createRequestHandler(const Poco::Net::HTTPServerRequest &request) override;
@@ -22,6 +24,8 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
         HTTPRequestFactory() = delete;
 
         ShutdownInterface *m_shutdown;
+        Common::EventExecutorInterface *m_eventExecutor;
+        UartInterface *m_uart;
 };
 
 }
