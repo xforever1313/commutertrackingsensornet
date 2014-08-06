@@ -1,3 +1,4 @@
+import argparse
 import subprocess
 import sys
 
@@ -5,6 +6,8 @@ sys.path.append("../..")
 
 from CTSNSharedGlobals import *
 from Secrets import *
+
+gatewayUrl = ""
 
 def performPostRequest(data, page):
     commandArgs = ['curl', '-X', 'POST', '-A', USER_AGENT, '--data']
@@ -17,7 +20,7 @@ def performPostRequest(data, page):
     #Get rid of unneeded &
     dataStr = dataStr[:-1]
 
-    commandArgs += [dataStr, 'http://localhost:' + str(GATEWAY_COMMAND_PORT) + page]
+    commandArgs += [dataStr, 'http://' + gatewayUrl + ":" + str(GATEWAY_COMMAND_PORT) + page]
 
     subprocess.call(commandArgs) 
 
@@ -32,6 +35,13 @@ def performShutdown():
     performPostRequest(data, SHUTDOWN_URI)
 
 if __name__ == '__main__':
+    argParser = argparse.ArgumentParser(description="Debug Console for the CTSN gateway")
+    argParser.add_argument("--url", dest='url', action = "store", default="localhost", help="The url to post to.")
+    args = argParser.parse_args()
+
+    global gatewayUrl
+    gatewayUrl = args.url
+
     keepGoing = True
     while (keepGoing):
         command = input("\nEnter a number:\n\t1.  Uart Tx\n\t2.  Send Email\n\t3." + \
