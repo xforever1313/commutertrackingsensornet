@@ -10,6 +10,7 @@
 #include "gateway/UartRecvThread.h"
 #include "io/LoggerBase.h"
 #include "SMutex.h"
+#include "SSemaphore.h"
 
 namespace Gateway {
 
@@ -26,10 +27,7 @@ class Gateway : public ShutdownInterface {
         Gateway(const Gateway &other) = delete;
 
         void initHTTPServer();
-        void sendEmail();
-        void sendTextMessage();
         void shutdown() override;
-        bool isShutdown();
 
         Common::EventExecutorInterface *m_eventExecutor;
         std::istream *m_input;
@@ -40,6 +38,8 @@ class Gateway : public ShutdownInterface {
 
         OS::SMutex m_shutdownMutex;
         bool m_isShutdown;
+
+        OS::SSemaphore m_shutdownSemaphore;
 
         Poco::Net::ServerSocket *m_socket;
         Poco::Net::HTTPServer *m_server;

@@ -30,7 +30,6 @@ Gateway::Gateway() :
     m_output(&Common::IO::ConsoleLogger::out),
     m_uart(new Uart(RxSignal)),
     m_recvThread(new UartRecvThread(m_uart)),
-    m_isShutdown(false),
     m_socket(nullptr),
     m_server(nullptr)
 {
@@ -54,75 +53,6 @@ void Gateway::initHTTPServer() {
     m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this, m_eventExecutor, m_uart), *m_socket, params);
 }
 
-void Gateway::sendEmail() {
-    std::map <std::string, std::string> addresses;
-    do {
-        std::string name = Common::IO::InputReader::PromptForInput("\nEnter Person's name (EOF to stop): ", *m_input, *m_output);
-        if (!m_input->eof()) {
-            std::string email = Common::IO::InputReader::PromptForInput("Enter Person's Email: ", *m_input, *m_output);
-
-            if (!email.empty()) {
-                addresses[email] = name;
-            }
-            else {
-                m_output->writeLine("Can not have empty email address!");
-            }
-        }
-    } while (!m_input->eof());
-
-    m_input->clear();
-
-    if (!addresses.empty()) {
-        std::string subject = Common::IO::InputReader::PromptForInput("Enter Subject: ", *m_input, *m_output);
-        std::string message = Common::IO::InputReader::PromptForInput("Enter Message: ", *m_input, *m_output);
-        m_eventExecutor->addEvent(std::shared_ptr<EmailEvent>(new EmailEvent(addresses, subject, message)));
-    }
-    else {
-        std::cout << "No addresses entered!" << std::endl;
-    }
-}
-
-void Gateway::sendTextMessage() {
-    std::map <std::string, TextMessageEvent::Provider> numbers;
-    std::string providerString;
-    for (auto &provider : TextMessageEvent::PROVIDER_NAMES) {
-        if (provider.first != TextMessageEvent::Provider::UNKNOWN) {
-            providerString += "\t" + std::to_string(provider.first) + " " + provider.second + "\n";
-        }
-    }
-
-    do {
-        std::string number = Common::IO::InputReader::PromptForInput("\nEnter Person's number (EOF to stop): ", *m_input, *m_output);
-        if (!m_input->eof()) {
-            std::string providerInput = Common::IO::InputReader::PromptForInput("Enter Provider: \n" + providerString, *m_input, *m_output);
-            if (providerInput.size() > 1) {
-                m_output->writeLine("Invalid input");
-            }
-            else {
-                //Convert number to int.
-                int provider = providerInput[0] - '0';
-                if ((provider < 1) || (provider >= TextMessageEvent::Provider::UNKNOWN)) {
-                    m_output->writeLine("Invalid provider");
-                }
-                else {
-                    numbers[number] = static_cast<TextMessageEvent::Provider>(provider);
-                }
-            }
-        }
-    } while (!m_input->eof());
-
-    m_input->clear();
-
-    if (!numbers.empty()) {
-        std::string subject = Common::IO::InputReader::PromptForInput("Enter Subject: ", *m_input, *m_output);
-        std::string message = Common::IO::InputReader::PromptForInput("Enter Message: ", *m_input, *m_output);
-        m_eventExecutor->addEvent(std::shared_ptr<TextMessageEvent>(new TextMessageEvent(numbers, subject, message)));
-    }
-    else {
-        std::cout << "No numbers entered!" << std::endl;
-    }
-}
-
 void Gateway::start() {
 
     try {
@@ -137,33 +67,9 @@ void Gateway::start() {
             m_output->writeLine(e.what());
         }
 
-        std::string input = "";
-        std::string promptMessage = "\nEnter a number:\n\t1.  Uart Tx\n\t2.  Send Email\n\t3.  Send Text Message\n\t0.  Exit\n>";
+        m_output->writeLine("Running CTSN Gateway...");
+        m_shutdownSemaphore.wait();
 
-        while (!isShutdown()){
-            if (m_input->fail()) {
-                m_input->clear();
-                input = Common::IO::InputReader::PromptForInput("\n>", *m_input, *m_output);
-            }
-            else {
-                input = Common::IO::InputReader::PromptForInput(promptMessage, *m_input, *m_output);
-            }
-
-            if ((input == "1") && !m_input->fail()) {
-                std::string promptMessage2 = "\nEnter a message to send:\n>";
-                std::string msg = Common::IO::InputReader::PromptForInput(promptMessage2, *m_input, *m_output);
-                m_eventExecutor->addEvent(std::shared_ptr<Common::EventInterface>(new UartTxEvent(msg, m_uart)));
-            }
-            else if ((input == "2") && !m_input->fail()) {
-                sendEmail();
-            }
-            else if ((input == "3") && !m_input->fail()) {
-                sendTextMessage();
-            }
-            else if ((input == "0") && (!m_input->fail())) {
-                shutdown();
-            }
-        }
     }
     catch (const std::runtime_error &e) {
         m_output->writeLine(e.what());
@@ -175,20 +81,7 @@ void Gateway::start() {
 }
 
 void Gateway::shutdown() {
-    m_shutdownMutex.lock();
-    m_isShutdown = true;
-    m_shutdownMutex.unlock();
-
-    //Kill CIN
-    std::cin.setstate(std::ios_base::eofbit);
-}
-
-bool Gateway::isShutdown() {
-    bool ret;
-    m_shutdownMutex.lock();
-    ret = m_isShutdown;
-    m_shutdownMutex.unlock();
-    return ret;
+    m_shutdownSemaphore.post();
 }
 
 }
