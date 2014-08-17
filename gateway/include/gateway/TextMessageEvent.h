@@ -14,14 +14,14 @@ class TextMessageEvent : public Common::EventInterface {
     public:
         enum Provider {
             ATT = 1,
-            VERIZON,
-            TMOBILE,
-            SPRINT,
-            VIRGIN_MOBILE,
-            US_CELLULAR,
-            NEXTEL,
-            BOOST,
-            ALLTEL,
+            VERIZON = 2,
+            TMOBILE = 3,
+            SPRINT = 4,
+            VIRGIN_MOBILE = 5,
+            US_CELLULAR = 6,
+            NEXTEL = 7,
+            BOOST = 8,
+            ALLTEL = 9,
             UNKNOWN
         };
 
@@ -30,7 +30,7 @@ class TextMessageEvent : public Common::EventInterface {
         /**
          * \param numbers The Keys are the phone number in the form of 1112223333
          */
-        TextMessageEvent(const std::map<std::string, Provider> &numbers, 
+        TextMessageEvent(const std::map<std::string, Provider> &numbers,
                          const std::string &subject,
                          const std::string &message,
                          Common::IO::LoggerBase &outLogger = Common::IO::ConsoleLogger::out,

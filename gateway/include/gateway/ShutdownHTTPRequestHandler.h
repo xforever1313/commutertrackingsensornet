@@ -3,6 +3,7 @@
 
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
+#include <string>
 
 #include "gateway/BaseHTTPRequestHandler.h"
 #include "gateway/ShutdownInterface.h"
