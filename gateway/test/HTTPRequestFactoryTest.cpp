@@ -10,6 +10,7 @@
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
+#include "gateway/TextMessageHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
 #include "MockHTTPServerRequest.h"
 #include "MockEventExecutor.h"
@@ -67,6 +68,18 @@ TEST(HTTPRequestFactoryTest, createUartTxTest) {
     delete handler;
 }
 
+TEST(HTTPRequestFactoryTest, createTextMessageTest) {
+    m_request->setURI(TEXT_MESSAGE_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Gateway::TextMessageHTTPRequestHandler* handler = dynamic_cast<Gateway::TextMessageHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+
+    CHECK(handler != nullptr);
+    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
+
+    delete handler;
+}
+
 TEST(HTTPRequestFactoryTest, notFoundTest) {
     m_request->setURI("herpaderp");
     m_request->set("user-agent", USER_AGENT);
@@ -92,3 +105,4 @@ TEST(HTTPRequestFactoryTest, badClientTestNoUserAgent) {
     CHECK(dynamic_cast<Gateway::BadClientHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }
+

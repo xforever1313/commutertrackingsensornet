@@ -22,6 +22,7 @@ def performPostRequest(data, page):
 
     commandArgs += [dataStr, 'http://' + gatewayUrl + ":" + str(GATEWAY_COMMAND_PORT) + page]
 
+    print ("\nCurl output:")
     subprocess.call(commandArgs) 
 
 def sendUartTx(message):
@@ -34,6 +35,45 @@ def performShutdown():
     data['shutdown'] = "true"
     performPostRequest(data, SHUTDOWN_URI)
 
+def performTextMessage(numbers, providers, subject, message):
+    data = {}
+    data['numbers'] = ""
+    data['providers'] = ""
+    data['subject'] = subject
+    data['message'] = message
+
+    for num in numbers:
+        data['numbers'] += num + ','
+    data['numbers'] = data['numbers'][:-1]
+
+    for p in providers:
+        data['providers'] += p + ','
+    data['providers'] = data['providers'][:-1]
+
+    performPostRequest(data, TEXT_MESSAGE_URI)
+
+def getTextMessageInfo():
+    subject = input ("Subject: ")
+    message = input ("Message to send: ")
+
+    numbers = []
+    providers = []
+
+    try:
+        while True:
+            number = input ("Give a phone number (xxxyyyzzzz), eof to stop: ")
+            provider = input("Select provider:\n1. ATT\n2. Verizon\n3. Tmobile\n4. Sprint\n5. Virgin Mobile\n6. US Cellular" + \
+                             "\n7. Nextel\n8. Boost\n9. Alltel\n> ")
+
+            numbers += [number]
+            providers += [provider]
+        
+    except EOFError:
+        pass
+
+    performTextMessage(numbers, providers, subject, message)
+    
+ 
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description="Debug Console for the CTSN gateway")
     argParser.add_argument("--url", dest='url', action = "store", default="localhost", help="The url to post to.")
@@ -53,7 +93,7 @@ if __name__ == '__main__':
         elif (command == "2"):
             print ("Not implemented in console yet.")
         elif (command == "3"):
-            print ("Not implemented in console yet.")
+            getTextMessageInfo()
         elif (command == "4"):
             performShutdown()
             print ("\n**WARNING!** Any more commands will not work.  Recommend Exiting.")

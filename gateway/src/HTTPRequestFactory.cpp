@@ -7,6 +7,7 @@
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
+#include "gateway/TextMessageHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
 #include "Secrets.py"
 
@@ -43,7 +44,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     else if (request.getURI() == SHUTDOWN_URI) {
         return new ShutdownHTTPRequestHandler(m_shutdown);
     }
-
+    else if (request.getURI() == TEXT_MESSAGE_URI) {
+        return new TextMessageHTTPRequestHandler(m_eventExecutor);
+    }
     else {
         return new NotFoundHTTPRequestHandler();
     }

@@ -42,5 +42,15 @@ const std::string
 #endif
 UART_TX_URI = "/uarttx";
 
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+TEXT_MESSAGE_URI = "/textmessage";
+
 #endif
 
