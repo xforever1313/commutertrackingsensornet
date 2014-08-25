@@ -7,6 +7,7 @@
 
 #include "CTSNSharedGlobals.py"
 #include "gateway/BadClientHTTPRequestHandler.h"
+#include "gateway/EmailHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
@@ -73,6 +74,18 @@ TEST(HTTPRequestFactoryTest, createTextMessageTest) {
     m_request->set("user-agent", USER_AGENT);
 
     Gateway::TextMessageHTTPRequestHandler* handler = dynamic_cast<Gateway::TextMessageHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+
+    CHECK(handler != nullptr);
+    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
+
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createEmailTest) {
+    m_request->setURI(EMAIL_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Gateway::EmailHTTPRequestHandler* handler = dynamic_cast<Gateway::EmailHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
     CHECK(handler != nullptr);
     POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);

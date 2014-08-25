@@ -73,6 +73,42 @@ def getTextMessageInfo():
 
     performTextMessage(numbers, providers, subject, message)
     
+def performEmail(addresses, names, subject, message):
+    data = {}
+    data['addresses'] = ""
+    data['names'] = ""
+    data['subject'] = subject
+    data['message'] = message
+
+    for addr in addresses:
+        data['addresses'] += addr + ','
+    data['addresses'] = data['addresses'][:-1]
+
+    for name in names:
+        data['names'] += name + ','
+    data['names'] = data['names'][:-1]
+
+    performPostRequest(data, EMAIL_URI)
+
+def getEmailInfo():
+    subject = input ("Subject: ")
+    message = input ("Message to send: ")
+
+    addresses = []
+    names = []
+
+    try:
+        while True:
+            address = input ("Give an email (someone@something.com), eof to stop: ")
+            name = input("Enter Recipient Name: ")
+
+            addresses += [address]
+            names += [name]
+        
+    except EOFError:
+        pass
+
+    performEmail(addresses, names, subject, message)
  
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description="Debug Console for the CTSN gateway")
@@ -91,7 +127,7 @@ if __name__ == '__main__':
             messageToSend = input("\nEnter a message to send:\n>")
             sendUartTx(messageToSend)
         elif (command == "2"):
-            print ("Not implemented in console yet.")
+            getEmailInfo()
         elif (command == "3"):
             getTextMessageInfo()
         elif (command == "4"):

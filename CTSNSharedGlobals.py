@@ -52,5 +52,14 @@ const std::string
 #endif
 TEXT_MESSAGE_URI = "/textmessage";
 
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+EMAIL_URI = "/email";
+
 #endif
 

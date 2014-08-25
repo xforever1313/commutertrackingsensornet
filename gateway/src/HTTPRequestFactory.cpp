@@ -4,6 +4,7 @@
 
 #include "CTSNSharedGlobals.py"
 #include "gateway/BadClientHTTPRequestHandler.h"
+#include "gateway/EmailHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
@@ -46,6 +47,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (request.getURI() == TEXT_MESSAGE_URI) {
         return new TextMessageHTTPRequestHandler(m_eventExecutor);
+    }
+    else if (request.getURI() == EMAIL_URI) {
+        return new EmailHTTPRequestHandler(m_eventExecutor);
     }
     else {
         return new NotFoundHTTPRequestHandler();
