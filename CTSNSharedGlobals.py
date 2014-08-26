@@ -16,6 +16,17 @@ GATEWAY_COMMAND_PORT = 9009;
 #ifdef PYTHON
 ''''
 #endif
+const short
+#ifdef PYTHON
+\''''
+#endif
+CTSN_DOMAIN = "seth.thenaterhood.com:1415";
+
+
+
+#ifdef PYTHON
+''''
+#endif
 const std::string
 #ifdef PYTHON
 \''''
