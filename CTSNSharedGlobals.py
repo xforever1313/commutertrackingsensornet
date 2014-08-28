@@ -16,7 +16,7 @@ GATEWAY_COMMAND_PORT = 9009;
 #ifdef PYTHON
 ''''
 #endif
-const short
+const std::string 
 #ifdef PYTHON
 \''''
 #endif
