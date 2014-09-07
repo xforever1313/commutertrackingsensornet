@@ -23,6 +23,6 @@ timestamp = datetime.datetime.now()
 
 outputFile = open(statusFile, "w")
 outputFile.write('<p><strong>' + statusStr  + '</strong></p>')
-outputFile.write("\n<p>Updated at: " + timestamp.date().isoformat() + " " + timestamp.time().isoformat() + '</p>')
+outputFile.write("\n<p>Updated at: " + timestamp.date().isoformat() + " " + timestamp.time().isoformat() + ' UTC</p>')
 outputFile.close()
 
