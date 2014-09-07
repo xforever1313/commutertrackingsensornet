@@ -4,6 +4,7 @@ sys.path.append('../')
 
 from CTSNSharedGlobals import *
 from Globals import *
+import datetime
 
 curlProc = subprocess.Popen(['curl', '-sL', '-w', '%{http_code}', CTSN_DOMAIN, "-o", "/dev/null"], 
                             stdout = subprocess.PIPE, stderr=subprocess.PIPE)
@@ -18,7 +19,10 @@ elif (status == 404):
 else:
     statusStr = "Down"
 
+timestamp = datetime.datetime.now()
+
 outputFile = open(statusFile, "w")
-outputFile.write(statusStr)
+outputFile.write('<p><strong>' + statusStr  + '</strong></p>')
+outputFile.write("\n<p>Updated at: " + timestamp.date().isoformat() + " " + timestamp.time().isoformat() + '</p>')
 outputFile.close()
 
