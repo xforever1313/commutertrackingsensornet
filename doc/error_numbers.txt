@@ -1,0 +1,7 @@
+# These error numbers and messages are what are in the database table
+# ctsn.error_messages.
+
+ERROR NUMBER:       ERROR MESSAGE:
+1                   SUCCESS
+2                   TEST ERROR
+

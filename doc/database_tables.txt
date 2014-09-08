@@ -1,0 +1,10 @@
+# These are a description of the database tables and what they do, and columns
+
+TABLE:                DESCRIPTION:        COLUMNS:
+
+ctsn.node             Stuff about nodes   ID int NOT NULL AUTO_INCREMENT, PRIMARY KEY(ID)
+
+ctsn.error_messages   Error messages      ID int NOT NULL AUTO_INCREMENT, MESSAGE varchar(255) NOT NULL, PRIMARY KEY(ID)
+
+ctsn.error_log        Error messages log  ID int NOT NULL AUTO_INCREMENT, NODE_ID int NOT NULL, MESSAGE_ID int NOT NULL, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(NODE_ID) REFERENCES ctsn.node(ID), FOREIGN KEY (MESSAGE_ID) REFERENCES ctsn.error_messages(ID), PRIMARY KEY(ID);
+
