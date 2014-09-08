@@ -1,0 +1,5 @@
+# Locations of the nodes and their numbers:
+
+NUMBER          LOCATION
+1               Gateway Node
+
