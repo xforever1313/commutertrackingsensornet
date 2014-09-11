@@ -26,6 +26,14 @@ targetFlags = DOXYGEN_TARGET | CPP_CHECK_TARGET | TESTING_TARGET | PROJECT_TARGE
 envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
 
 ###
+# Additional Flags
+###
+if (ARGUMENTS.get('pi_build', '0') ==  '1'):
+    additionalFlags = ['-DGATEWAY_IP=\\"localhost\\"']
+else:
+    additionalFlags = ['-DGATEWAY_IP=\\"192.168.15.115\\"']
+
+###
 # Files to compile
 ###
 
@@ -58,12 +66,29 @@ else:
     sourceFiles += glob.glob(os.path.join(srcDir, 'linux/*.cpp'))
     sourceTestFiles += glob.glob(os.path.join(testDir, 'linux/*.cpp'))
 
+#Remove MariaDB from files to unit test.
+allTestSourceFiles = filterSourceFiles(sourceFiles + sourceTestFiles, [os.path.join(srcDir, 'MariaDBWrapper.cpp')])
+
 coverageFiles = deepcopy(sourceFiles + [dateVersionFile])
 
 ###Libs
+
+#Libs needed for the pi
+piLibs = ['mariadbclient', 'z', 'm', 'ssl', 'crypto' ,'dl', 'rt']
+
+#Libs needed on arch
+archLibs = ['mysqlclient', 'z', 'm', 'ssl', 'crypto', 'dl', 'rt']
+
 debugLibs = ['CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 releaseLibs = ['CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 testLibs = debugLibs
+
+if (ARGUMENTS.get('pi_build', '0') ==  '1'):
+    debugLibs += piLibs
+    releaseLibs += piLibs
+else:
+    debugLibs += archLibs
+    releaseLibs += archLibs
 
 ###LibPath
 debugLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
@@ -85,6 +110,7 @@ createTestOutputFolder(envBase)
 ###
 
 def addFlags(env):
+    env.Append(CCFLAGS = additionalFlags)
     for p in systemPaths:
         env.Append(CCFLAGS = ['-isystem', p])
 
@@ -115,7 +141,7 @@ doxygenFiles = [dateVersionFile] + sourceFiles + sourceTestFiles + glob.glob(os.
 
 (unitTestTarget, runTestTarget) = createUnitTestExe(testEnvironment,
                                                     getCompiledObjectsWithDateVersionObject(testEnvironment,
-                                                                                            sourceFiles + sourceTestFiles,
+                                                                                            allTestSourceFiles,
                                                                                             dateVersionFile,
                                                                                             ARGUMENTS),
                                                     coverageFiles)

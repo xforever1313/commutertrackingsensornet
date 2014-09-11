@@ -5,12 +5,14 @@
 #include "EventExecutor.h"
 #include "gateway/EmailEvent.h"
 #include "gateway/Gateway.h"
+#include "gateway/MariaDBWrapper.h"
 #include "gateway/TextMessageEvent.h"
 #include "gateway/Uart.h"
 #include "gateway/UartRecvThread.h"
 #include "gateway/UartTxEvent.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "io/InputReader.h"
+#include "Secrets.py"
 #include "SMutex.h"
 
 namespace Gateway {
@@ -31,7 +33,8 @@ Gateway::Gateway() :
     m_uart(new Uart(RxSignal)),
     m_recvThread(new UartRecvThread(m_uart)),
     m_socket(nullptr),
-    m_server(nullptr)
+    m_server(nullptr),
+    m_mariadb(nullptr)
 {
 }
 
@@ -42,6 +45,7 @@ Gateway::~Gateway() {
     delete m_recvThread;
     delete m_uart;
     delete m_eventExecutor;
+    delete m_mariadb; //Delete this last, as some left over events may use it.
 }
 
 void Gateway::initHTTPServer() {
@@ -53,11 +57,22 @@ void Gateway::initHTTPServer() {
     m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this, m_eventExecutor, m_uart), *m_socket, params);
 }
 
+void Gateway::initMariaDB() {
+    m_mariadb = new MariaDBWrapper();
+    m_mariadb->mysql_init();
+    // Gateway IP is defined with -D at compile time
+    m_mariadb->mysql_real_connect(GATEWAY_IP, MARIADB_USER.c_str(),
+                                  MARIADB_PASSWORD.c_str(),
+                                  "ctsn", 3306, nullptr, 0);
+}
+
 void Gateway::start() {
 
     try {
+        initMariaDB();
+
         initHTTPServer();
-        m_server->start();
+        m_server->start();        
 
         try {
             m_uart->open("/dev/ttyAMA0");

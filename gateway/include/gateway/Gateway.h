@@ -5,6 +5,7 @@
 #include <Poco/Net/HTTPServer.h>
 
 #include "EventExecutorInterface.h"
+#include "gateway/MariaDBInterface.h"
 #include "gateway/ShutdownInterface.h"
 #include "gateway/UartInterface.h"
 #include "gateway/UartRecvThread.h"
@@ -27,6 +28,7 @@ class Gateway : public ShutdownInterface {
         Gateway(const Gateway &other) = delete;
 
         void initHTTPServer();
+        void initMariaDB();
         void shutdown() override;
 
         Common::EventExecutorInterface *m_eventExecutor;
@@ -43,6 +45,8 @@ class Gateway : public ShutdownInterface {
 
         Poco::Net::ServerSocket *m_socket;
         Poco::Net::HTTPServer *m_server;
+
+        MariaDBInterface *m_mariadb;
 };
 
 }
