@@ -72,5 +72,14 @@ const std::string
 #endif
 EMAIL_URI = "/email";
 
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+LOG_MESSAGE_URI = "/log_message";
+
 #endif
 

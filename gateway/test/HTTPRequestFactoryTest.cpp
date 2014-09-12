@@ -9,12 +9,14 @@
 #include "gateway/BadClientHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
+#include "gateway/LogMessageHTTPRequestHandler.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
 #include "MockHTTPServerRequest.h"
 #include "MockEventExecutor.h"
+#include "MockMariaDB.h"
 #include "MockShutdown.h"
 #include "MockUart.h"
 #include "Secrets.py"
@@ -23,24 +25,28 @@ TEST_GROUP(HTTPRequestFactoryTest) {
     TEST_SETUP() {
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_uart = new testing::StrictMock<Gateway::MockUart>();
+        m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_shutdown = new testing::StrictMock<Gateway::MockShutdown> ();
-        m_uut = new Gateway::HTTPRequestFactory(m_shutdown, m_eventExecutor, m_uart);
+        m_uut = new Gateway::HTTPRequestFactory(m_shutdown, m_eventExecutor, m_uart, m_mariadb);
 
         POINTERS_EQUAL(m_uut->m_shutdown, m_shutdown);
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
         POINTERS_EQUAL(m_uut->m_uart, m_uart);
+        POINTERS_EQUAL(m_uut->m_mariadb, m_mariadb);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
         delete m_shutdown;
         delete m_request;
+        delete m_mariadb;
         delete m_uart;
         delete m_eventExecutor;
     }
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockUart> *m_uart;
+    testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
 
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<Gateway::MockShutdown> *m_shutdown;
@@ -86,6 +92,18 @@ TEST(HTTPRequestFactoryTest, createEmailTest) {
     m_request->set("user-agent", USER_AGENT);
 
     Gateway::EmailHTTPRequestHandler* handler = dynamic_cast<Gateway::EmailHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+
+    CHECK(handler != nullptr);
+    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
+
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createLogMessageTest) {
+    m_request->setURI(LOG_MESSAGE_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Gateway::LogMessageHTTPRequestHandler* handler = dynamic_cast<Gateway::LogMessageHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
     CHECK(handler != nullptr);
     POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);

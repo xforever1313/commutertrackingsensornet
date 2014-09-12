@@ -110,6 +110,13 @@ def getEmailInfo():
 
     performEmail(addresses, names, subject, message)
  
+def logTestMessage():
+    data = {}
+    data['node'] = '1'    #Gateway node is node 1
+    data['message'] = '2' #Error message is TEST_ERROR
+
+    performPostRequest(data, LOG_MESSAGE_URI)
+
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description="Debug Console for the CTSN gateway")
     argParser.add_argument("--url", dest='url', action = "store", default="localhost", help="The url to post to.")
@@ -121,7 +128,7 @@ if __name__ == '__main__':
     keepGoing = True
     while (keepGoing):
         command = input("\nEnter a number:\n\t1.  Uart Tx\n\t2.  Send Email\n\t3." + \
-                        "  Send Text Message\n\t4.  Shutdown Gateway\n\t0.  Exit\n>")
+                        "  Send Text Message\n\t4.  Shutdown Gateway\n\t5.  Log Test Message\n\t0.  Exit\n>")
 
         if (command == "1"):
             messageToSend = input("\nEnter a message to send:\n>")
