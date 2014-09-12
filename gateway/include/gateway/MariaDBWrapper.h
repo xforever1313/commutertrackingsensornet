@@ -9,6 +9,8 @@ namespace Gateway {
 
 /**
  * \brief Wraps MariaDB so it can be abstracted out and mocked.
+ * \warning Ensure mysql_library_init() is called before using this class, and mysql_library_end() is 
+ *          called after this class is destoryed.
  */
 class MariaDBWrapper : public MariaDBInterface {
     public:
