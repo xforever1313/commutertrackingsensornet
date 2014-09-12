@@ -67,7 +67,7 @@ else:
     sourceTestFiles += glob.glob(os.path.join(testDir, 'linux/*.cpp'))
 
 #Remove MariaDB from files to unit test.
-allTestSourceFiles = filterSourceFiles(sourceFiles + sourceTestFiles, [os.path.join(srcDir, 'MariaDBWrapper.cpp')])
+allTestSourceFiles = filterSourceFiles(sourceFiles + sourceTestFiles, [])
 
 coverageFiles = deepcopy(sourceFiles + [dateVersionFile])
 
@@ -81,7 +81,6 @@ archLibs = ['mysqlclient', 'z', 'm', 'ssl', 'crypto', 'dl', 'rt']
 
 debugLibs = ['CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 releaseLibs = ['CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
-testLibs = debugLibs
 
 if (ARGUMENTS.get('pi_build', '0') ==  '1'):
     debugLibs += piLibs
@@ -89,6 +88,8 @@ if (ARGUMENTS.get('pi_build', '0') ==  '1'):
 else:
     debugLibs += archLibs
     releaseLibs += archLibs
+
+testLibs = debugLibs
 
 ###LibPath
 debugLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
