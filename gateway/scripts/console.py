@@ -140,6 +140,8 @@ if __name__ == '__main__':
         elif (command == "4"):
             performShutdown()
             print ("\n**WARNING!** Any more commands will not work.  Recommend Exiting.")
+        elif (command == "5"):
+            logTestMessage()
         elif (command == "0"):
             keepGoing = False
 
