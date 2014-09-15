@@ -18,9 +18,13 @@ UartRX:>UartRX.Start()
 Gateway:
 
 XBee:UartRX.IncommingUartMessage &
-UartRX:UartRX.ReadMessage()
-UartRX:EventExecutor.queueEvent()
+UartRX:UartRX.ReadAndParseMessage()
+UartRX:HttpServer.postRequest()
+HttpServer:HttpServer.ProcessRequest()
+HttpServer:EventExecutor.queueEvent()
+
 UartRX:XBee.Ack or Error &
+
 EventExecutor:EventExecutor.ExecuteEvent()
 
 UartRX[1]:

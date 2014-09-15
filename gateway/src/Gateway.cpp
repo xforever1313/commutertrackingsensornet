@@ -76,12 +76,14 @@ void Gateway::initMariaDB() {
 
 void Gateway::start() {
 
+    bool HTTPServerStarted = false;
     try {
         // Mariadb MUST come before the http server.
         initMariaDB();
 
         initHTTPServer();
-        m_server->start();        
+        m_server->start();
+        HTTPServerStarted = true;
 
         try {
             m_uart->open("/dev/ttyAMA0");
@@ -99,7 +101,10 @@ void Gateway::start() {
         m_output->writeLine(e.what());
     }
 
-    m_server->stop();
+    // Ensure the server is started, or a segfault occurs.
+    if (HTTPServerStarted) {
+        m_server->stop();
+    }
     m_recvThread->kill();
     m_uart->close();
 }
