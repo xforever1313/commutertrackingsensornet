@@ -25,9 +25,9 @@ from Secrets import *
 SECRET_KEY = DJANGO_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', 'ctsn.student.rit.edu']
 
@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ctsn.models'
+    'ctsn_web'
 )
 
 MIDDLEWARE_CLASSES = (

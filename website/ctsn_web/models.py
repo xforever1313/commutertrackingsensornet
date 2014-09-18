@@ -10,6 +10,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 
 class ErrorLog(models.Model):
     id = models.IntegerField(db_column='ID', primary_key=True) # Field name made lowercase.
@@ -32,4 +33,13 @@ class Node(models.Model):
     class Meta:
         managed = False
         db_table = 'node'
+
+class CtsnUser(models.Model):
+    user = models.ForeignKey(User)
+    phone = models.CharField(db_column = "PHONE_NUMBER", max_length=255)
+    provider = models.IntegerField(db_column = "PROVIDER")
+
+    class Meta:
+        managed = True
+        db_table = 'ctsn_user'
 
