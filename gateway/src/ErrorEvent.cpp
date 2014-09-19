@@ -85,11 +85,30 @@ void ErrorEvent::setupEmailEvent() {
 }
 
 void ErrorEvent::setupLogEvent() {
-
+    m_logEvent = new LogEvent(m_errorNumber, m_node, m_mariadb, m_errLogger);
 }
 
 void ErrorEvent::setupTextEvent() {
+    std::vector<std::string> numbers = m_userResult->getValuesFromColumn("PHONE_NUMBER");
+    std::vector<std::string> providers = m_userResult->getValuesFromColumn("PROVIDER");
 
+    if (numbers.size() != providers.size()) {
+        throw std::runtime_error(MISMATCHED_COLUMNS);
+    }
+
+    std::map<std::string, TextMessageEvent::Provider> contacts;
+    for (size_t i = 0; i < numbers.size(); ++i) {
+        if (numbers[i] != "") {
+            try {
+                contacts[numbers[i]] = TextMessageEvent::convertStringToProvider(providers[i]);
+            }
+            catch (const std::invalid_argument &e) {
+                m_errLogger.writeLine(e.what());
+            }
+        }
+    }
+
+    m_textMessageEvent = new TextMessageEvent(contacts, SUBJECT, m_errorMessage, m_outLogger, m_errLogger);
 }
 
 void ErrorEvent::executeEvents() {

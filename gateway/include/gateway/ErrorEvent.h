@@ -44,10 +44,11 @@ class ErrorEvent : public Common::EventInterface {
          * \throws std::runtime_error if query fails
          */
         void queryForStaffedUsers();
+
         void setupEmailEvent();
         void setupLogEvent();
         void setupTextEvent();
-        void executeEvents(); 
+        void executeEvents();
 
         ErrorNumber m_errorNumber;
         unsigned int m_node;

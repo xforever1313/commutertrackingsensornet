@@ -13,6 +13,7 @@
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/LogEvent.h"
+#include "gateway/TextMessageEvent.h"
 #include "io/StringLogger.h"
 #include "MockMariaDB.h"
 
@@ -219,3 +220,82 @@ TEST(ErrorEventTest, setupEmailEventLastNameMismatchedSizeTest) {
         CHECK_EQUAL(e.what(), Gateway::ErrorEvent::MISMATCHED_COLUMNS);
     }
 }
+
+///setupLogEvent Tests
+TEST(ErrorEventTest, setupLogEventTest) {
+    m_uut->setupLogEvent();
+
+    CHECK(m_uut->m_logEvent != nullptr);
+    Gateway::LogEvent *logEvent = dynamic_cast<Gateway::LogEvent*>(m_uut->m_logEvent);
+    CHECK(logEvent != nullptr);
+
+    CHECK_EQUAL(logEvent->m_errorNumber, m_uut->m_errorNumber);
+    CHECK_EQUAL(logEvent->m_node, NODE);
+    POINTERS_EQUAL(logEvent->m_mariadb, m_mariadb);
+}
+
+///setupTextEvents
+TEST(ErrorEventTest, setupTextMessageEventSuccessTest) {
+    std::vector<std::string> numbers = {"1234567890", "2345678901", "", "1591234568"};
+    std::vector<std::string> providers = {"1", "2", "3", "4"};
+    m_uut->m_errorMessage = "Error Message";
+
+    EXPECT_CALL(*m_userResult, getValuesFromColumn("PHONE_NUMBER"))
+        .WillOnce(testing::Return(numbers));
+    EXPECT_CALL(*m_userResult, getValuesFromColumn("PROVIDER"))
+        .WillOnce(testing::Return(providers));
+    
+    m_uut->setupTextEvent();
+
+    // Ensure email event was created correctly.
+    CHECK(m_uut->m_textMessageEvent != nullptr);
+    Gateway::TextMessageEvent *textMessageEvent = dynamic_cast<Gateway::TextMessageEvent*>(m_uut->m_textMessageEvent);
+    CHECK(textMessageEvent != nullptr);
+
+    // Convert emailer
+    Gateway::Emailer *emailer = dynamic_cast<Gateway::Emailer*>(textMessageEvent->m_emailer);
+    CHECK(emailer != nullptr);
+
+    // Confirm everything worked
+    try {
+        CHECK_EQUAL(emailer->m_subject, Gateway::ErrorEvent::SUBJECT);
+        CHECK_EQUAL(emailer->m_message, m_uut->m_errorMessage);
+
+        CHECK_EQUAL(emailer->m_addresses.at(numbers[0] + "@" + Gateway::TextMessageEvent::PROVIDER_EMAIL.at(Gateway::TextMessageEvent::ATT)), numbers[0]);
+        CHECK_EQUAL(emailer->m_addresses.at(numbers[1] + "@" + Gateway::TextMessageEvent::PROVIDER_EMAIL.at(Gateway::TextMessageEvent::VERIZON)), numbers[1]);
+        CHECK_EQUAL(emailer->m_addresses.at(numbers[3] + "@" + Gateway::TextMessageEvent::PROVIDER_EMAIL.at(Gateway::TextMessageEvent::SPRINT)), numbers[3]);
+
+        // Ensure "" did not make it in
+        try {
+            emailer->m_addresses.at(numbers[2]);
+            FAIL("Expected an out of range exception");
+        }
+        catch (const std::out_of_range &e) {
+            CHECK(true);
+        }
+    }
+    catch (const std::out_of_range &e) {
+
+        FAIL("Test failed due to a key not making it in");
+    }
+}
+
+
+TEST(ErrorEventTest, setupTextEventLastNameMismatchedSizeTest) {
+    std::vector<std::string> numbers = {"1234567890", "2345678901", "", "1591234568"};
+    std::vector<std::string> providers = {"1", "2", "3", "4", "5"};
+
+    EXPECT_CALL(*m_userResult, getValuesFromColumn("PHONE_NUMBER"))
+        .WillOnce(testing::Return(numbers));
+    EXPECT_CALL(*m_userResult, getValuesFromColumn("PROVIDER"))
+        .WillOnce(testing::Return(providers));
+
+    try {    
+        m_uut->setupTextEvent();
+        FAIL("Expected Exception");
+    }
+    catch (const std::runtime_error &e) {
+        CHECK_EQUAL(e.what(), Gateway::ErrorEvent::MISMATCHED_COLUMNS);
+    }
+}
+

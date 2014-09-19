@@ -1,4 +1,5 @@
 #include <gmock/gmock.h>
+#undef FAIL
 #include <CppUTest/TestHarness.h>
 
 #include <map>
@@ -73,3 +74,45 @@ TEST(TextMessageEventTest, SendFailException) {
     //Ensure error log is what was expected
     CHECK_EQUAL(m_errLogger->getString(), expectedReturn + '\n');
 }
+
+///convertStringToProviderTests
+TEST(TextMessageEventTest, convertStringToProviderSuccess) {
+    for (unsigned int i = Gateway::TextMessageEvent::ATT; i < Gateway::TextMessageEvent::UNKNOWN; ++i) {
+        CHECK_EQUAL(Gateway::TextMessageEvent::convertStringToProvider(std::to_string(i)), i);
+    }
+}
+
+TEST(TextMessageEventTest, convertStringToProviderFailures) {
+    try {
+        Gateway::TextMessageEvent::convertStringToProvider("0");
+        FAIL("Should not have converted");
+    }
+    catch (const std::invalid_argument &e) {
+
+    }
+
+    try {
+        Gateway::TextMessageEvent::convertStringToProvider("10");
+        FAIL("Should not have converted");
+    }
+    catch (const std::invalid_argument &e) {
+
+    }
+
+    try {
+        Gateway::TextMessageEvent::convertStringToProvider("1abc");
+        FAIL("Should not have converted");
+    }
+    catch (const std::invalid_argument &e) {
+
+    }
+
+    try {
+        Gateway::TextMessageEvent::convertStringToProvider("abc");
+        FAIL("Should not have converted");
+    }
+    catch (const std::invalid_argument &e) {
+
+    }
+}
+

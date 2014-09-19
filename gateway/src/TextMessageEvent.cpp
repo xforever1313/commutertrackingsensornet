@@ -62,4 +62,20 @@ void TextMessageEvent::execute() {
     }
 }
 
+TextMessageEvent::Provider TextMessageEvent::convertStringToProvider(const std::string &s) {
+    std::string error = s + " is not a provider.";
+    if (s.size() != 1) {
+        throw std::invalid_argument(error);
+    }
+    unsigned int i = s[0] - '0';
+    if (i == 0) {
+        throw std::invalid_argument(error);
+    }
+    else if (i >= UNKNOWN) {
+        throw std::invalid_argument(error);
+    }
+
+    return static_cast<Provider>(i);
+}
+
 }

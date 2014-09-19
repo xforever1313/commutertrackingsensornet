@@ -22,10 +22,15 @@ class TextMessageEvent : public Common::EventInterface {
             NEXTEL = 7,
             BOOST = 8,
             ALLTEL = 9,
-            UNKNOWN
+            UNKNOWN = 10
         };
 
         static const std::map<Provider, std::string> PROVIDER_NAMES;
+
+        /**
+         * \throw std::invalid_argument if inputted string is not a provider.
+         */
+        static Provider convertStringToProvider(const std::string &s);
 
         /**
          * \param numbers The Keys are the phone number in the form of 1112223333
