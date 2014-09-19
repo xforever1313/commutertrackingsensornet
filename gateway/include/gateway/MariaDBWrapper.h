@@ -48,9 +48,44 @@ class MariaDBWrapper : public MariaDBInterface {
          * \warning Ensure real_connect was called first, or a nullptr will occur.
          */
         void mysql_commit() override;
+
+        class MariaDBResult : public MariaDBResultInterface {
+            public:
+                /**
+                 * \warning ensure the passed in mariaDB does not
+                 *          get deleted while this object is alive
+                 */
+                MariaDBResult(MariaDBInterface *mariaDB);
+
+                /**
+                * \brief Destorys the result, if storeResult() was called.
+                */
+                ~MariaDBResult();
+
+                /**
+                 * \brief Stores the result from the last quiery.
+                 * \throw std::runtime_error if an error occurs.
+                 */
+                void storeResult() override;
+
+                /**
+                 * \brief retreives the entire column of the result
+                 * \param columnName The column name
+                 * \throw std::out_of_range if column name does not exist
+                 */
+                std::vector<std::string> getValuesFromColumn(const std::string &columnName) override;
+
+            private:
+                static const std::string INVALID_HEADER;
+
+                const MYSQL_t *const m_connection;
+                MYSQL_RES_t *m_result;
+        };
  
     private:
         static const std::string COULD_NOT_CONNECT_ERROR;
+
+        const MYSQL_t *const getConnection() const override;
 
         MYSQL_t *m_connection;
 };

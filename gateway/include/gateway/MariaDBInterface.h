@@ -2,6 +2,7 @@
 #define MariaDB_INTERFACE_H_
 
 #include <string>
+#include <vector>
 
 namespace Gateway {
 
@@ -10,6 +11,12 @@ namespace Gateway {
  * \brief Wraps the MYSQL Object
  */
  struct MYSQL_t;
+
+/**
+ * \struct MYSQL_RES_t
+ * \brief Wraps a MYSQL_RES object
+ */
+struct MYSQL_RES_t;
 
 /**
  * \class
@@ -32,6 +39,25 @@ class MariaDBInterface {
         virtual void mysql_real_query(const std::string &query) = 0;
 
         virtual void mysql_commit() = 0;
+
+        /**
+         * \warning Don't be stupid and call delete on this pointer,
+         *          it will break things.
+         */
+        virtual const MYSQL_t *const getConnection() const = 0;
+};
+
+
+/**
+ * \class MysqlResult
+ * \brief Wraps the MySql result
+ */
+class MariaDBResultInterface {
+    public:
+        virtual ~MariaDBResultInterface(){}
+        
+        virtual void storeResult() = 0;
+        virtual std::vector<std::string> getValuesFromColumn(const std::string &columnName) =  0;
 };
 
 }

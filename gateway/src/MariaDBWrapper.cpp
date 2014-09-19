@@ -1,6 +1,7 @@
 #include <mysql/mysql.h>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "gateway/MariaDBInterface.h"
 #include "gateway/MariaDBWrapper.h"
@@ -21,6 +22,22 @@ struct MYSQL_t {
         MYSQL *m_mysql;
 };
 
+struct MYSQL_RES_t {
+    public:
+        MYSQL_RES_t() :
+            m_mysql_res(nullptr)
+        {
+        }
+
+        ~MYSQL_RES_t() {
+        }
+
+       MYSQL_RES *m_mysql_res; 
+};
+
+const std::string MariaDBWrapper::MariaDBResult::INVALID_HEADER = "Not a valid header for this table";
+
+///MariaDBWrapper Functions
 const std::string MariaDBWrapper::COULD_NOT_CONNECT_ERROR = "Could not connect to MariaDB";
 
 MariaDBWrapper::MariaDBWrapper() :
@@ -68,6 +85,57 @@ void MariaDBWrapper::mysql_commit() {
     if (::mysql_commit(m_connection->m_mysql)) {
         throw std::runtime_error(::mysql_error(m_connection->m_mysql));
     }
+}
+
+const MYSQL_t *const MariaDBWrapper::getConnection() const {
+    return m_connection;
+}
+
+///MariaDBResult Functions
+MariaDBWrapper::MariaDBResult::MariaDBResult(MariaDBInterface *mariaDB) :
+    m_connection(mariaDB->getConnection()),
+    m_result(new MYSQL_RES_t)
+{
+
+}
+
+MariaDBWrapper::MariaDBResult::~MariaDBResult() {
+    if (m_result->m_mysql_res != nullptr) {
+        mysql_free_result(m_result->m_mysql_res);
+    }
+    delete m_result;
+}
+
+void MariaDBWrapper::MariaDBResult::storeResult() {
+    MYSQL_RES *res = mysql_store_result(m_connection->m_mysql);
+    if (res == nullptr) {
+        throw std::runtime_error(mysql_error(m_connection->m_mysql));
+    }
+    m_result->m_mysql_res = res;
+}
+
+std::vector<std::string> MariaDBWrapper::MariaDBResult::getValuesFromColumn(const std::string &columnName) {
+    std::vector<std::string> v;
+
+    MYSQL_FIELD *field;
+    bool found = false;
+    size_t index = 0;
+    for (size_t i = 0; (field = mysql_fetch_field(m_result->m_mysql_res)) && !found; ++i) {
+        if (columnName == field->name) {
+            found = true;
+            index = i;
+        }
+    }
+    if (!found) {
+        throw std::out_of_range(COULD_NOT_CONNECT_ERROR);
+    }
+
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(m_result->m_mysql_res))) {
+        v.push_back(row[index]);  
+    }
+
+    return v;
 }
 
 }
