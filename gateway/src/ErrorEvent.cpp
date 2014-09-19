@@ -112,11 +112,40 @@ void ErrorEvent::setupTextEvent() {
 }
 
 void ErrorEvent::executeEvents() {
+    try {
+        m_logEvent->execute();
+    }
+    catch (const std::exception &e) {
+        m_errLogger.writeLine(e.what());
+    }
 
+    try {
+        m_textMessageEvent->execute();
+    }
+    catch (const std::exception &e) {
+        m_errLogger.writeLine(e.what());
+    }
+
+    try {
+        m_emailEvent->execute();
+    }
+    catch (const std::exception &e) {
+        m_errLogger.writeLine(e.what());
+    }
 }
 
 void ErrorEvent::execute() {
-
+    try {
+        queryErrorMessage();
+        queryForStaffedUsers();
+        setupEmailEvent();
+        setupLogEvent();
+        setupTextEvent();
+        executeEvents();
+    }
+    catch (const std::exception &e) {
+        m_errLogger.writeLine(e.what());
+    }
 }
 
 }

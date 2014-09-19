@@ -15,6 +15,7 @@
 #include "gateway/LogEvent.h"
 #include "gateway/TextMessageEvent.h"
 #include "io/StringLogger.h"
+#include "MockEvent.h"
 #include "MockMariaDB.h"
 
 TEST_GROUP(ErrorEventTest) {
@@ -297,5 +298,101 @@ TEST(ErrorEventTest, setupTextEventLastNameMismatchedSizeTest) {
     catch (const std::runtime_error &e) {
         CHECK_EQUAL(e.what(), Gateway::ErrorEvent::MISMATCHED_COLUMNS);
     }
+}
+
+///ExecuteEvents Tests
+TEST(ErrorEventTest, executeEventTestSuccess) {
+    testing::StrictMock<Common::MockEvent> *emailEvent = new testing::StrictMock<Common::MockEvent>;
+    testing::StrictMock<Common::MockEvent> *logEvent = new testing::StrictMock<Common::MockEvent>;
+    testing::StrictMock<Common::MockEvent> *textEvent = new testing::StrictMock<Common::MockEvent>;
+   
+    m_uut->m_emailEvent = emailEvent;
+    m_uut->m_logEvent = logEvent;
+    m_uut->m_textMessageEvent = textEvent;
+
+    EXPECT_CALL(*logEvent, execute());
+    EXPECT_CALL(*textEvent, execute());
+    EXPECT_CALL(*emailEvent, execute());
+   
+     m_uut->executeEvents();
+
+    //Events are deleted in uut's destructor
+}
+
+TEST(ErrorEventTest, executeEventTestLogFailure) {
+    std::string error = "error";
+
+    testing::StrictMock<Common::MockEvent> *emailEvent = new testing::StrictMock<Common::MockEvent>;
+    testing::StrictMock<Common::MockEvent> *logEvent = new testing::StrictMock<Common::MockEvent>;
+    testing::StrictMock<Common::MockEvent> *textEvent = new testing::StrictMock<Common::MockEvent>;
+   
+    m_uut->m_emailEvent = emailEvent;
+    m_uut->m_logEvent = logEvent;
+    m_uut->m_textMessageEvent = textEvent;
+
+    EXPECT_CALL(*logEvent, execute())
+        .WillOnce(testing::Throw(std::invalid_argument(error)));
+    EXPECT_CALL(*textEvent, execute());
+    EXPECT_CALL(*emailEvent, execute());
+
+    m_uut->executeEvents();
+    CHECK_EQUAL(m_errLogger->getString(), error + '\n');
+    
+    //Events are deleted in uut's destructor
+}
+
+TEST(ErrorEventTest, executeEventTestTextFailure) {
+    std::string error = "error";
+
+    testing::StrictMock<Common::MockEvent> *emailEvent = new testing::StrictMock<Common::MockEvent>;
+    testing::StrictMock<Common::MockEvent> *logEvent = new testing::StrictMock<Common::MockEvent>;
+    testing::StrictMock<Common::MockEvent> *textEvent = new testing::StrictMock<Common::MockEvent>;
+   
+    m_uut->m_emailEvent = emailEvent;
+    m_uut->m_logEvent = logEvent;
+    m_uut->m_textMessageEvent = textEvent;
+
+    EXPECT_CALL(*logEvent, execute());
+    EXPECT_CALL(*textEvent, execute())
+        .WillOnce(testing::Throw(std::invalid_argument(error)));
+    EXPECT_CALL(*emailEvent, execute());
+
+    m_uut->executeEvents();
+    CHECK_EQUAL(m_errLogger->getString(), error + '\n');
+
+    //Events are deleted in uut's destructor
+}
+
+TEST(ErrorEventTest, executeEventTestEmailFailure) {
+    std::string error = "error";
+
+    testing::StrictMock<Common::MockEvent> *emailEvent = new testing::StrictMock<Common::MockEvent>;
+    testing::StrictMock<Common::MockEvent> *logEvent = new testing::StrictMock<Common::MockEvent>;
+    testing::StrictMock<Common::MockEvent> *textEvent = new testing::StrictMock<Common::MockEvent>;
+   
+    m_uut->m_emailEvent = emailEvent;
+    m_uut->m_logEvent = logEvent;
+    m_uut->m_textMessageEvent = textEvent;
+
+    EXPECT_CALL(*logEvent, execute());
+    EXPECT_CALL(*textEvent, execute());
+    EXPECT_CALL(*emailEvent, execute())
+        .WillOnce(testing::Throw(std::invalid_argument(error)));
+
+    m_uut->executeEvents();
+    CHECK_EQUAL(m_errLogger->getString(), error + '\n');
+
+    //Events are deleted in uut's destructor
+}
+
+///Execute test
+TEST(ErrorEventTest, executeTest) {
+    std::string error = "error";
+    EXPECT_CALL(*m_mariadb, mysql_real_query(testing::_))
+        .WillOnce(testing::Throw(std::runtime_error(error)));
+
+    m_uut->execute();
+
+    CHECK_EQUAL(m_errLogger->getString(), error + '\n');
 }
 
