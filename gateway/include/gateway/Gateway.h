@@ -17,16 +17,12 @@ namespace Gateway {
 
 class Gateway : public ShutdownInterface {
     public:
-        static unsigned int getNumberOfNodes();
-
         static Gateway &getInstance();
         virtual ~Gateway();
 
         void start();
     private:
         static void RxSignal(int status);
-
-        static unsigned int numberOfNodes;
 
         Gateway();
         Gateway(const Gateway &other) = delete;

@@ -17,16 +17,8 @@
 
 namespace Gateway {
 
-///\todo Make it so this quieries the database for the current number
-///      of nodes setup.
-unsigned int Gateway::numberOfNodes = 1;
-
 void Gateway::RxSignal(int status) {
     getInstance().m_recvThread->dataReady();
-}
-
-unsigned int Gateway::getNumberOfNodes() {
-    return numberOfNodes;
 }
 
 Gateway &Gateway::getInstance() {

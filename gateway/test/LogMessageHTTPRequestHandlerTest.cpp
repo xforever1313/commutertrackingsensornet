@@ -118,8 +118,8 @@ TEST(LogMessageHTTPRequestHandlerTest, postNodeTooLow) {
 TEST(LogMessageHTTPRequestHandlerTest, postNodeTooHigh) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
   
-    Gateway::Gateway::numberOfNodes = 5;
-    m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::NODE_FORM_DATA << "=" << Gateway::Gateway::getNumberOfNodes() + 1 << "&";
+    Gateway::Node::numberOfNodes = 5;
+    m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::NODE_FORM_DATA << "=" << Gateway::Node::numberOfNodes + 1 << "&";
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "1";
 
     m_uut->handleRequest(*m_request, *m_response);
@@ -168,7 +168,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postMessageTooLow) {
 TEST(LogMessageHTTPRequestHandlerTest, postMessageTooHigh) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
   
-    Gateway::Gateway::numberOfNodes = 5;
+    Gateway::Node::numberOfNodes = 5;
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << Gateway::ErrorNumber::END;
 
