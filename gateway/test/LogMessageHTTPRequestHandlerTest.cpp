@@ -10,6 +10,7 @@
 #include "gateway/ErrorNumbers.h"
 #include "gateway/LogEvent.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
+#include "gateway/Node.h"
 #include "MockEventExecutor.h"
 #include "MockHTTPServerRequest.h"
 #include "MockHTTPServerResponse.h"
@@ -86,7 +87,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postNodeNotAnIntTest1) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::LogMessageHTTPRequestHandler::POST_FAILURE_INVALID_NODE);
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::Node::INVALID_NODE_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
@@ -98,7 +99,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postNodeNotAnIntTest2) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::LogMessageHTTPRequestHandler::POST_FAILURE_INVALID_NODE);
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::Node::INVALID_NODE_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
@@ -110,7 +111,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postNodeTooLow) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::LogMessageHTTPRequestHandler::POST_FAILURE_INVALID_NODE);
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::Node::INVALID_NODE_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
@@ -123,7 +124,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postNodeTooHigh) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::LogMessageHTTPRequestHandler::POST_FAILURE_INVALID_NODE);
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::Node::INVALID_NODE_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
