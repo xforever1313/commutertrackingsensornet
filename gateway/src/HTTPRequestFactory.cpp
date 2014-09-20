@@ -5,6 +5,7 @@
 #include "CTSNSharedGlobals.py"
 #include "gateway/BadClientHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
+#include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
@@ -44,6 +45,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (request.getURI() == UART_TX_URI) {
         return new UartTxHTTPRequestHandler(m_eventExecutor, m_uart);
+    }
+    else if (request.getURI() == ERROR_MESSAGE_URI) {
+        return new ErrorHTTPRequestHandler(m_eventExecutor, m_mariadb);
     }
     else if (request.getURI() == SHUTDOWN_URI) {
         return new ShutdownHTTPRequestHandler(m_shutdown);

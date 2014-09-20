@@ -81,5 +81,16 @@ const std::string
 #endif
 LOG_MESSAGE_URI = "/log_message";
 
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+ERROR_MESSAGE_URI = "/error_message";
+
+
 #endif
 
