@@ -8,6 +8,7 @@
 
 #include "EventExecutorInterface.h"
 #include "gateway/BaseHTTPRequestHandler.h"
+#include "gateway/ErrorNumbers.h"
 #include "gateway/Gateway.h"
 #include "gateway/LogEvent.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
@@ -42,7 +43,7 @@ void LogMessageHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerReques
         const std::string &messageStr =  form[MESSAGE_FORM_DATA];
 
         unsigned int nodeNumber = convertStringToNodeNumber(nodeStr);
-        ErrorNumber messageType = convertStringToMessage(messageStr);
+        ErrorNumber messageType = ErrorMessage::convertStringToMessage(messageStr);
 
         std::shared_ptr<LogEvent> event(new LogEvent(messageType, nodeNumber, m_mariadb));
         m_eventExecutor->addEvent(event);
@@ -88,29 +89,6 @@ unsigned int LogMessageHTTPRequestHandler::convertStringToNodeNumber(const std::
 
     return nodeNumber;
 } 
-
-ErrorNumber LogMessageHTTPRequestHandler::convertStringToMessage(const std::string &messageString) {
-    unsigned int errorNumber = 0;
-    try{
-        size_t stringSize;
-        errorNumber = std::stoi(messageString, &stringSize);
-         // Ensure theres nothing left over from the messageString.
-        if (stringSize != messageString.size()) {
-            throw std::invalid_argument(POST_FAILURE_INVALID_MESSAGE);
-        }
-        //Message must be valid
-        else if (errorNumber <= ErrorNumber::FIRST) {
-            throw std::out_of_range(POST_FAILURE_INVALID_MESSAGE);
-        }
-        else if (errorNumber >= ErrorNumber::END) {
-            throw std::out_of_range(POST_FAILURE_INVALID_MESSAGE);
-        }
-    }
-    catch (const std::invalid_argument &e) {
-        throw std::invalid_argument(POST_FAILURE_INVALID_MESSAGE);
-    }
-    return static_cast<ErrorNumber>(errorNumber);
-}
 
 }
 

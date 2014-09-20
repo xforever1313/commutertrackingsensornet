@@ -136,7 +136,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postMessageNotAnIntTest1) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::LogMessageHTTPRequestHandler::POST_FAILURE_INVALID_MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::ErrorMessage::INVALID_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
@@ -148,7 +148,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postMessageNotAnIntTest2) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::LogMessageHTTPRequestHandler::POST_FAILURE_INVALID_MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::ErrorMessage::INVALID_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
@@ -160,7 +160,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postMessageTooLow) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::LogMessageHTTPRequestHandler::POST_FAILURE_INVALID_MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::ErrorMessage::INVALID_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
@@ -173,7 +173,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postMessageTooHigh) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::LogMessageHTTPRequestHandler::POST_FAILURE_INVALID_MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::ErrorMessage::INVALID_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
