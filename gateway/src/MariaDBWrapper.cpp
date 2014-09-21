@@ -118,6 +118,7 @@ std::vector<std::string> MariaDBWrapper::MariaDBResult::getValuesFromColumn(cons
     std::vector<std::string> v;
 
     MYSQL_FIELD *field;
+    mysql_field_seek(m_result->m_mysql_res, 0); //Start from the beginning
     bool found = false;
     size_t index = 0;
     for (size_t i = 0; (field = mysql_fetch_field(m_result->m_mysql_res)) && !found; ++i) {
@@ -127,8 +128,10 @@ std::vector<std::string> MariaDBWrapper::MariaDBResult::getValuesFromColumn(cons
         }
     }
     if (!found) {
-        throw std::out_of_range(COULD_NOT_CONNECT_ERROR);
+        throw std::out_of_range(INVALID_HEADER + ": " + columnName);
     }
+
+    mysql_data_seek(m_result->m_mysql_res, 0); //Reset to beginning of rows.
 
     MYSQL_ROW row;
     while ((row = mysql_fetch_row(m_result->m_mysql_res))) {

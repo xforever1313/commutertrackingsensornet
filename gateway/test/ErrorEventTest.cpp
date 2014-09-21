@@ -66,7 +66,7 @@ TEST(ErrorEventTest, queryErrorMessageTestSuccess) {
 
     EXPECT_CALL(*m_mariadb, mysql_real_query(testing::_));
     EXPECT_CALL(*m_errorMessageResult, storeResult());
-    EXPECT_CALL(*m_errorMessageResult, getValuesFromColumn("MESSAGES"))
+    EXPECT_CALL(*m_errorMessageResult, getValuesFromColumn("MESSAGE"))
         .WillOnce(testing::Return(ret));
 
     m_uut->queryErrorMessage();
@@ -80,7 +80,7 @@ TEST(ErrorEventTest, queryErrorMessageTestBadErrorNumber) {
 
     EXPECT_CALL(*m_mariadb, mysql_real_query(testing::_));
     EXPECT_CALL(*m_errorMessageResult, storeResult());
-    EXPECT_CALL(*m_errorMessageResult, getValuesFromColumn("MESSAGES"))
+    EXPECT_CALL(*m_errorMessageResult, getValuesFromColumn("MESSAGE"))
         .WillOnce(testing::Return(ret));
 
     try {
@@ -196,7 +196,7 @@ TEST(ErrorEventTest, setupEmailEventFirstNameMismatchedSizeTest) {
         FAIL("Expected Exception");
     }
     catch (const std::runtime_error &e) {
-        CHECK_EQUAL(e.what(), Gateway::ErrorEvent::MISMATCHED_COLUMNS);
+        CHECK(std::string(e.what()).find(Gateway::ErrorEvent::MISMATCHED_COLUMNS) != std::string::npos);
     }
 }
 
@@ -218,7 +218,7 @@ TEST(ErrorEventTest, setupEmailEventLastNameMismatchedSizeTest) {
         FAIL("Expected Exception");
     }
     catch (const std::runtime_error &e) {
-        CHECK_EQUAL(e.what(), Gateway::ErrorEvent::MISMATCHED_COLUMNS);
+         CHECK(std::string(e.what()).find(Gateway::ErrorEvent::MISMATCHED_COLUMNS) != std::string::npos);
     }
 }
 
@@ -296,7 +296,7 @@ TEST(ErrorEventTest, setupTextEventLastNameMismatchedSizeTest) {
         FAIL("Expected Exception");
     }
     catch (const std::runtime_error &e) {
-        CHECK_EQUAL(e.what(), Gateway::ErrorEvent::MISMATCHED_COLUMNS);
+        CHECK(std::string(e.what()).find(Gateway::ErrorEvent::MISMATCHED_COLUMNS) != std::string::npos);
     }
 }
 

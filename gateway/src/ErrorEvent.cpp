@@ -48,7 +48,7 @@ void ErrorEvent::queryErrorMessage() {
     m_mariadb->mysql_real_query("SELECT * FROM error_messages WHERE id=" + std::to_string(m_errorNumber) + ";");
 
     m_errorMessageResult->storeResult();
-    std::vector<std::string> messages = m_errorMessageResult->getValuesFromColumn("MESSAGES");
+    std::vector<std::string> messages = m_errorMessageResult->getValuesFromColumn("MESSAGE");
 
     // If no messages return, bad error number given.
     if (messages.size() == 0) {
@@ -72,7 +72,9 @@ void ErrorEvent::setupEmailEvent() {
     std::vector<std::string> lastName = m_userResult->getValuesFromColumn("last_name");
 
     if ((emails.size() != firstName.size()) || (emails.size() != lastName.size())) {
-        throw std::runtime_error(MISMATCHED_COLUMNS);
+        throw std::runtime_error(MISMATCHED_COLUMNS + ": Email: " + std::to_string(emails.size()) +
+                                 " First Name: " + std::to_string(firstName.size()) + " Last Name: " +
+                                 std::to_string(lastName.size()));
     }
 
     std::map<std::string, std::string> addresses;
@@ -93,7 +95,8 @@ void ErrorEvent::setupTextEvent() {
     std::vector<std::string> providers = m_userResult->getValuesFromColumn("PROVIDER");
 
     if (numbers.size() != providers.size()) {
-        throw std::runtime_error(MISMATCHED_COLUMNS);
+        throw std::runtime_error(MISMATCHED_COLUMNS + ": Phone Number: " + std::to_string(numbers.size()) + " Providers: " +
+                                 std::to_string(providers.size()));
     }
 
     std::map<std::string, TextMessageEvent::Provider> contacts;
