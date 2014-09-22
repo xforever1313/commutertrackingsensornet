@@ -1,10 +1,94 @@
-# These are a description of the database tables and what they do, and columns
+Tables in ctsn:
++----------------------------+
+| auth_group                 |
+| auth_group_permissions     |
+| auth_permission            |
+| auth_user                  |
+| auth_user_groups           |
+| auth_user_user_permissions |
+| ctsn_user                  |
+| django_admin_log           |
+| django_content_type        |
+| django_session             |
+| error_log                  |
+| error_messages             |
+| node                       |
+| node_status                |
+| status_severity            |
++----------------------------+
 
-TABLE:                DESCRIPTION:        COLUMNS:
 
-ctsn.node             Stuff about nodes   ID int NOT NULL AUTO_INCREMENT, PRIMARY KEY(ID)
+MariaDB [ctsn]> describe auth_user;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| id           | int(11)      | NO   | PRI | NULL    | auto_increment |
+| password     | varchar(128) | NO   |     | NULL    |                |
+| last_login   | datetime     | NO   |     | NULL    |                |
+| is_superuser | tinyint(1)   | NO   |     | NULL    |                |
+| username     | varchar(30)  | NO   | UNI | NULL    |                |
+| first_name   | varchar(30)  | NO   |     | NULL    |                |
+| last_name    | varchar(30)  | NO   |     | NULL    |                |
+| email        | varchar(75)  | NO   |     | NULL    |                |
+| is_staff     | tinyint(1)   | NO   |     | NULL    |                |
+| is_active    | tinyint(1)   | NO   |     | NULL    |                |
+| date_joined  | datetime     | NO   |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
 
-ctsn.error_messages   Error messages      ID int NOT NULL AUTO_INCREMENT, MESSAGE varchar(255) NOT NULL, PRIMARY KEY(ID)
+MariaDB [ctsn]> describe ctsn_user;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| id           | int(11)      | NO   | PRI | NULL    | auto_increment |
+| user_id      | int(11)      | NO   | MUL | NULL    |                |
+| PHONE_NUMBER | varchar(255) | NO   |     | NULL    |                |
+| PROVIDER     | int(11)      | NO   |     | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
 
-ctsn.error_log        Error messages log  ID int NOT NULL AUTO_INCREMENT, NODE_ID int NOT NULL, MESSAGE_ID int NOT NULL, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(NODE_ID) REFERENCES ctsn.node(ID), FOREIGN KEY (MESSAGE_ID) REFERENCES ctsn.error_messages(ID), PRIMARY KEY(ID);
+MariaDB [ctsn]> describe error_log;
++------------+-----------+------+-----+-------------------+----------------+
+| Field      | Type      | Null | Key | Default           | Extra          |
++------------+-----------+------+-----+-------------------+----------------+
+| ID         | int(11)   | NO   | PRI | NULL              | auto_increment |
+| NODE_ID    | int(11)   | NO   | MUL | NULL              |                |
+| MESSAGE_ID | int(11)   | NO   | MUL | NULL              |                |
+| time       | timestamp | NO   |     | CURRENT_TIMESTAMP |                |
++------------+-----------+------+-----+-------------------+----------------+
+
+MariaDB [ctsn]> describe error_messages;
++---------+--------------+------+-----+---------+----------------+
+| Field   | Type         | Null | Key | Default | Extra          |
++---------+--------------+------+-----+---------+----------------+
+| ID      | int(11)      | NO   | PRI | NULL    | auto_increment |
+| MESSAGE | varchar(255) | NO   |     | NULL    |                |
++---------+--------------+------+-----+---------+----------------+
+
+MariaDB [ctsn]> describe node_status;
++-----------------+--------------+------+-----+---------+----------------+
+| Field           | Type         | Null | Key | Default | Extra          |
++-----------------+--------------+------+-----+---------+----------------+
+| id              | int(11)      | NO   | PRI | NULL    | auto_increment |
+| desc            | varchar(255) | NO   |     | NULL    |                |
+| status_severity | int(11)      | NO   | MUL | NULL    |                |
++-----------------+--------------+------+-----+---------+----------------+
+
+MariaDB [ctsn]> describe status_severity;
++-------+--------------+------+-----+---------+----------------+
+| Field | Type         | Null | Key | Default | Extra          |
++-------+--------------+------+-----+---------+----------------+
+| id    | int(11)      | NO   | PRI | NULL    | auto_increment |
+| desc  | varchar(255) | NO   |     | NULL    |                |
+| color | varchar(15)  | NO   |     | NULL    |                |
++-------+--------------+------+-----+---------+----------------+
+
+MariaDB [ctsn]> describe node;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| id          | int(11)      | NO   | PRI | NULL    | auto_increment |
+| description | varchar(255) | YES  |     | NULL    |                |
+| x           | int(11)      | YES  |     | NULL    |                |
+| y           | int(11)      | YES  |     | NULL    |                |
+| status      | int(11)      | YES  | MUL | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
 

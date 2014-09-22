@@ -29,10 +29,28 @@ class ErrorMessages(models.Model):
         db_table = 'error_messages'
 
 class Node(models.Model):
-    id = models.IntegerField(db_column='ID', primary_key=True) # Field name made lowercase.
+    desc = models.CharField(db_column = "description", max_length = 255)
+    x = models.IntegerField(db_column = 'x')
+    y = models.IntegerField(db_column = 'y')
+    status = models.ForeignKey('NodeStatus', db_column="status")
     class Meta:
-        managed = False
+        managed = True
         db_table = 'node'
+
+class NodeStatus(models.Model):
+    desc = models.CharField(db_column = 'desc', max_length = 255)
+    severity = models.ForeignKey('StatusSeverity', db_column='status_severity')
+    class Meta:
+        managed = True
+        db_table = 'node_status'
+
+class StatusSeverity(models.Model):
+    desc = models.CharField(db_column = 'desc', max_length = 255)
+    color = models.CharField(db_column = 'color', max_length = 15)
+
+    class Meta:
+        managed = True
+        db_table = 'status_severity'
 
 class CtsnUser(models.Model):
     user = models.ForeignKey(User)
