@@ -28,8 +28,9 @@ void EmailEvent::execute() {
         m_outLogger.writeLine(curlOutput);
     }
     catch (const std::runtime_error &e) {
-        m_errLogger.writeLine(e.what());
+        m_errLogger.writeLineWithTimeStamp(e.what());
     }
 }
 
 }
+

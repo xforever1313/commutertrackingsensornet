@@ -41,7 +41,7 @@ TEST(LogEventTest, queryFail) {
 
    m_uut->execute();
 
-   CHECK_EQUAL(m_errorLogger->getString(), error + "\n"); 
+   CHECK(m_errorLogger->getString().find(error + '\n') != std::string::npos);
 }
 
 TEST(LogEventTest, commitFail) {
@@ -52,6 +52,6 @@ TEST(LogEventTest, commitFail) {
 
     m_uut->execute();
 
-    CHECK_EQUAL(m_errorLogger->getString(), error + "\n"); 
+    CHECK(m_errorLogger->getString().find(error + '\n') != std::string::npos);
 }
 

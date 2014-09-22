@@ -70,5 +70,6 @@ TEST(EmailEventTest, SendFailException) {
     CHECK(m_outLogger->getString().empty());
     
     //Ensure error log is what was expected
-    CHECK_EQUAL(m_errLogger->getString(), expectedReturn + '\n');
+    CHECK(m_errLogger->getString().find(expectedReturn) != std::string::npos);
 }
+

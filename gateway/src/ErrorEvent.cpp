@@ -119,21 +119,21 @@ void ErrorEvent::executeEvents() {
         m_logEvent->execute();
     }
     catch (const std::exception &e) {
-        m_errLogger.writeLine(e.what());
+        m_errLogger.writeLineWithTimeStamp(e.what());
     }
 
     try {
         m_textMessageEvent->execute();
     }
     catch (const std::exception &e) {
-        m_errLogger.writeLine(e.what());
+        m_errLogger.writeLineWithTimeStamp(e.what());
     }
 
     try {
         m_emailEvent->execute();
     }
     catch (const std::exception &e) {
-        m_errLogger.writeLine(e.what());
+        m_errLogger.writeLineWithTimeStamp(e.what());
     }
 }
 
@@ -147,7 +147,7 @@ void ErrorEvent::execute() {
         executeEvents();
     }
     catch (const std::exception &e) {
-        m_errLogger.writeLine(e.what());
+        m_errLogger.writeLineWithTimeStamp(e.what());
     }
 }
 

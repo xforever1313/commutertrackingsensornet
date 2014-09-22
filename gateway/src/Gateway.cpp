@@ -82,7 +82,7 @@ void Gateway::start() {
             m_recvThread->start();
         }
         catch(const std::runtime_error &e) {
-            m_output->writeLine(e.what());
+            m_output->writeLineWithTimeStamp(e.what());
         }
 
         m_output->writeLine("Running CTSN Gateway...");
@@ -90,7 +90,7 @@ void Gateway::start() {
 
     }
     catch (const std::runtime_error &e) {
-        m_output->writeLine(e.what());
+        m_output->writeLineWithTimeStamp(e.what());
     }
 
     // Ensure the server is started, or a segfault occurs.
@@ -106,3 +106,4 @@ void Gateway::shutdown() {
 }
 
 }
+

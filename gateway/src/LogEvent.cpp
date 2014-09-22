@@ -36,7 +36,7 @@ void LogEvent::execute() {
        m_mariadb->mysql_commit();
     }
     catch (const std::runtime_error &e) {
-        m_errLogger.writeLine(e.what());
+        m_errLogger.writeLineWithTimeStamp(e.what());
     }
 }
 

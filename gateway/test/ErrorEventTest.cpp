@@ -336,7 +336,7 @@ TEST(ErrorEventTest, executeEventTestLogFailure) {
     EXPECT_CALL(*emailEvent, execute());
 
     m_uut->executeEvents();
-    CHECK_EQUAL(m_errLogger->getString(), error + '\n');
+    CHECK(m_errLogger->getString().find(error + '\n') != std::string::npos);
     
     //Events are deleted in uut's destructor
 }
@@ -358,7 +358,7 @@ TEST(ErrorEventTest, executeEventTestTextFailure) {
     EXPECT_CALL(*emailEvent, execute());
 
     m_uut->executeEvents();
-    CHECK_EQUAL(m_errLogger->getString(), error + '\n');
+    CHECK(m_errLogger->getString().find(error + '\n') != std::string::npos);
 
     //Events are deleted in uut's destructor
 }
@@ -380,7 +380,7 @@ TEST(ErrorEventTest, executeEventTestEmailFailure) {
         .WillOnce(testing::Throw(std::invalid_argument(error)));
 
     m_uut->executeEvents();
-    CHECK_EQUAL(m_errLogger->getString(), error + '\n');
+    CHECK(m_errLogger->getString().find(error + '\n') != std::string::npos);
 
     //Events are deleted in uut's destructor
 }
@@ -393,6 +393,6 @@ TEST(ErrorEventTest, executeTest) {
 
     m_uut->execute();
 
-    CHECK_EQUAL(m_errLogger->getString(), error + '\n');
+    CHECK(m_errLogger->getString().find(error + '\n') != std::string::npos);
 }
 

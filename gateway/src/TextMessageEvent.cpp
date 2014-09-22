@@ -55,10 +55,10 @@ TextMessageEvent::~TextMessageEvent() {
 void TextMessageEvent::execute() {
     try {
         std::string curlOutput = m_emailer->send();
-        m_outLogger.writeLine(curlOutput);
+        m_outLogger.writeLineWithTimeStamp(curlOutput);
     }
     catch (const std::runtime_error &e) {
-        m_errLogger.writeLine(e.what());
+        m_errLogger.writeLineWithTimeStamp(e.what());
     }
 }
 

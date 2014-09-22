@@ -55,7 +55,7 @@ TEST(TextMessageEventTest, SendSuccess) {
     m_uut->execute();
 
     //Ensure output log is what was expected
-    CHECK_EQUAL(m_outLogger->getString(), expectedReturn + '\n');
+    CHECK(m_outLogger->getString().find(expectedReturn + '\n') != std::string::npos);
 
     //Ensure error log is empty
     CHECK(m_errLogger->getString().empty());
@@ -72,7 +72,7 @@ TEST(TextMessageEventTest, SendFailException) {
     CHECK(m_outLogger->getString().empty());
 
     //Ensure error log is what was expected
-    CHECK_EQUAL(m_errLogger->getString(), expectedReturn + '\n');
+    CHECK(m_errLogger->getString().find(expectedReturn + '\n') != std::string::npos);
 }
 
 ///convertStringToProviderTests
