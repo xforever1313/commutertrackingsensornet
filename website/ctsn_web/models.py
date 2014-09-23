@@ -24,6 +24,7 @@ class ErrorLog(models.Model):
 class ErrorMessages(models.Model):
     id = models.IntegerField(db_column='ID', primary_key=True) # Field name made lowercase.
     message = models.CharField(db_column='MESSAGE', max_length=255) # Field name made lowercase.
+    severity = models.ForeignKey('StatusSeverity', db_column='severity')
     class Meta:
         managed = False
         db_table = 'error_messages'
