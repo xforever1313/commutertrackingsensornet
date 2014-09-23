@@ -38,12 +38,18 @@ class Node(models.Model):
         managed = True
         db_table = 'node'
 
+    def __unicode__(self):
+        return self.desc
+
 class NodeStatus(models.Model):
     desc = models.CharField(db_column = 'desc', max_length = 255)
     severity = models.ForeignKey('StatusSeverity', db_column='status_severity')
     class Meta:
         managed = True
         db_table = 'node_status'
+
+    def __unicode__(self):
+        return self.desc
 
 class StatusSeverity(models.Model):
     desc = models.CharField(db_column = 'desc', max_length = 255)
@@ -53,12 +59,33 @@ class StatusSeverity(models.Model):
         managed = True
         db_table = 'status_severity'
 
+    def __unicode__(self):
+        return desc
+
+providerChoices = ((1, "ATT"),
+                   (2, "Verizon"),
+                   (3, "T-Mobile"),
+                   (4, "Sprint"),
+                   (5, "Virgin Mobile"),
+                   (6, "US Cellular"),
+                   (7, "Nextel"),
+                   (8, "Boost Mobile"),
+                   (9, "Alltel"))
+
 class CtsnUser(models.Model):
     user = models.ForeignKey(User)
     phone = models.CharField(db_column = "PHONE_NUMBER", max_length=255)
-    provider = models.IntegerField(db_column = "PROVIDER")
+    provider = models.IntegerField(db_column = "PROVIDER", choices=providerChoices)
 
     class Meta:
         managed = True
         db_table = 'ctsn_user'
+
+    def __unicode__(self):
+        firstName = self.user.first_name
+        lastName = self.user.last_name
+        if ((firstName == "") or (lastName == "")):
+            return self.user.username
+        else:
+            return firstName + " " + lastName
 
