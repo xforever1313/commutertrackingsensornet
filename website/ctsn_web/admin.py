@@ -40,6 +40,23 @@ class CtsnUserAdmin(admin.ModelAdmin):
     getUsername.admin_order_field = "user"
     getUsername.short_description = "User"
 
+class NodeAdmin(admin.ModelAdmin):
+    list_display = ("id", "getDescription", "getStatus", "x", "y")
+    readonly_fields = ("status",)
+
+    def getDescription(self, obj):
+        return obj.desc
+
+    getDescription.admin_order_field = "desc"
+    getDescription.short_description = "Description"
+
+    def getStatus(self, obj):
+        return obj.status.desc
+
+    getStatus.admin_order_field = "status__desc"
+    getStatus.short_description = "Status"
+
 # Register your models here.
 admin.site.register(CtsnUser, CtsnUserAdmin)
+admin.site.register(Node, NodeAdmin)
 
