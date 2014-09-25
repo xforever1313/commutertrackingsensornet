@@ -34,6 +34,10 @@ ALLOWED_HOSTS = ['localhost', 'ctsn.student.rit.edu']
 
 # Application definition
 
+TEMPLATE_DIRS = (
+    "/home/seth/www/templates",
+)
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
