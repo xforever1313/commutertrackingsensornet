@@ -35,7 +35,7 @@ ALLOWED_HOSTS = ['localhost', 'ctsn.student.rit.edu']
 # Application definition
 
 TEMPLATE_DIRS = (
-    "/home/seth/www/templates",
+    "/home/django/www/templates",
 )
 
 INSTALLED_APPS = (
@@ -97,3 +97,4 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = '/home/django/static'
 
+STATICFILES_DIRS = ('/home/django/www/ctsn/static',)

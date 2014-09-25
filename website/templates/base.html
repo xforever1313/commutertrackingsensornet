@@ -1,6 +1,6 @@
 <!doctype html>
 <head>
-    <title></title>
+    <title>{{title}}</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <link type = "text/css" rel = "stylesheet" href = "static/css/ctsn.css" />
     {%block extraHead%} {%endblock%}
@@ -10,14 +10,22 @@
         <div id = "status">
 
         </div>
+
         <div id = "navbar">
+
+        {% for pageName, url in NavBarURLs %}
+            {% if url == pageID%}
+                <div class = "currentPage">
+            {% else %}
+                <div class = "navBarPiece">
+            {% endif %}
+            <a href = "{{url}}">{{pageName}}</a></div>
+        {% endfor %}
         </div>
 
         <div id = "logout">
             <div class = "navBarPiece"><a href = "logout.html">Log Out</a></div>
         </div>
-
-        {%block betweenNavAndContent %} {% endblock %}
 
         <div id = "pageContent">
         {% block content %} {% endblock %}

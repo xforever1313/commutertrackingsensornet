@@ -1,0 +1,137 @@
+body {
+    background-color: #00CCCC;
+    font-family: "couier new", courier, arial, sans-serif;
+}
+
+/**
+ * Main page stuff
+ */
+
+#main {
+    min-width: 900px;
+    max-width: 1200px;
+    margin-top: 5px;
+}
+
+#pageContent {
+    background-color: white;
+    margin-top: 50px;
+    margin-left: 3em;
+    margin-right: 3em;
+    margin-bottom: 2em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 1em;
+    padding-bottom:  2em;
+    font-size: 120%;
+    border: 5px;
+    border-color: black;
+    border-style: solid;
+    line-height: 2em;
+    float: left;
+    clear: both;
+    min-width: 1025px;
+    text-align: center;
+}
+
+#status {
+    float: right;
+    clear: both;
+    font-size: 120%;
+    margin: 25px;
+    font-weight: bold;
+    margin-right: 60px;
+}
+
+/**
+ * Nav Bar Stuff 
+ */
+#navbar {
+    float: left;
+    clear: both;
+    font-size: 120%;
+    margin-left: 3em;
+    font-weight: bold;
+    background-color: #00CCCC;
+}
+
+#adminBar {
+    float: left;
+    clear: both;
+    font-size: 100%;
+    margin-left: 4em;
+    font-weight: bold;
+    background-color: #00CCCC;
+    margin-top: 25px;
+}
+
+.currentPage {
+    background-color: #FF9900;
+    color: black;
+    float: left;
+    padding: 1em;
+    border: 5px;
+    border-color: black;
+    border-style: solid;
+    font-size: 107%;
+    margin-left: -5px;
+}
+
+.currentPage a {
+    color: black;
+    text-decoration: none;
+}
+
+.navBarPiece {
+    background-color: #0099FF;
+    float: left;
+    padding: 1em;
+    margin-left: -5px;
+    border: 5px;
+    border-color: black;
+    border-style: solid;
+    color: white;
+    font-size:107%;
+}
+
+.navBarPiece a {
+    color: white;
+    text-decoration: none; /* Get rid of underlines in hyperlink*/
+}
+
+.navBarPiece a:hover {
+    text-decoration: underline; /* Show underline when hovered over */
+}
+
+.navBarPiece:hover {
+}
+
+#logout {
+    float: right;
+    clear: right;
+    font-size: 120%;
+    margin-left: 3em;
+    font-weight: bold;
+    background-color: #00CCCC;
+    margin-right: 60px;
+}
+
+/**
+ * scrolling textarea
+ */
+#scroll {
+    height: 500px;
+    width: 800px;
+    overflow: auto;
+    border: 1px solid black;
+    background-color: #DDDDDD;
+    padding: 2em;
+    text-align: left;
+}
+
+noscript {
+    color: red;
+    font-weight: bold;
+}
+
+
