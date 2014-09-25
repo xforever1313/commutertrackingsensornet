@@ -9,5 +9,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', 'ctsn_web.views.HomeView') 
+    url(r'^$', 'ctsn_web.views.HomeView'),
+    url(r'^index.html$', 'ctsn_web.views.HomeView'),
+    url(r'admin_messages.html', 'ctsn_web.views.AdminMessageView')
 )

@@ -16,17 +16,21 @@ class ErrorLog(models.Model):
     id = models.IntegerField(db_column='ID', primary_key=True) # Field name made lowercase.
     node = models.ForeignKey('Node', db_column='NODE_ID') # Field name made lowercase.
     message = models.ForeignKey('ErrorMessages', db_column='MESSAGE_ID') # Field name made lowercase.
-    time = models.DateTimeField()
+    time = models.DateTimeField(db_column='time')
     class Meta:
-        managed = False
+        managed = True
         db_table = 'error_log'
 
 class ErrorMessages(models.Model):
     id = models.IntegerField(db_column='ID', primary_key=True) # Field name made lowercase.
     message = models.CharField(db_column='MESSAGE', max_length=255) # Field name made lowercase.
     severity = models.ForeignKey('StatusSeverity', db_column='severity')
+
+    def __unicode__(self):
+        return self.message
+
     class Meta:
-        managed = False
+        managed = True
         db_table = 'error_messages'
 
 class Node(models.Model):
@@ -61,7 +65,7 @@ class StatusSeverity(models.Model):
         db_table = 'status_severity'
 
     def __unicode__(self):
-        return desc
+        return self.desc
 
 providerChoices = ((1, "ATT"),
                    (2, "Verizon"),

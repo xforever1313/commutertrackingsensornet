@@ -27,6 +27,17 @@
             <div class = "navBarPiece"><a href = "logout.html">Log Out</a></div>
         </div>
 
+        <div id = "adminBar">
+        {% for pageName, url in AdminBarURLs %}
+            {% if url == pageID%}
+                <div class = "currentPage">
+            {% else %}
+                <div class = "navBarPiece">
+            {% endif %}
+            <a href = "{{url}}">{{pageName}}</a></div>
+        {% endfor %}
+        </div>
+
         <div id = "pageContent">
         {% block content %} {% endblock %}
         </div>

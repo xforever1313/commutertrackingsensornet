@@ -1,0 +1,26 @@
+{%extends "base.html" %}
+
+{%block extraHead%}
+    <script type="text/javascript">
+        window.onload = function() {
+            var textBoxDiv = document.getElementById("scroll");
+            textBoxDiv.scrollTop = textBoxDiv.scrollHeight;
+        }
+    </script>
+
+{%endblock%}
+
+{%block content%}
+<h1>CTSN Admin Messages</h1>
+<noscript>Javascript is recommended but not required</noscript>
+<div id = "scroll">
+
+{% for msg in errorMessages %}
+    <p><span style = "color: #{{msg.message.severity.color}};"> [{{msg.time}}]&gt; {{msg.node.id}}:  {{msg.message.message}}</span></p>
+{% endfor %}
+
+</div>
+<p><a href="static/gateway.log.html">Gateway Log</a>
+
+{%endblock%}
+
