@@ -11,5 +11,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'ctsn_web.views.HomeView'),
     url(r'^index.html$', 'ctsn_web.views.HomeView'),
-    url(r'admin_messages.html', 'ctsn_web.views.AdminMessageView')
+    url(r'admin_messages.html', 'ctsn_web.views.AdminMessageView'),
+    url(r'node_status.html', 'ctsn_web.views.NodeStatusView')
 )

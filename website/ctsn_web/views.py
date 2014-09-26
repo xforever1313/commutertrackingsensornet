@@ -22,4 +22,10 @@ def AdminMessageView(request):
                 'errorMessages' : errorMessages }
 
     return render_to_response(NavBarURLs[3][1], context, context_instance=RequestContext(request))
-    
+
+def NodeStatusView(request):
+    context = {'NavBarURLs' : NavBarURLs, 'pageID' : NavBarURLs[1][1], 
+               'title' : 'CTSN Node Status',
+               'nodes' : Node.objects.all()}
+
+    return render_to_response(NavBarURLs[1][1], context, context_instance=RequestContext(request))

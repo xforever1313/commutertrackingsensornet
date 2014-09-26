@@ -1,0 +1,35 @@
+{%extends "base.html"%}
+
+{%block extraHead%}
+<link type="text/css" rel="stylesheet" href="static/css/leaflet.css"/>
+<script src="static/js/leaflet.js"></script>
+
+<script type = "text/javascript">
+    window.onload=function() {
+        var map = L.map('map').setView([51.505, -0.09], 13);
+        var osmURL = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+        var osmAttrib = 'Map Data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+        var osm = new L.TileLayer(osmURL, {minZoom: 8, maxZoom: 15, attribution: osmAttrib});
+
+        //Start the map
+        map.setView(new L.LatLng(43.08, -77.678419), 12);
+        map.addLayer(osm);
+
+        {% for node in nodes %}
+            var marker{{node.id}}HTML = '<p><strong>ID:</strong> {{node.id}}</p>';
+            marker{{node.id}}HTML += '<p><strong>Name:</strong> {{node.desc}}</p>';
+            marker{{node.id}}HTML += '<p><strong>Status:</strong><span style="color:#{{node.status.severity.color}};"> {{node.status.severity.desc}}</span></p>';
+            var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).addTo(map).bindPopup(marker{{node.id}}HTML);
+        {% endfor %} 
+    }
+</script>
+{%endblock%}
+
+{%block content%}
+<h1>CTSN Node Status</h1>
+<noscript>Javascript is required to see the interactive map.</noscript>
+<div id = "map" style = "height:500px; width:1000px;">
+</div>
+
+{%endblock%}
+

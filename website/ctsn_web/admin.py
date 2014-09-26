@@ -41,7 +41,7 @@ class CtsnUserAdmin(admin.ModelAdmin):
     getUsername.short_description = "User"
 
 class NodeAdmin(admin.ModelAdmin):
-    list_display = ("id", "getDescription", "getStatus", "x", "y")
+    list_display = ("id", "getDescription", "getStatus", "lat", "lon")
     readonly_fields = ("status",)
 
     def getDescription(self, obj):
