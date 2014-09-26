@@ -1,0 +1,39 @@
+{%extends "map_base.html"%}
+
+{%block extraJS%}
+function powerOff(nodeID) {
+    alert("Node " + nodeID + " will turn off.... when this thing is implemented");
+}
+{%endblock%}
+
+{%block nodePlacement%}
+   {% for node in nodes %}
+        var marker{{node.id}}HTML = '<p><strong>ID:</strong> {{node.id}}</p>';
+        marker{{node.id}}HTML += '<p><strong>Name:</strong> {{node.desc}}</p>';
+        marker{{node.id}}HTML += '<button type="button" onclick="powerOff({{node.id}})">Turn Off</button>'
+        var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).addTo(map).bindPopup(marker{{node.id}}HTML);
+
+    {%endfor%}
+
+{%endblock%}
+
+{%block preMap%}
+<h1>CTSN Statistics</h1>
+{%endblock%}
+
+{%block postMap%}
+<h2 style="text-align: left;">Control Table</h2>
+
+<table cellspacing = "0" cellpadding = "4px" border = "2px">
+<tr><th>Node</th><th>Description</th><th>Turn Off</th></tr>
+{%for node in nodes%}
+    <tr><td><strong>{{node.id}}</strong></td>
+        <td>{{node.desc}}</td>
+        <td><button type="button" onclick="powerOff({{node.id}})">Turn Off</button></td>
+    </tr>
+{%endfor%}
+
+</table>
+
+{%endblock%}
+

@@ -37,3 +37,10 @@ def NodeStatsView(request):
 
     return render_to_response(NavBarURLs[2][1], context, context_instance=RequestContext(request))
 
+def AdminMaintenanceView(request):
+    context = {'NavBarURLs' : NavBarURLs, 'pageID' : AdminBarURLs[1][1], 
+               'title' : 'CTSN Statistics', 'AdminBarURLs' : AdminBarURLs,
+               'nodes' : Node.objects.all()}
+
+    return render_to_response(AdminBarURLs[1][1], context, context_instance=RequestContext(request))
+
