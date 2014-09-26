@@ -4,7 +4,9 @@
    {% for node in nodes %}
         var marker{{node.id}}HTML = '<p><strong>ID:</strong> {{node.id}}</p>';
         marker{{node.id}}HTML += '<p><strong>Name:</strong> {{node.desc}}</p>';
-        marker{{node.id}}HTML += '<p><strong>Status:</strong><span style="color:#{{node.status.severity.color}};"> {{node.status.severity.desc}}</span></p>';
+        marker{{node.id}}HTML += '<p><strong>People:</strong> 0</p>';
+        marker{{node.id}}HTML += '<p><strong>Bikes:</strong> 0</p>';
+        marker{{node.id}}HTML += '<p><strong>Horses:</strong> 0</p>';
         var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).addTo(map).bindPopup(marker{{node.id}}HTML);
 
     {%endfor%}
@@ -12,20 +14,27 @@
 {%endblock%}
 
 {%block preMap%}
-<h1>CTSN Node Status</h1>
+<h1>CTSN Statistics</h1>
 {%endblock%}
 
 {%block postMap%}
-<h2 style="text-align: left;">Status Table</h2>
+<h2 style="text-align: left;">Results Summary</h2>
 
 <table cellspacing = "0" cellpadding = "4px" border = "2px">
-<tr><th>Node</th><th>Description</th><th>Status</th></tr>
+<tr><th>Node</th><th>Description</th><th>People</th><th>Bikes</th><th>Horses</th><th>Total</th></tr>
 {%for node in nodes%}
     <tr><td><strong>{{node.id}}</strong></td>
         <td>{{node.desc}}</td>
-        <td><span style="color:#{{node.status.severity.color}};">{{node.status.severity.desc}}</span></td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
     </tr>
 {%endfor%}
+
+<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td><strong>Total</strong></td><td></td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
 </table>
+
 {%endblock%}
 

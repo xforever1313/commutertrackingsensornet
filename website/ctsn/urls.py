@@ -12,5 +12,6 @@ urlpatterns = patterns('',
     url(r'^$', 'ctsn_web.views.HomeView'),
     url(r'^index.html$', 'ctsn_web.views.HomeView'),
     url(r'admin_messages.html', 'ctsn_web.views.AdminMessageView'),
-    url(r'node_status.html', 'ctsn_web.views.NodeStatusView')
+    url(r'node_status.html', 'ctsn_web.views.NodeStatusView'),
+    url(r'node_stats.html', 'ctsn_web.views.NodeStatsView')
 )

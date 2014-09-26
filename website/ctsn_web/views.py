@@ -29,3 +29,11 @@ def NodeStatusView(request):
                'nodes' : Node.objects.all()}
 
     return render_to_response(NavBarURLs[1][1], context, context_instance=RequestContext(request))
+
+def NodeStatsView(request):
+    context = {'NavBarURLs' : NavBarURLs, 'pageID' : NavBarURLs[2][1], 
+               'title' : 'CTSN Statistics',
+               'nodes' : Node.objects.all()}
+
+    return render_to_response(NavBarURLs[2][1], context, context_instance=RequestContext(request))
+
