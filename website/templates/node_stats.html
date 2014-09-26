@@ -7,6 +7,7 @@
         marker{{node.id}}HTML += '<p><strong>People:</strong> 0</p>';
         marker{{node.id}}HTML += '<p><strong>Bikes:</strong> 0</p>';
         marker{{node.id}}HTML += '<p><strong>Horses:</strong> 0</p>';
+
         var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).addTo(map).bindPopup(marker{{node.id}}HTML);
 
     {%endfor%}
