@@ -1,0 +1,117 @@
+import SCons.Defaults
+import SCons
+from SCons.Util import unique
+import stat
+import os
+import sys
+import subprocess
+import glob
+import shutil
+from copy import deepcopy
+
+baseDir = os.path.abspath("../")
+sys.path.append(baseDir)
+
+from CTSNGlobals import *
+commonPath = getCommonPath(baseDir)
+sys.path.append(commonPath)
+
+from Globals import *
+from SethCommonGlobals import *
+from SConstructGlobals import *
+
+#Make common environment
+projectName = "CTSN_Windbelt_Capturer"
+targetFlags = CPP_CHECK_TARGET | PROJECT_TARGET | EXE_TARGET
+envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
+
+###
+# Additional Flags
+###
+if (ARGUMENTS.get('pi_build', '0') ==  '1'):
+    additionalFlags = ['-DGATEWAY_IP=\\"localhost\\"']
+else:
+    additionalFlags = ['-DGATEWAY_IP=\\"192.168.15.115\\"']
+
+###
+# Files to compile
+###
+
+###include paths:
+systemPaths = []
+
+#Put any additional include paths you need here.
+includePaths = [includeDir, os.path.join(baseDir)]
+
+###Source Files
+mainFile = os.path.join(srcDir, "main.cpp")
+
+sourceFiles = filterSourceFiles(glob.glob(os.path.join(srcDir, '*.cpp')),
+                                [mainFile])
+
+###Libs
+
+#Libs needed for the pi
+piLibs = ['mariadbclient', 'z', 'm', 'ssl', 'crypto' ,'dl', 'rt']
+
+#Libs needed on arch
+archLibs = ['mysqlclient', 'z', 'm', 'ssl', 'crypto', 'dl', 'rt']
+
+debugLibs = ['PocoNet', 'PocoFoundation', 'PocoUtil']
+releaseLibs = ['PocoNet', 'PocoFoundation', 'PocoUtil']
+
+if (ARGUMENTS.get('pi_build', '0') ==  '1'):
+    debugLibs += piLibs
+    releaseLibs += piLibs
+else:
+    debugLibs += archLibs
+    releaseLibs += archLibs
+
+###LibPath
+debugLibPath = []
+releaseLibPath = []
+
+Help(getHelpMessage(envBase))
+
+###
+# Environment creation
+###
+
+def addFlags(env):
+    env.Append(CCFLAGS = additionalFlags)
+    for p in systemPaths:
+        env.Append(CCFLAGS = ['-isystem', p])
+
+#Debug Environment
+debugEnvironment = createDebugEnvironment(envBase, includePaths, debugLibs, debugLibPath)
+addFlags(debugEnvironment)
+
+#Release Environment
+releaseEnvironment = createReleaseEnvironment(envBase, includePaths, releaseLibs, releaseLibPath)
+addFlags(releaseEnvironment)
+
+###
+# Targets
+###
+
+(debugTarget, runDebugTarget) = createExe(debugEnvironment, "windbelt-capturer-d",
+                                          sourceFiles + [mainFile])
+
+(releaseTarget, runReleaseTarget)  = createExe(releaseEnvironment, "windbelt-capturer",
+                                               sourceFiles + [mainFile])
+
+cppCheckTarget = createCppCheckTarget(releaseEnvironment, sourceFiles)
+
+(netBeansTarget, vsTarget, CodeBlocksTarget) = createProjectTargets(envBase, releaseEnvironment['CPPPATH'], "CTSNWindbeltCapturer")
+
+Alias(DEBUG_ALIAS, debugTarget)
+Alias(RUN_DEBUG_ALIAS, runDebugTarget)
+Alias(RELEASE_ALIAS, releaseTarget)
+Alias(RUN_RELEASE_ALIAS, runReleaseTarget)
+Alias(CPP_CHECK_ALIAS, cppCheckTarget)
+
+Alias (NIGHTLY_ALIAS, [debugTarget, releaseTarget, cppCheckTarget, netBeansTarget, vsTarget, CodeBlocksTarget])
+Alias (DELTA_ALIAS, [debugTarget, releaseTarget, cppCheckTarget])
+
+Default([DEBUG_ALIAS])
+

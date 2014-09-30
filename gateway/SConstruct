@@ -52,10 +52,10 @@ testIncludePaths = [os.path.join(testDir, includeDir),
 
 ###Source Files
 dateVersionFile = (os.path.join(srcDir, 'GatewayDateVersion.cpp'))
-mainFile = os.path.join(srcDir, "main.cpp")
+gatewayMainFile = os.path.join(srcDir, "main.cpp")
 
 sourceFiles = filterSourceFiles(glob.glob(os.path.join(srcDir, '*.cpp')),
-                                [dateVersionFile, mainFile])
+                                [dateVersionFile, gatewayMainFile])
 sourceTestFiles = glob.glob(os.path.join(testDir, '*.cpp')) + [getTestMain(commonPath)] + \
                   glob.glob(os.path.join(testDir, srcDir, '*.cpp'))
 
@@ -135,10 +135,14 @@ doxygenFiles = [dateVersionFile] + sourceFiles + sourceTestFiles + glob.glob(os.
 ###
 
 (debugTarget, runDebugTarget) = createExe(debugEnvironment, "CTSNGateway-d",
-                                          getCompiledObjectsWithDateVersionObject(debugEnvironment, sourceFiles + [mainFile], dateVersionFile, ARGUMENTS))
+                                          getCompiledObjectsWithDateVersionObject(debugEnvironment, 
+                                                                                  sourceFiles + [gatewayMainFile], 
+                                                                                  dateVersionFile, ARGUMENTS))
 
 (releaseTarget, runReleaseTarget)  = createExe(releaseEnvironment, "CTSNGateway",
-                                               getCompiledObjectsWithDateVersionObject(releaseEnvironment, sourceFiles + [mainFile], dateVersionFile, ARGUMENTS))
+                                               getCompiledObjectsWithDateVersionObject(releaseEnvironment, 
+                                                                                       sourceFiles + [gatewayMainFile], 
+                                                                                       dateVersionFile, ARGUMENTS))
 
 (unitTestTarget, runTestTarget) = createUnitTestExe(testEnvironment,
                                                     getCompiledObjectsWithDateVersionObject(testEnvironment,
