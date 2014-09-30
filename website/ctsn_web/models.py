@@ -94,3 +94,13 @@ class CtsnUser(models.Model):
         else:
             return firstName + " " + lastName
 
+class WindbeltResult(models.Model):
+    voltage = models.IntegerField('voltage', db_column='voltage')
+    time = models.DateTimeField(db_column='time')
+    class Meta:
+        manage = True
+        db_table = 'windbelt_result'
+
+    def __unicode__(self):
+        return self.voltage
+
