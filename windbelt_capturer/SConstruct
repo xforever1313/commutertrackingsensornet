@@ -89,7 +89,6 @@ addFlags(debugEnvironment)
 #Release Environment
 releaseEnvironment = createReleaseEnvironment(envBase, includePaths, releaseLibs, releaseLibPath)
 addFlags(releaseEnvironment)
-
 ###
 # Targets
 ###

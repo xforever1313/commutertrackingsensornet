@@ -3,7 +3,9 @@
  * Never write code like this, or god will kill a kitten.
  */
 
+#include <condition_variable>
 #include <iostream>
+#include <mutex>
 #include <mysql/mysql.h>
 #include <stdexcept>
 #include <string>
@@ -19,14 +21,29 @@
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServer.h>
-#include <Poco/Util/ServerApplication.h>
 
+#include "CTSNSharedGlobals.py"
 #include "Secrets.py"
 
 Poco::Net::ServerSocket *theSocket = nullptr;
 Poco::Net::HTTPServer *server = nullptr;
 
 MYSQL *con = nullptr;
+
+std::mutex mutex;
+std::condition_variable shutdownProgram;
+
+class ShutdownHTTPRequestHandler : public Poco::Net::HTTPRequestHandler {
+    public:
+        void handleRequest(Poco::Net::HTTPServerRequest &request,
+                           Poco::Net::HTTPServerResponse &response) override {
+            shutdownProgram.notify_all();
+            response.setContentType("text/html");
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+            std::ostream &ostr = response.send();
+            ostr << "Shutting Down...";
+        }
+};
 
 class NotFoundHTTPRequestHandler : public Poco::Net::HTTPRequestHandler {
     public:
@@ -74,6 +91,9 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
                     if (request.getURI() == WINDBELT_URI) {
                         return new VoltageHTTPRequestHandler();
                     }
+                    else if (request.getURI() == SHUTDOWN_URI) {
+                        return new ShutdownHTTPRequestHandler();
+                    }
                 }
             }
             return new NotFoundHTTPRequestHandler();
@@ -109,29 +129,21 @@ void cleanup() {
     }
 }
 
-class Application : public Poco::Util::ServerApplication {
-    protected:
-        int main(const std::vector<std::string> &) override{
-            initHTTPServer();
-            server->start();
-            std::cout << "Listening" << std::endl;
-            waitForTerminationRequest();
-            server->stop();
-            return 0;
-        }
-};
-
 int main(int argc, char **argv){
     mysql_library_init(argc, argv, nullptr);
     std::cout << "Starting Windbelt capturer..." << std::endl;
     try {
+        std::unique_lock<std::mutex> lock(mutex);
         initMariaDB();
-        Application app;
-        app.run(argc, argv);
+        initHTTPServer();
+        server->start();
+        shutdownProgram.wait(lock);
+        server->stop();
         cleanup();
     }
     catch(const std::exception &e){
         std::cerr << "EXCEPTION: " << e.what() << std::endl;
+        server->stop();
         cleanup();
     }
     mysql_library_end();
