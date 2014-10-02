@@ -119,3 +119,13 @@ def LogoutRequest(request):
     logout(request)
     return HttpResponseRedirect('login.html')
 
+def WindbeltResultPage(request):
+    #If not authenticated, return to login
+    if not request.user.is_authenticated():
+       return HttpResponseRedirect('login.html')
+    elif not request.user.is_staff:
+        return HttpResponse('Unauthorized', status=401)
+
+    context = {'windbelt_results' : WindbeltResult.objects.all()}
+    return render_to_response('windbelt_result.html', context, context_instance=RequestContext(request))
+
