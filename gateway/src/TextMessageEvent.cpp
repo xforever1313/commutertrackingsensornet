@@ -1,3 +1,4 @@
+#include <cctype>
 #include <stdexcept>
 #include <string>
 #include <map>
@@ -6,6 +7,8 @@
 #include "gateway/TextMessageEvent.h"
 
 namespace Gateway {
+
+const std::string TextMessageEvent::BAD_NUMBER_ERROR = "Invalid phone number:";
 
 const std::map<TextMessageEvent::Provider, std::string> TextMessageEvent::PROVIDER_NAMES = {
         { ATT, "AT&T" },
@@ -43,7 +46,13 @@ TextMessageEvent::TextMessageEvent(const std::map <std::string, Provider> &numbe
 {
     std::map <std::string, std::string> addresses;
     for (const auto &number : numbers) {
-        addresses[number.first + '@' + PROVIDER_EMAIL.at(number.second) ] = number.first;
+        try {
+            std::string numberString = convertPhoneStringToNumber(number.first);
+            addresses[numberString + '@' + PROVIDER_EMAIL.at(number.second) ] = numberString;
+        }
+        catch(const std::invalid_argument &e) {
+            m_errLogger.writeLineWithTimeStamp(e.what());
+        }
     }
     m_emailer = new Emailer(addresses, subject, message);
 }
@@ -78,4 +87,19 @@ TextMessageEvent::Provider TextMessageEvent::convertStringToProvider(const std::
     return static_cast<Provider>(i);
 }
 
+std::string TextMessageEvent::convertPhoneStringToNumber(const std::string &number) {
+    std::string s;
+    for (size_t i = 0; i < number.size(); ++i) {
+        if (::isdigit(number[i])) {
+            s += number[i];
+        }
+        else if (::isalpha(number[i])) {
+            throw std::invalid_argument(BAD_NUMBER_ERROR + " " + number);
+        }
+    }
+
+    return s;
 }
+
+}
+

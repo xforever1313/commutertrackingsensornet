@@ -8,6 +8,7 @@
 #define private public
 #define protected public
 
+#include "gateway/Emailer.h"
 #include "gateway/TextMessageEvent.h"
 #include "io/StringLogger.h"
 #include "MockEmailer.h"
@@ -114,5 +115,39 @@ TEST(TextMessageEventTest, convertStringToProviderFailures) {
     catch (const std::invalid_argument &e) {
 
     }
+}
+
+TEST(TextMessageEventTest, convertPhoneStringToNumberTest) {
+    CHECK_EQUAL(Gateway::TextMessageEvent::convertPhoneStringToNumber("5555551234"), "5555551234");
+    CHECK_EQUAL(Gateway::TextMessageEvent::convertPhoneStringToNumber("(555)-555-5555"), "5555555555");
+    CHECK_EQUAL(Gateway::TextMessageEvent::convertPhoneStringToNumber("( 555 ) - 123   - 4569"), "5551234569");
+
+    std::string badNumber = "123d564565";
+    try{
+        Gateway::TextMessageEvent::convertPhoneStringToNumber(badNumber);
+        FAIL("Exception not thrown");
+    }
+    catch (const std::invalid_argument &e) {
+        CHECK_EQUAL(e.what(), Gateway::TextMessageEvent::BAD_NUMBER_ERROR + " " + badNumber);
+    }
+}
+
+TEST(TextMessageEventTest, badNumberConstructorTest) {
+    std::string badNumber = "5181a234567";
+    std::string goodNumber = "1112223333";
+    std::map<std::string, Gateway::TextMessageEvent::Provider> numbers = 
+        { { badNumber, Gateway::TextMessageEvent::Provider::VERIZON }, 
+          { goodNumber, Gateway::TextMessageEvent::Provider::ATT } };
+
+    Gateway::TextMessageEvent uut (numbers, m_message, m_subject, *m_outLogger, *m_errLogger);
+
+    //Ensure error log is what was expected
+    std::string expectedReturn = Gateway::TextMessageEvent::BAD_NUMBER_ERROR + " " + badNumber + "\n";
+    CHECK(m_errLogger->getString().find(expectedReturn) != std::string::npos);
+
+    //Ensure theres only one number in the emailer map.
+    Gateway::Emailer *emailer = dynamic_cast<Gateway::Emailer*>(uut.m_emailer);
+
+    CHECK_EQUAL(emailer->m_addresses.size(), 1);
 }
 

@@ -46,6 +46,14 @@ class TextMessageEvent : public Common::EventInterface {
         void execute() override;
 
     private:
+        /**
+         * \brief Converts a string like (555)-555-2243 to 5555552243.  
+         *        Spaces and symbols are stripped from the string
+         * \throw std::invalid_argument if a letter is detected.
+         */
+        static std::string convertPhoneStringToNumber(const std::string &number);
+
+        static const std::string BAD_NUMBER_ERROR;
         static const std::map <Provider, std::string> PROVIDER_EMAIL;
 
         TextMessageEvent() = delete;
@@ -59,3 +67,4 @@ class TextMessageEvent : public Common::EventInterface {
 }
 
 #endif
+
