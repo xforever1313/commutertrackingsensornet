@@ -10,7 +10,11 @@ TEST_GROUP(DatabasePokeEventTest) {
     TEST_SETUP() {
         m_errLogger = new Common::IO::StringLogger();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
+        m_result = new testing::StrictMock<Gateway::MockMariaDBResult>();
         m_uut = new Gateway::DatabasePokeEvent(m_mariadb, *m_errLogger);
+
+        delete m_uut->m_dummyResult;
+        m_uut->m_dummyResult = m_result;
 
         POINTERS_EQUAL(m_uut->m_mariadb, m_mariadb);
     }
@@ -19,15 +23,18 @@ TEST_GROUP(DatabasePokeEventTest) {
         delete m_uut;
         delete m_mariadb;
         delete m_errLogger;
+        // m_result is deleted in uut
     }
 
     Common::IO::StringLogger *m_errLogger;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
+    testing::StrictMock<Gateway::MockMariaDBResult> *m_result;
     Gateway::DatabasePokeEvent *m_uut;
 };
 
 TEST(DatabasePokeEventTest, successTest) {
     EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::DatabasePokeEvent::QUERY));
+    EXPECT_CALL(*m_result, storeResult());
 
     m_uut->execute();
 

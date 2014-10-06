@@ -23,6 +23,7 @@ class DatabasePokeEvent : public Common::EventInterface {
 
         MariaDBInterface *m_mariadb;
         Common::IO::LoggerBase &m_errLogger;
+        MariaDBResultInterface *m_dummyResult;
 };
 
 }
