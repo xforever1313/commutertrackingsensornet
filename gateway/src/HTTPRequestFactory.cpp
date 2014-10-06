@@ -4,6 +4,7 @@
 
 #include "CTSNSharedGlobals.py"
 #include "gateway/BadClientHTTPRequestHandler.h"
+#include "gateway/DatabasePokeHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
@@ -42,6 +43,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (userAgent != USER_AGENT) {
         return new BadClientHTTPRequestHandler();
+    }
+    else if (request.getURI() == DATABASE_POKE_URI) {
+        return new DatabasePokeHTTPRequestHandler(m_mariadb, m_eventExecutor);
     }
     else if (request.getURI() == UART_TX_URI) {
         return new UartTxHTTPRequestHandler(m_eventExecutor, m_uart);

@@ -92,5 +92,14 @@ const std::string
 ERROR_MESSAGE_URI = "/error_message";
 
 
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+DATABASE_POKE_URI = "/database_poke";
+
 #endif
 

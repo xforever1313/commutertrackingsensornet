@@ -124,6 +124,12 @@ def sendErrorMessage():
 
     performPostRequest(data, ERROR_MESSAGE_URI)
 
+def pokeDatabase():
+    data = {}
+    data['poke'] = 'true'
+
+    performPostRequest(data, DATABASE_POKE_URI)
+
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description="Debug Console for the CTSN gateway")
     argParser.add_argument("--url", dest='url', action = "store", default="localhost", help="The url to post to.")
@@ -136,7 +142,7 @@ if __name__ == '__main__':
     while (keepGoing):
         command = input("\nEnter a number:\n\t1.  Uart Tx\n\t2.  Send Email\n\t3." + \
                         "  Send Text Message\n\t4.  Shutdown Gateway\n\t5.  Log Test Message\n\t6.  Send Error Message\n\t" + \
-                        "0.  Exit\n>")
+                        "7.  Poke Database\n\t0.  Exit\n>")
 
         if (command == "1"):
             messageToSend = input("\nEnter a message to send:\n>")
@@ -152,6 +158,8 @@ if __name__ == '__main__':
             logTestMessage()
         elif (command == "6"):
             sendErrorMessage()
+        elif (command == "7"):
+            pokeDatabase()
         elif (command == "0"):
             keepGoing = False
 

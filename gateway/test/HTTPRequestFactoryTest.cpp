@@ -7,6 +7,7 @@
 
 #include "CTSNSharedGlobals.py"
 #include "gateway/BadClientHTTPRequestHandler.h"
+#include "gateway/DatabasePokeHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
@@ -118,6 +119,19 @@ TEST(HTTPRequestFactoryTest, createErrorMessageTest) {
     m_request->set("user-agent", USER_AGENT);
 
     Gateway::ErrorHTTPRequestHandler* handler = dynamic_cast<Gateway::ErrorHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+
+    CHECK(handler != nullptr);
+    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
+    POINTERS_EQUAL(handler->m_mariadb, m_mariadb);
+
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createDatabasePokeTest) {
+    m_request->setURI(DATABASE_POKE_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Gateway::DatabasePokeHTTPRequestHandler* handler = dynamic_cast<Gateway::DatabasePokeHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
     CHECK(handler != nullptr);
     POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
