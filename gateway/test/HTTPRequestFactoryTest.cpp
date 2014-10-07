@@ -13,6 +13,7 @@
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
+#include "gateway/RootHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
@@ -61,6 +62,15 @@ TEST(HTTPRequestFactoryTest, createShutdownTest) {
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<Gateway::ShutdownHTTPRequestHandler*>(handler) != nullptr);
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createRootTest) {
+    m_request->setURI(ROOT_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
+    CHECK(dynamic_cast<Gateway::RootHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }
 

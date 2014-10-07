@@ -11,6 +11,7 @@
 #include "gateway/MariaDBInterface.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
+#include "gateway/RootHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
@@ -43,6 +44,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (userAgent != USER_AGENT) {
         return new BadClientHTTPRequestHandler();
+    }
+    else if (request.getURI() == ROOT_URI) {
+        return new RootHTTPRequestHandler();
     }
     else if (request.getURI() == DATABASE_POKE_URI) {
         return new DatabasePokeHTTPRequestHandler(m_mariadb, m_eventExecutor);
