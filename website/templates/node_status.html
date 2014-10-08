@@ -4,7 +4,7 @@
    {% for node in nodes %}
         var marker{{node.id}}HTML = '<p><strong>ID:</strong> {{node.id}}</p>';
         marker{{node.id}}HTML += '<p><strong>Name:</strong> {{node.desc}}</p>';
-        marker{{node.id}}HTML += '<p><strong>Status:</strong><span style="color:#{{node.status.severity.color}};"> {{node.status.severity.desc}}</span></p>';
+        marker{{node.id}}HTML += '<p><strong>Status:</strong><span style="color:#{{node.status.severity.color}};"> {{node.status.desc}}</span></p>';
         var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).addTo(map).bindPopup(marker{{node.id}}HTML);
 
     {%endfor%}
@@ -23,7 +23,7 @@
 {%for node in nodes%}
     <tr><td><strong>{{node.id}}</strong></td>
         <td>{{node.desc}}</td>
-        <td><span style="color:#{{node.status.severity.color}};">{{node.status.severity.desc}}</span></td>
+        <td><span style="color:#{{node.status.severity.color}};">{{node.status.desc}}</span></td>
     </tr>
 {%endfor%}
 </table>
