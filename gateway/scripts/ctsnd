@@ -1,0 +1,42 @@
+#! /bin/bash
+# /etc/init.d/ctsn
+
+# Put this in /etc/init.d in order for it to work, the run
+# update-rc.d ctsnd defaults
+
+### BEGIN INIT INFO
+# Provides: CTSNGateway
+# Required-Start: $remote_fs $syslog $Network mysql
+# Required-Stop: $remote_fs $syslog $Network mysql
+# Should-Start: 
+# Should-Stop: 
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: CTSN Gateway
+# Description: CTSN Gateway - controls the CTSN
+### END INIT INFO
+
+case "$1" in 
+start)
+
+logFile=/home/django/static/gateway.log.txt
+echo -e "\n\n\n" >> $logFile
+echo -e "####################################\n" >> $logFile
+date >> $logFile
+echo -e "" >> $logFile
+
+cd /home/seth/CTSN
+exec ./CTSNGateway &>> $logFile &
+;;
+stop)
+curl -X POST -A CTSN_Gateway --data shutdown=true http://localhost:9009/shutdown
+echo ""
+;;
+*)
+echo "Usage: /etc/init.d/ctsn (start|stop)"
+exit 1
+;;
+esac
+
+exit 0
+
