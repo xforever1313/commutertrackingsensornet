@@ -34,9 +34,19 @@ body {
     text-align: center;
 }
 
+#maintenance {
+    margin: 25px;
+    float: left;
+    clear: left;
+    margin-left: 3em;
+    font-size: 120%;
+    padding-left: 1em;
+    font-weight: bold;
+}
+
 #status {
     float: right;
-    clear: both;
+    clear: right;
     font-size: 120%;
     margin: 25px;
     font-weight: bold;

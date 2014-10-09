@@ -7,6 +7,12 @@
 </head>
 <body>
     <div id = "main">
+        {% if isMaintenance %}
+        <div id = "maintenance">
+            <p><strong>MAINTENANCE MODE</strong></p>
+            <p>Site down for non-staff members</p>
+        </div>
+        {%endif%}
         <div id = "status">
             <p><strong>Gateway Status: </strong>
                 <span style = "color:#{{status.getGatewayNodeStatus.severity.color}};">

@@ -17,5 +17,6 @@ urlpatterns = patterns('',
     url(r'^admin_maintenance.html$', 'ctsn_web.views.AdminMaintenanceView'),
     url(r'^login.html$', 'ctsn_web.views.LoginRequest'),
     url(r'^logout.html$', 'ctsn_web.views.LogoutRequest'),
-    url(r'^windbelt_result.html$', 'ctsn_web.views.WindbeltResultPage')
+    url(r'^windbelt_result.html$', 'ctsn_web.views.WindbeltResultPage'),
+    url(r'^maintenance.html$', 'ctsn_web.views.MaintenanceView')
 )

@@ -104,3 +104,23 @@ class WindbeltResult(models.Model):
     def __unicode__(self):
         return self.voltage
 
+class Website(models.Model):
+    desc = models.CharField(db_column = 'desc', max_length = 255)
+    status = models.ForeignKey('WebsiteStatus', db_column='status')
+    class Meta:
+        managed = True
+        db_table = 'website'
+
+    def __unicode__(self):
+        return self.desc
+
+class WebsiteStatus(models.Model):
+    desc = models.CharField(db_column = 'desc', max_length = 255)
+    severity = models.ForeignKey('StatusSeverity', db_column='status_severity')
+    class Meta:
+        managed = True
+        db_table = 'website_status'
+
+    def __unicode__(self):
+        return self.desc
+
