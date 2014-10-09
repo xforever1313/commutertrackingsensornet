@@ -31,6 +31,7 @@ bld
 *.exe
 *.pyc
 *.d
+*.crf
 
 # Packages #
 ############
@@ -69,6 +70,7 @@ Thumbs.db
 *.layout
 nbproject
 vsproject
+*.uvgui.*
 
 # Others #
 ##########
