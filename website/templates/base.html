@@ -8,7 +8,16 @@
 <body>
     <div id = "main">
         <div id = "status">
-
+            <p><strong>Gateway Status: </strong>
+                <span style = "color:#{{status.getGatewayNodeStatus.severity.color}};">
+                    {{status.getGatewayNodeStatus}}
+                </span>
+            </p>
+            <p><strong>Trail Status: </strong>
+                <span style = "color:#{{status.getTrailNodeStatus.color}};">
+                    {{status.getTrailNodeStatus}}
+                </span>
+            </p>
         </div>
 
         <div id = "navbar">

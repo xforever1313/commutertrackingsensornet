@@ -13,6 +13,26 @@ NavBarURLs = [('Home', 'index.html'), ('Node Status', 'node_status.html'),
 AdminBarURLs = [('Messages', 'admin_messages.html'),
               ('Maintenance', 'admin_maintenance.html')]
 
+class CtsnStatus():
+    def __init__(self):
+        self.nodes = Node.objects.all()
+        self.gatewayNode = self.nodes.get(id=1)
+        self.trailNodes = self.nodes.exclude(id=1)
+
+    def getGatewayNodeStatus(self):
+        return self.gatewayNode.status
+
+    def getTrailNodeStatus(self):
+        returnStatus = StatusSeverity.objects.get(id=1)
+
+        for node in self.trailNodes:
+            if (node.status.severity.id > returnStatus.severity.id and \
+                node.status.severity.id < 5):
+
+                returnStatus = node.status.severity
+
+        return returnStatus
+
 def HomeView(request):
     #If not authenticated, return to login
     if not request.user.is_authenticated():
@@ -24,7 +44,7 @@ def HomeView(request):
         urls = NavBarURLs[:-1]
 
     context = { 'NavBarURLs' : urls, 'pageID' : NavBarURLs[0][1], 
-                'title' : 'CTSN Home' }
+                'title' : 'CTSN Home', 'status' : CtsnStatus()}
     return render_to_response(NavBarURLs[0][1], context, context_instance=RequestContext(request))
 
 def AdminMessageView(request):
@@ -37,7 +57,7 @@ def AdminMessageView(request):
     errorMessages = ErrorLog.objects.all()
     context = { 'NavBarURLs' : NavBarURLs, 'pageID' : NavBarURLs[3][1],
                 'title' : 'CTSN Trail Node Log', 'AdminBarURLs' : AdminBarURLs,
-                'errorMessages' : errorMessages }
+                'errorMessages' : errorMessages, 'status' : CtsnStatus() }
 
     return render_to_response(NavBarURLs[3][1], context, context_instance=RequestContext(request))
 
@@ -53,7 +73,7 @@ def NodeStatusView(request):
 
     context = {'NavBarURLs' : urls, 'pageID' : NavBarURLs[1][1], 
                'title' : 'CTSN Node Status',
-               'nodes' : Node.objects.all()}
+               'nodes' : Node.objects.all(), 'status' : CtsnStatus()}
 
     return render_to_response(NavBarURLs[1][1], context, context_instance=RequestContext(request))
 
@@ -69,7 +89,7 @@ def NodeStatsView(request):
 
     context = {'NavBarURLs' : urls, 'pageID' : NavBarURLs[2][1], 
                'title' : 'CTSN Statistics',
-               'nodes' : Node.objects.all()}
+               'nodes' : Node.objects.all(), 'status' : CtsnStatus()}
 
     return render_to_response(NavBarURLs[2][1], context, context_instance=RequestContext(request))
 
@@ -82,7 +102,7 @@ def AdminMaintenanceView(request):
 
     context = {'NavBarURLs' : NavBarURLs, 'pageID' : AdminBarURLs[1][1], 
                'title' : 'CTSN Node Maintenance', 'AdminBarURLs' : AdminBarURLs,
-               'nodes' : Node.objects.all()}
+               'nodes' : Node.objects.all(), 'status' : CtsnStatus()}
 
     return render_to_response(AdminBarURLs[1][1], context, context_instance=RequestContext(request))
 
