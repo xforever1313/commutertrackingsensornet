@@ -12,7 +12,7 @@ db = mysql.connector.connect(user = MARIADB_USER,
                              host = "localhost",
                              database = "ctsn")
 
-curlProc = subprocess.Popen(['curl', '-sL', '-w', '%{http_code}', "http://localhost:" + str(GATEWAY_COMMAND_PORT), "-o", "/dev/null"], 
+curlProc = subprocess.Popen(['curl', '-sL', '-w', '%{http_code}', '-A', USER_AGENT, "http://localhost:" + str(GATEWAY_COMMAND_PORT), "-o", "/dev/null"], 
                             stdout = subprocess.PIPE, stderr=subprocess.PIPE)
 
 status = int(curlProc.communicate()[0])
