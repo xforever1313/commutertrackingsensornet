@@ -1,0 +1,11 @@
+*.txt
+*.lst
+*.dep
+*.map
+*.hex
+*.htm
+*.Scr
+*.lib
+video/spifi
+video/m0
+video/m0_image.c
