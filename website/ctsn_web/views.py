@@ -130,6 +130,16 @@ def AdminMaintenanceView(request):
     elif not request.user.is_staff:
         return HttpResponse('Unauthorized', status=401)
 
+    if (request.method == 'POST'):
+        if ('disable_maintenance' in request.POST):
+            website = Website.objects.get(id=1)
+            website.status = WebsiteStatus.objects.get(id=1)
+            website.save()
+        elif ('enable_maintenance' in request.POST):
+            website = Website.objects.get(id=1)
+            website.status = WebsiteStatus.objects.get(id=2)
+            website.save()
+
     context = {'NavBarURLs' : NavBarURLs, 'pageID' : AdminBarURLs[1][1], 
                'title' : 'CTSN Node Maintenance', 'AdminBarURLs' : AdminBarURLs,
                'nodes' : Node.objects.all(), 'status' : CtsnStatus(),

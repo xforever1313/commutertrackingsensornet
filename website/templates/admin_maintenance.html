@@ -35,5 +35,19 @@ function powerOff(nodeID) {
 
 </table>
 
+<div style = "text-align:left;">
+<h2>Website Maintenance</h2>
+
+<form action="" method="post">
+{%csrf_token%}
+{%if isMaintenance %}
+<p><input type = "submit" alt = "Disable Maintenance Mode" name = "disable_maintenance" value = "Disable Maintenance Mode"></p>
+{%else%}
+<p><input type = "submit" alt = "Enable Maintenance Mode" name = "enable_maintenance" value = "Enable Maintenance Mode"></p>
+{%endif%}
+</form>
+
+</div>
+
 {%endblock%}
 
