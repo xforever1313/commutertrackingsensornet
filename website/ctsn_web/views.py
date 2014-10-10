@@ -135,10 +135,18 @@ def AdminMaintenanceView(request):
             website = Website.objects.get(id=1)
             website.status = WebsiteStatus.objects.get(id=1)
             website.save()
+
+            errorMessage = ErrorMessages.objects.get(id=4)
+            query = ErrorLog(node=Node.objects.get(id=1), message=errorMessage)
+            query.save()
         elif ('enable_maintenance' in request.POST):
             website = Website.objects.get(id=1)
             website.status = WebsiteStatus.objects.get(id=2)
             website.save()
+
+            errorMessage = ErrorMessages.objects.get(id=3)
+            query = ErrorLog(node=Node.objects.get(id=1), message=errorMessage)
+            query.save()
 
     context = {'NavBarURLs' : NavBarURLs, 'pageID' : AdminBarURLs[1][1], 
                'title' : 'CTSN Node Maintenance', 'AdminBarURLs' : AdminBarURLs,
