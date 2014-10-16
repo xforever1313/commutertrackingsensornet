@@ -5,6 +5,7 @@
     #define Linux //Override the Linux namespace to the global namespace
 #endif
 
+#include <cstdint>
 #include <fcntl.h>          //Used for UART
 #include <sys/signal.h>     //Used for interrupt
 #include <termios.h>        //Used for UART
@@ -67,7 +68,7 @@ void Uart::open (const std::string &file) {
                 //  PARODD - Odd parity (else even)
                 struct termios options;
                 tcgetattr(m_uartFile, &options);
-                options.c_cflag = B115200 | CS8 | CLOCAL | CREAD;     //<Set baud rate
+                options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;     //<Set baud rate
                 options.c_iflag = IGNPAR;
                 options.c_oflag = 0;
                 options.c_lflag = 0;
@@ -94,7 +95,21 @@ void Uart::send (const std::string &str) {
     }
 }
 
-std::string Uart::recv() {
+void Uart::send (const std::vector<std::uint8_t> &data) {
+    if (m_uartFile == Uart::NOT_OPEN) {
+        throw std::runtime_error(NOT_OPEN_ERROR_MESSAGE);
+    }
+    else {
+        int byteCount = Linux::write(m_uartFile, data.data(), data.size());
+
+        // write returns 0 if no bytes were written, or less than zero if an error occured.
+        if (byteCount < 0) {
+            throw std::runtime_error(SEND_ERROR_MESSAGE);
+        }
+    }
+}
+
+std::string Uart::recvString() {
     std::string ret;
     if (m_uartFile == Uart::NOT_OPEN) {
         throw std::runtime_error(NOT_OPEN_ERROR_MESSAGE);
@@ -107,6 +122,23 @@ std::string Uart::recv() {
         }
         buffer[bytesRead] = '\0';
         ret = buffer;
+    }
+
+    return ret;
+}
+
+std::vector<std::uint8_t> Uart::recvBinary() {
+    std::vector<uint8_t> ret;
+    if (m_uartFile == Uart::NOT_OPEN) {
+        throw std::runtime_error(NOT_OPEN_ERROR_MESSAGE);
+    }
+    else {
+        std::vector<uint8_t> buffer(BUFFER_SIZE);
+        int bytesRead = Linux::read(m_uartFile, static_cast<void*>(buffer.data()), buffer.size());
+        if (bytesRead < 0) {
+            throw std::runtime_error(RECV_ERROR_MESSAGE);
+        }
+        ret = std::vector<uint8_t>(buffer.begin(), buffer.begin() + bytesRead);
     }
 
     return ret;

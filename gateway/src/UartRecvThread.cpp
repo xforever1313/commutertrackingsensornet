@@ -48,7 +48,7 @@ void UartRecvThread::run() {
     do {
         try {
             m_dataSemaphore.wait();
-            std::string message = m_uart->recv();
+            std::string message = m_uart->recvString();
 
             m_outLogger.writeLine(MESSAGE_PREFIX + message);
         }

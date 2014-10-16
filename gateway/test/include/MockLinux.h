@@ -9,6 +9,7 @@ extern int openReturn;
 extern int readReturn;
 extern int writeReturn;
 extern int closeReturn;
+extern void *readReturnBuffer;
 
 int open (const char *c, int flags);
 size_t write (int file, const void *buffer, size_t bytes);

@@ -47,7 +47,7 @@ TEST(UartRecvThreadTest, runSuccessTest) {
 
     testing::InSequence dummy;
 
-    EXPECT_CALL(*m_mockUart, recv())
+    EXPECT_CALL(*m_mockUart, recvString())
         .WillOnce(testing::Return(str1));
 
     m_uut->start();
@@ -68,7 +68,7 @@ TEST(UartRecvThreadTest, runFailTest) {
 
     testing::InSequence dummy;
 
-    EXPECT_CALL(*m_mockUart, recv())
+    EXPECT_CALL(*m_mockUart, recvString())
         .WillOnce(testing::Throw(std::runtime_error(errorMessage)));
 
     m_uut->start();

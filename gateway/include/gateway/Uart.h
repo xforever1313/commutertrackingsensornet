@@ -1,6 +1,7 @@
 #ifndef PIUART_H
 #define PIUART_H
 
+#include <cstdint>
 #include <functional>
 #include <stdexcept>
 #include <string>
@@ -27,10 +28,16 @@ class Uart : public UartInterface {
         void open (const std::string &file) override;
 
         /**
+         * \brief sends a string of characters to the uart.
          * \throw std::runtime_error if file is not open, or can not be written to
          */
         void send (const std::string &str) override;
 
+        /**
+         * \brief Sends raw binary data to the uart.
+         * \throw std::runtime_error if file is not open, or can not be written to
+         */
+         void send (const std::vector<std::uint8_t> &data) override;
 
         /**
          * \brief Gets up to 255 characters from the UART's receive.
@@ -38,7 +45,16 @@ class Uart : public UartInterface {
          * \throw std::runtime_error if file is not open, or can not receive data
          * \return A string of up to 255 characters.  Returns empty string when there is nothing left to read.
          */
-        std::string recv() override;
+         std::string recvString() override;
+
+        /**
+         * \brief Gets up to 255 bytes from the UART's receive.
+         * \details it is recommended to put this in a while loop until an emptry vector is returned.
+         * \throw std::runtime_error if file is not open, or can not receive data
+         * \warning unlike recvString(), no null character is appended to the returned vector.
+         * \return A vector of up to 255 bytes.  Returns empty vector when there is nothing left to read.
+         */
+         std::vector<std::uint8_t> recvBinary() override;
 
         /**
          * \brief closes the Uart
