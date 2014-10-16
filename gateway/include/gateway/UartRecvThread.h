@@ -2,6 +2,7 @@
 #define UARTRECVTHREAD_H
 
 #include "gateway/UartInterface.h"
+#include "gateway/UartRecvCallbackInterface.h"
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
 #include "SMutex.h"
@@ -16,7 +17,7 @@ class UartRecvThread : public OS::SThread {
          * \note Constructor only constructs object, start() must be called before the thread begins.
          */
         UartRecvThread(UartInterface *uart,
-                       Common::IO::LoggerBase &outLogger = Common::IO::ConsoleLogger::out,
+                       UartRecvCallbackInterface *callback,
                        Common::IO::LoggerBase &errorLogger = Common::IO::ConsoleLogger::err);
 
         /**
@@ -35,13 +36,11 @@ class UartRecvThread : public OS::SThread {
         bool isAlive();
 
     private:
-        static const std::string MESSAGE_PREFIX;
-
         UartRecvThread() = delete;
         void run() override;
 
         UartInterface *m_uart;
-        Common::IO::LoggerBase &m_outLogger;
+        UartRecvCallbackInterface *m_callback;
         Common::IO::LoggerBase &m_errorLogger;
         OS::SSemaphore m_dataSemaphore;
         bool m_isAlive;

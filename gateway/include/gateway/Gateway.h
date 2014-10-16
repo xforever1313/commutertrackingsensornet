@@ -9,6 +9,7 @@
 #include "gateway/ShutdownInterface.h"
 #include "gateway/UartInterface.h"
 #include "gateway/UartRecvThread.h"
+#include "gateway/XBeeController.h"
 #include "io/LoggerBase.h"
 #include "SMutex.h"
 #include "SSemaphore.h"
@@ -36,6 +37,7 @@ class Gateway : public ShutdownInterface {
         Common::IO::LoggerBase *m_output;
 
         UartInterface *m_uart;
+        XBeeController *m_xbeeController;
         UartRecvThread *m_recvThread;
 
         OS::SMutex m_shutdownMutex;

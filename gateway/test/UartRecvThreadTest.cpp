@@ -8,14 +8,17 @@
 #include "gateway/UartRecvThread.h"
 #include "io/StringLogger.h"
 #include "MockUart.h"
+#include "MockUartRecvCallback.h"
 
 TEST_GROUP(UartRecvThreadTest) {
 
     TEST_SETUP() {
-        m_outputLogger = new Common::IO::StringLogger();
+        m_data = {0x00, 0x01, 0x02, 0xFF};
+
         m_errorLogger = new Common::IO::StringLogger();
         m_mockUart = new testing::StrictMock<Gateway::MockUart>();
-        m_uut = new Gateway::UartRecvThread(m_mockUart, *m_outputLogger,
+        m_callback = new testing::StrictMock<Gateway::MockUartRecvCallback>();
+        m_uut = new Gateway::UartRecvThread(m_mockUart, m_callback,
                                             *m_errorLogger);
 
         CHECK(m_uut->m_isAlive);
@@ -24,14 +27,16 @@ TEST_GROUP(UartRecvThreadTest) {
 
     TEST_TEARDOWN() {
         delete m_uut;
+        delete m_callback;
         delete m_mockUart;
         delete m_errorLogger;
-        delete m_outputLogger;
     }
 
-    Common::IO::StringLogger *m_outputLogger;
+    std::vector<std::uint8_t> m_data;
+
     Common::IO::StringLogger *m_errorLogger;
     testing::StrictMock<Gateway::MockUart> *m_mockUart;
+    testing::StrictMock<Gateway::MockUartRecvCallback> *m_callback;
     Gateway::UartRecvThread *m_uut;
 };
 
@@ -43,21 +48,18 @@ TEST(UartRecvThreadTest, killTest) {
 }
 
 TEST(UartRecvThreadTest, runSuccessTest) {
-    std::string str1 = "Hello ";
 
     testing::InSequence dummy;
 
-    EXPECT_CALL(*m_mockUart, recvString())
-        .WillOnce(testing::Return(str1));
+    EXPECT_CALL(*m_mockUart, recvBinary())
+        .WillOnce(testing::Return(m_data));
+
+    EXPECT_CALL(*m_callback, addData(m_data));
 
     m_uut->start();
     m_uut->dataReady();
     m_uut->kill();
     m_uut->join();
-
-    // Ensure we got the right message
-    CHECK_EQUAL(m_outputLogger->getString(), Gateway::UartRecvThread::MESSAGE_PREFIX + \
-                                             str1 + "\n");
 
     // Ensure no errors
     CHECK_EQUAL(m_errorLogger->getString(), "");
@@ -68,7 +70,7 @@ TEST(UartRecvThreadTest, runFailTest) {
 
     testing::InSequence dummy;
 
-    EXPECT_CALL(*m_mockUart, recvString())
+    EXPECT_CALL(*m_mockUart, recvBinary())
         .WillOnce(testing::Throw(std::runtime_error(errorMessage)));
 
     m_uut->start();
@@ -76,10 +78,6 @@ TEST(UartRecvThreadTest, runFailTest) {
     m_uut->kill();
     m_uut->join();
 
-    // Ensure nothing was printed to stdout
-    CHECK_EQUAL(m_outputLogger->getString(), "");
-
     // Ensure we get the error message back
-    CHECK_EQUAL(m_errorLogger->getString(), Gateway::UartRecvThread::MESSAGE_PREFIX + \
-                                            errorMessage + "\n");
+    CHECK(m_errorLogger->getString().find(errorMessage + "\n") != std::string::npos);
 }

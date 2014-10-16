@@ -31,7 +31,8 @@ Gateway::Gateway() :
     m_input(&std::cin),
     m_output(&Common::IO::ConsoleLogger::out),
     m_uart(new Uart(RxSignal)),
-    m_recvThread(new UartRecvThread(m_uart)),
+    m_xbeeController(new XBeeController),
+    m_recvThread(new UartRecvThread(m_uart, m_xbeeController)),
     m_socket(nullptr),
     m_server(nullptr),
     m_mariadb(nullptr)
@@ -43,6 +44,7 @@ Gateway::~Gateway() {
     delete m_server;
     delete m_socket;
     delete m_recvThread;
+    delete m_xbeeController;
     delete m_uart;
     delete m_eventExecutor;
     delete m_mariadb; //Delete this last, as some left over events may use it.

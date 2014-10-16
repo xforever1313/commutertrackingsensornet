@@ -1,19 +1,18 @@
 #include <stdexcept>
 
 #include "gateway/UartInterface.h"
+#include "gateway/UartRecvCallbackInterface.h"
 #include "gateway/UartRecvThread.h"
 #include "io/LoggerBase.h"
 #include "SSemaphore.h"
 
 namespace Gateway {
 
-const std::string UartRecvThread::MESSAGE_PREFIX = "UART RX>";
-
 UartRecvThread::UartRecvThread(UartInterface *uart,
-                               Common::IO::LoggerBase &outLogger /*= Common::IO::ConsoleLogger::out*/,
+                               UartRecvCallbackInterface *callback,
                                Common::IO::LoggerBase &errorLogger /*= Common::IO::ConsoleLogger::err*/) :
     m_uart(uart),
-    m_outLogger(outLogger),
+    m_callback(callback),
     m_errorLogger(errorLogger),
     m_isAlive(true)
 {
@@ -48,12 +47,11 @@ void UartRecvThread::run() {
     do {
         try {
             m_dataSemaphore.wait();
-            std::string message = m_uart->recvString();
-
-            m_outLogger.writeLine(MESSAGE_PREFIX + message);
+            std::vector<std::uint8_t> data = m_uart->recvBinary();
+            m_callback->addData(data);
         }
         catch(const std::runtime_error &e) {
-            m_errorLogger.writeLine(MESSAGE_PREFIX + e.what());
+            m_errorLogger.writeLineWithTimeStamp(e.what());
         }
 
     } while(isAlive());
