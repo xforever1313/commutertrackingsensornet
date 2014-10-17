@@ -37,14 +37,13 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
             GOT_LENGTH1,
             GOT_LENGTH2,
             IGNORE_OPTIONS,
-            PARSE_MESSAGE,
+            PARSE_PAYLOAD,
             CHECK_CHECKSUM,
-            SEND_COMMAND,
-            BAD_CHECKSUM,
             INCOMPLETE_MESSAGE
         };
 
         static const uint8_t START_CHARACTER;
+        static const uint8_t BYTES_TO_IGNORE; /// <Bytes to ignore during the ignore state
 
         /**
          * \brief Thread loop
@@ -56,9 +55,23 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
          */
         void handleData();
         void handleStartupState();
+        void handleMessageStartState();
+        void handleGotLength1State();
+        void handleGotLength2State();
+        void handleIgnoreOptionsState();
+        void handleParsePayloadState();
+        void handleCheckCheckSumState();
+
+        void reset();
 
         std::queue<std::uint8_t> m_data;
         OS::SSemaphore m_dataSemaphore;
+
+        std::uint16_t m_dataLength;
+        std::uint8_t m_checkSumTotal;
+        std::uint16_t m_bytesProcessed; ///< Bytes processed AFTER the length states.
+
+        std::string m_payload;
 
         bool m_isAlive;
         OS::SMutex m_isAliveMutex;
