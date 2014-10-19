@@ -1,19 +1,23 @@
 #include <cstdint>
 #include <vector>
 
+#include "gateway/XBeeCallbackInterface.h"
 #include "gateway/XBeeController.h"
 
 namespace Gateway {
 
 const uint8_t XBeeController::START_CHARACTER = '~';
-const uint8_t XBeeController::BYTES_TO_IGNORE = 14;
 
-XBeeController::XBeeController() :
+// Ignore start char, length, address, and option bytes.
+const uint8_t XBeeController::BYTES_TO_IGNORE = 17;
+
+XBeeController::XBeeController(XBeeCallbackInterface *callbacks) :
     m_dataLength(0),  // Put in bad state until everything begins
     m_checkSumTotal(0),
     m_bytesProcessed(0),
     m_isAlive(true),
-    m_currentState(STARTUP)
+    m_currentState(STARTUP),
+    m_callbacks(callbacks)
 {
 
 }
@@ -97,12 +101,14 @@ void XBeeController::handleStartupState() {
     m_data.pop();
     if (data == START_CHARACTER) {
         m_currentState = MSG_START;
+        m_bytesProcessed.push_back(data);
     }
 }
 
 void XBeeController::handleMessageStartState() {
     std::uint16_t data = m_data.front();
     m_data.pop();
+    m_bytesProcessed.push_back(data);
     /// \todo insert incomplete state
 
     //Get the MSB of the length
@@ -114,6 +120,8 @@ void XBeeController::handleMessageStartState() {
 void XBeeController::handleGotLength1State() {
     std::uint8_t data = m_data.front();
     m_data.pop();
+    m_bytesProcessed.push_back(data);
+
     /// \todo insert incomplete state
 
     //Get the LSB of the length
@@ -124,20 +132,22 @@ void XBeeController::handleGotLength1State() {
 void XBeeController::handleGotLength2State() {
     std::uint8_t data = m_data.front();
     m_data.pop();
+    m_bytesProcessed.push_back(data);
+
     /// \todo insert incomplete state
 
     m_checkSumTotal += data;
     m_currentState = IGNORE_OPTIONS;
-    ++m_bytesProcessed;
 }
 
 void XBeeController::handleIgnoreOptionsState() {
     std::uint8_t data = m_data.front();
     m_data.pop();
+    m_bytesProcessed.push_back(data);
 
     /// \todo insert incomplete state
     m_checkSumTotal += data;
-    if (++m_bytesProcessed == BYTES_TO_IGNORE) {
+    if (m_bytesProcessed.size() == BYTES_TO_IGNORE) {
         m_currentState = PARSE_PAYLOAD;
     }
 }
@@ -145,10 +155,14 @@ void XBeeController::handleIgnoreOptionsState() {
 void XBeeController::handleParsePayloadState() {
     std::uint8_t data = m_data.front();
     m_data.pop();
+    m_bytesProcessed.push_back(data);
 
     /// \todo insert incomplete state
     m_checkSumTotal += data;
-    if (++m_bytesProcessed == (m_dataLength)) {
+
+    // data length + 3, as we need to add the start character,
+    // and the two length characters.
+    if (m_bytesProcessed.size() == static_cast<size_t>(m_dataLength + 3)) {
         m_currentState = CHECK_CHECKSUM;
     }
 
@@ -158,6 +172,7 @@ void XBeeController::handleParsePayloadState() {
 void XBeeController::handleCheckCheckSumState() {
     std::uint8_t data = m_data.front();
     m_data.pop();
+    m_bytesProcessed.push_back(data);
 
     /// \todo check for incomplete state AFTER we check
     ///       the checksum.
@@ -175,7 +190,7 @@ void XBeeController::handleCheckCheckSumState() {
 void XBeeController::reset() {
     m_currentState = STARTUP;
     m_dataLength = 0;
-    m_bytesProcessed = 0;
+    m_bytesProcessed.clear();
     m_checkSumTotal = 0;
 }
 

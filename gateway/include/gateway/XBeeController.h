@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "gateway/XBeeCallbackInterface.h"
 #include "gateway/UartRecvCallbackInterface.h"
 #include "SSemaphore.h"
 #include "SThread.h"
@@ -18,7 +19,7 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         /**
          * \note thread will not start until start() is called.
          */
-        XBeeController();
+        XBeeController(XBeeCallbackInterface *callbacks);
 
         /**
          * \brief kills AND joins the thread.
@@ -69,7 +70,7 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
 
         std::uint16_t m_dataLength;
         std::uint8_t m_checkSumTotal;
-        std::uint16_t m_bytesProcessed; ///< Bytes processed AFTER the length states.
+        std::vector<std::uint8_t> m_bytesProcessed;
 
         std::string m_payload;
 
@@ -77,6 +78,8 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         OS::SMutex m_isAliveMutex;
 
         State m_currentState;
+
+        XBeeCallbackInterface *m_callbacks;
 };
 
 }

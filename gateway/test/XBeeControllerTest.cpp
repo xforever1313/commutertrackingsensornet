@@ -5,23 +5,27 @@
 #include "UnitTest.h"
 
 #include "gateway/XBeeController.h"
+#include "MockXBeeCallback.h"
 
 TEST_GROUP(XBeeControllerTest) {
     TEST_SETUP() {
-        m_uut = new Gateway::XBeeController();
+        m_callbacks = new testing::StrictMock<Gateway::MockXBeeCallback>();
+        m_uut = new Gateway::XBeeController(m_callbacks);
 
         CHECK(m_uut->isAlive());
         CHECK(m_uut->m_isAlive);
         CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
         CHECK_EQUAL(m_uut->m_dataLength, 0);
         CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
-        CHECK_EQUAL(m_uut->m_bytesProcessed, 0);
+        CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
+        delete m_callbacks;
     }
 
+    testing::StrictMock<Gateway::MockXBeeCallback> *m_callbacks;
     Gateway::XBeeController *m_uut;
 };
 
@@ -77,6 +81,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 1);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 1);
     CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK(m_uut->m_bytesProcessed.empty());
 
     // Second character: Garbage data.  Should remain in startup state.
     m_uut->run();
@@ -84,6 +89,8 @@ TEST(XBeeControllerTest, verboseStateTest) {
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 2);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 2);
     CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK(m_uut->m_bytesProcessed.empty());
+
 
     // Third Character: Start character.  Should go to MSG_START state.
     m_uut->run();
@@ -91,6 +98,9 @@ TEST(XBeeControllerTest, verboseStateTest) {
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 3);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 3);
     CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], data[2]);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1);
+
 
     // Forth Character: MSB Length.  Should go to LENGTH1 State
     m_uut->run();
@@ -98,6 +108,8 @@ TEST(XBeeControllerTest, verboseStateTest) {
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 4);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 4);
     CHECK_EQUAL(m_uut->m_dataLength, 0); // Length is still zero.
+    CHECK_EQUAL(m_uut->m_bytesProcessed[1], data[3]);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 2);
 
 
     // Fifth Character: LSB Length.  Should go into LENGTH2 State
@@ -106,6 +118,8 @@ TEST(XBeeControllerTest, verboseStateTest) {
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 5);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 5);
     CHECK_EQUAL(m_uut->m_dataLength, 0x16); // Length is now what is expected.
+    CHECK_EQUAL(m_uut->m_bytesProcessed[2], data[4]);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 3);
 
 
     std::uint8_t runningCheckSum = 0;
@@ -127,7 +141,8 @@ TEST(XBeeControllerTest, verboseStateTest) {
         CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - i - 1);
         CHECK_EQUAL(m_uut->m_data.size(), data.size() - i - 1);
         CHECK_EQUAL(m_uut->m_checkSumTotal, runningCheckSum);
-        CHECK_EQUAL(m_uut->m_bytesProcessed, i - 4);
+        CHECK_EQUAL(m_uut->m_bytesProcessed[i - 2], data[i]);
+        CHECK_EQUAL(m_uut->m_bytesProcessed.size(), i - 1); 
     }
 
     // Characters 20 - 27, The payload.  The data we actually care about.
@@ -146,7 +161,8 @@ TEST(XBeeControllerTest, verboseStateTest) {
         CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - i - 1);
         CHECK_EQUAL(m_uut->m_data.size(), data.size() - i - 1);
         CHECK_EQUAL(m_uut->m_checkSumTotal, runningCheckSum);
-        CHECK_EQUAL(m_uut->m_bytesProcessed, i - 4);
+        CHECK_EQUAL(m_uut->m_bytesProcessed[i - 2], data[i]);
+        CHECK_EQUAL(m_uut->m_bytesProcessed.size(), i - 1);
     }
 
     // LAST CHARACTER! Ensure the checksum is correct.
@@ -166,7 +182,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
 
     // Everything should reset
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
 }
 

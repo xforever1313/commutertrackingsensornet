@@ -10,6 +10,7 @@
 #include "gateway/Uart.h"
 #include "gateway/UartRecvThread.h"
 #include "gateway/UartTxEvent.h"
+#include "gateway/XBeeCallbacks.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "io/InputReader.h"
 #include "Secrets.py"
@@ -31,7 +32,8 @@ Gateway::Gateway() :
     m_input(&std::cin),
     m_output(&Common::IO::ConsoleLogger::out),
     m_uart(new Uart(RxSignal)),
-    m_xbeeController(new XBeeController),
+    m_xbeeCallbacks(new XBeeCallbacks()),
+    m_xbeeController(new XBeeController(m_xbeeCallbacks)),
     m_recvThread(new UartRecvThread(m_uart, m_xbeeController)),
     m_socket(nullptr),
     m_server(nullptr),
@@ -45,6 +47,7 @@ Gateway::~Gateway() {
     delete m_socket;
     delete m_recvThread;
     delete m_xbeeController;
+    delete m_xbeeCallbacks;
     delete m_uart;
     delete m_eventExecutor;
     delete m_mariadb; //Delete this last, as some left over events may use it.
