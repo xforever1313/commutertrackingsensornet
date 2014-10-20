@@ -8,8 +8,8 @@ namespace Gateway {
 
 const uint8_t XBeeController::START_CHARACTER = '~';
 
-// Ignore start char, length, address, and option bytes.
-const uint8_t XBeeController::BYTES_TO_IGNORE = 17;
+// Include start char, length, address, and option bytes.
+const uint8_t XBeeController::BYTES_TO_IGNORE = 15;
 
 XBeeController::XBeeController(XBeeCallbackInterface *callbacks) :
     m_dataLength(0),  // Put in bad state until everything begins
@@ -27,9 +27,9 @@ XBeeController::~XBeeController() {
     join(); // Wait for run loop to exit.
 
     // Handle the remaining pieces of data
-    while (!m_data.empty()) {
-        handleData();
-    }
+    //while (!m_data.empty()) {
+    //    handleData();
+    //}
 }
 
 void XBeeController::addData(const std::vector<std::uint8_t> &data) {
