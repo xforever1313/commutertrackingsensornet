@@ -84,6 +84,7 @@ void Gateway::start() {
 
         try {
             m_uart->open("/dev/ttyAMA0");
+            m_xbeeController->start();
             m_recvThread->start();
         }
         catch(const std::runtime_error &e) {
@@ -103,6 +104,7 @@ void Gateway::start() {
         m_server->stop();
     }
     m_recvThread->kill();
+    m_xbeeController->kill();
     m_uart->close();
 }
 
