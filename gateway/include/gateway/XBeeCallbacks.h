@@ -23,6 +23,7 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         void successfulParse(const std::string &payload) override;
         void incompleteMessage(const std::vector<std::uint8_t> &badData) override;
         void badChecksum(const std::vector<std::uint8_t> &badData) override;
+        void badState(const std::vector<std::uint8_t> &badData) override;
 
     private:
         /**
@@ -35,6 +36,7 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         static const std::string SUCCESS_MESSAGE;
         static const std::string INCOMPLETE_MESSAGE;
         static const std::string BAD_CHECKSUM_MESSAGE;
+        static const std::string BAD_STATE_MESSAGE;
 
         Common::IO::LoggerBase &m_outLogger;
         Common::IO::LoggerBase &m_errLogger;

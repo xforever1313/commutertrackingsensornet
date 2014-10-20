@@ -29,6 +29,12 @@ class XBeeCallbackInterface {
          * \param badData The data that caused the bad message
          */
         virtual void badChecksum(const std::vector<std::uint8_t> &badData) = 0;
+
+        /**
+         * \brief Called if the state somehow ends up bad
+         * \param badData The data that may have caused the bad message
+         */
+        virtual void badState(const std::vector<std::uint8_t> &badData) = 0;
 };
 
 }

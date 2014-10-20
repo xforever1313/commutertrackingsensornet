@@ -12,6 +12,7 @@ namespace Gateway {
 const std::string XBeeCallbacks::SUCCESS_MESSAGE = "XBee Message -\n\t";
 const std::string XBeeCallbacks::INCOMPLETE_MESSAGE = "Incomplete XBee Message -\n\t";
 const std::string XBeeCallbacks::BAD_CHECKSUM_MESSAGE = "Bad XBee Checksum -\n\t";
+const std::string XBeeCallbacks::BAD_STATE_MESSAGE = "Bad XBee Controller State -\n\t";
 
 XBeeCallbacks::XBeeCallbacks(Common::IO::LoggerBase &outLogger,/* = Common::IO::ConsoleLogger::out */
                              Common::IO::LoggerBase &errLogger/* = Common::IO::ConsoleLogger::err */) :
@@ -34,6 +35,10 @@ void XBeeCallbacks::incompleteMessage(const std::vector<std::uint8_t> &badData) 
 
 void XBeeCallbacks::badChecksum(const std::vector<std::uint8_t> &badData) {
      m_errLogger.writeLineWithTimeStamp(BAD_CHECKSUM_MESSAGE + dumpData(badData));
+}
+
+void XBeeCallbacks::badState(const std::vector<std::uint8_t> &badData) {
+     m_errLogger.writeLineWithTimeStamp(BAD_STATE_MESSAGE + dumpData(badData));
 }
 
 std::string XBeeCallbacks::dumpData(const std::vector<std::uint8_t> &badData) {

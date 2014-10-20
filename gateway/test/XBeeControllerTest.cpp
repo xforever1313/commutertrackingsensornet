@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -18,6 +19,7 @@ TEST_GROUP(XBeeControllerTest) {
         CHECK_EQUAL(m_uut->m_dataLength, 0);
         CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
         CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
+        CHECK_EQUAL(m_uut->m_payload, "");
     }
 
     TEST_TEARDOWN() {
@@ -33,6 +35,7 @@ TEST(XBeeControllerTest, killTest) {
     m_uut->kill();
     CHECK(!m_uut->isAlive());
     CHECK(!m_uut->m_isAlive);
+    CHECK(m_uut->m_dataSemaphore.isShutdown());
 }
 
 TEST(XBeeControllerTest, verboseStateTest) {
@@ -67,7 +70,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
         0x7c            // Checksum
     };
 
-    m_uut->kill(); // Ensure the run loop does not go forever
+    m_uut->kill(false); // Ensure the run loop does not go forever
     m_uut->addData(data); // Add the data to the queue
 
     // Ensure the semaphore count and the number of stuff in the data
@@ -173,7 +176,9 @@ TEST(XBeeControllerTest, verboseStateTest) {
     // Ensure the uut's checksum is what we expect
     CHECK_EQUAL(0xff - m_uut->m_checkSumTotal, 0x7c);
 
-    /// \todo Add an expect call to a successfull checksum.
+    // Ensure the callback will get called when the checksum is good.
+    EXPECT_CALL(*m_callbacks, successfulParse("Hello :)"));
+
     m_uut->run();  // Run the last state.
 
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
@@ -184,7 +189,290 @@ TEST(XBeeControllerTest, verboseStateTest) {
     CHECK_EQUAL(m_uut->m_dataLength, 0);
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
 }
+
+/**
+ * \brief tests to see that a bad checksum will put the thing in the right state.
+ */
+TEST(XBeeControllerTest, badChecksumTest) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER, // Start Character
+        0x00,           // Length1
+        0x16,           // Length of 22
+        0x10,           // Options
+        0x01,           // More options
+        0x00,           // Address
+        0x00, 
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0xff,
+        0xff,
+        0Xff,           // Place holder1
+        0xfe,           // Place holder2
+        0x00,           // Options
+        0x00,           // Options
+        'H',            // Payload
+        'e',
+        'l',
+        'l',
+        'o',
+        ' ',
+        ':',
+        ')',
+        0x7b            // Invaid Checksum
+    };
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, badChecksum(data))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should reset
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+}
+
+/////
+/// Incomplete Message Tests
+/////
+TEST(XBeeControllerTest, incompleteMessageStartupState) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeController::START_CHARACTER // Premature start char
+    };
+
+    // Get the expected data to be passed through
+    std::vector<std::uint8_t> expectedPrintedData = data;
+    expectedPrintedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedPrintedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the msg_start state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
+    CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+}
+
+TEST(XBeeControllerTest, incompleteMessageGotLength1State) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        0x00,
+        Gateway::XBeeController::START_CHARACTER // Premature start char
+    };
+
+    // Get the expected data to be passed through
+    std::vector<std::uint8_t> expectedPrintedData = data;
+    expectedPrintedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedPrintedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the msg_start state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
+    CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+}
+
+TEST(XBeeControllerTest, incompleteMessageGotLength2State) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        0x00,
+        0x16,
+        Gateway::XBeeController::START_CHARACTER // Premature start char
+    };
+
+    // Get the expected data to be passed through
+    std::vector<std::uint8_t> expectedPrintedData = data;
+    expectedPrintedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedPrintedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the msg_start state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
+    CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+}
+
+TEST(XBeeControllerTest, incompleteMessageIgnoreOptionsState) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        0x00,
+        0x16,
+        0x10,           // Options
+        0x01,           // More options
+        0x00,           // Address
+        0x00, 
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0xff,
+        Gateway::XBeeController::START_CHARACTER // Premature start char
+    };
+
+    // Get the expected data to be passed through
+    std::vector<std::uint8_t> expectedPrintedData = data;
+    expectedPrintedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedPrintedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the msg_start state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
+    CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+}
+
+TEST(XBeeControllerTest, incompleteMessageParsePayloadState) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        0x00,
+        0x16,
+        0x10,           // Options
+        0x01,           // More options
+        0x00,           // Address
+        0x00, 
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0xff,
+        0xff,
+        0Xff,           // Place holder1
+        0xfe,           // Place holder2
+        0x00,           // Options
+        0x00,           // Options
+        'H',            // Payload
+        'e',
+        'l',
+        'l',
+        'o',
+        ' ',
+        Gateway::XBeeController::START_CHARACTER // Premature start char
+    };
+
+    // Get the expected data to be passed through
+    std::vector<std::uint8_t> expectedPrintedData = data;
+    expectedPrintedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedPrintedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the msg_start state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
+    CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+}
+
+TEST(XBeeControllerTest, incompleteMessageCheckCheckSumState) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        0x00,
+        0x16,
+        0x10,           // Options
+        0x01,           // More options
+        0x00,           // Address
+        0x00, 
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0xff,
+        0xff,
+        0Xff,           // Place holder1
+        0xfe,           // Place holder2
+        0x00,           // Options
+        0x00,           // Options
+        'H',            // Payload
+        'e',
+        'l',
+        'l',
+        'o',
+        ' ',
+        ':',
+        ')',
+        Gateway::XBeeController::START_CHARACTER // Premature start char
+    };
+
+    std::vector<std::uint8_t> expectedPrintedData = data;
+    expectedPrintedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedPrintedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the msg_start state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
+    CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+}
+
+
 
 /**
  * \brief Ensures that handleMessageStartState will make the MSB correct
@@ -208,4 +496,85 @@ TEST(XBeeControllerTest, handleGotLength1StateLSBTest) {
 
     CHECK_EQUAL(m_uut->m_dataLength, 0x00ff);
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::GOT_LENGTH2);
+}
+
+TEST(XBeeControllerTest, nonVerboseSuccessTest) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        0x00,
+        0x16,
+        0x10,           // Options
+        0x01,           // More options
+        0x00,           // Address
+        0x00, 
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0xff,
+        0xff,
+        0Xff,           // Place holder1
+        0xfe,           // Place holder2
+        0x00,           // Options
+        0x00,           // Options
+        'H',            // Payload
+        'e',
+        'l',
+        'l',
+        'o',
+        ' ',
+        ':',
+        ')',
+        0x7C            //Checksum
+    };
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, successfulParse("Hello :)"))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+}
+
+TEST(XBeeControllerTest, badStateTest) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        0x00,
+        0x16,
+        0x10,           // Options
+        0x01,           // More options
+        0x00,           // Address
+        0x00, 
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0xff,
+        0xff,
+        0Xff,           // Place holder1
+        0xfe,           // Place holder2
+        0x00
+    };
+    m_uut->m_bytesProcessed = data;
+    m_uut->m_currentState = static_cast<Gateway::XBeeController::State>(-1);
+
+    EXPECT_CALL(*m_callbacks, badState(data));
+
+    m_uut->handleData();
+    
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
 }

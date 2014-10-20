@@ -28,7 +28,14 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
 
         void addData(const std::vector<std::uint8_t> &data) override;
 
-        void kill();
+        /**
+         *  \param shutdownSemaphore Shut downs the wait semaphore.  If
+         *                           the thread is waiting on the data semaphore,
+         *                           and kill is called, then the thread will never
+         *                           exit.  This is only a param so during unit testing
+         *                           we can not shutdown the semaphore if we dont want to
+         */
+        void kill(bool shutdownSemaphore = true);
         bool isAlive();
 
     private:
@@ -62,6 +69,8 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         void handleIgnoreOptionsState();
         void handleParsePayloadState();
         void handleCheckCheckSumState();
+        void handleIncompleteMessage();
+        void handleBadState();
 
         void reset();
 

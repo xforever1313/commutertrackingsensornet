@@ -90,4 +90,22 @@ TEST(XBeeCallbacksTest, badChecksumMessageTest) {
 
 }
 
+TEST(XBeeCallbacksTest, badStateTest) {
+    std::vector<std::uint8_t> data = {
+        0x00,
+        0x20,
+        0x21,
+        0x35,
+        0x7e,
+        0x7F
+    };
 
+    m_uut->badState(data);
+
+    CHECK_EQUAL(m_outLogger->getString(), "");
+
+    CHECK(m_errLogger->getString().find(Gateway::XBeeCallbacks::BAD_STATE_MESSAGE +
+                                        Gateway::XBeeCallbacks::dumpData(data)) 
+          != std::string::npos);
+
+}

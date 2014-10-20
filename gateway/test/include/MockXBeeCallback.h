@@ -17,6 +17,7 @@ class MockXBeeCallback : public XBeeCallbackInterface {
         MOCK_METHOD1(successfulParse, void(const std::string &));
         MOCK_METHOD1(incompleteMessage, void(const std::vector<std::uint8_t>&));
         MOCK_METHOD1(badChecksum, void(const std::vector<std::uint8_t>&));
+        MOCK_METHOD1(badState, void(const std::vector<std::uint8_t>&));
 };
 
 }
