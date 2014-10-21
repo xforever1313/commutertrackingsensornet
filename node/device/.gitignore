@@ -5,7 +5,15 @@
 *.hex
 *.htm
 *.Scr
+*.sdf
+*.axf
+*.bin
+*.user
+*.opensdf
+*.bak
 *.lib
+*.lnp
+*.suo
 video/spifi
 video/m0
 video/m0_image.c

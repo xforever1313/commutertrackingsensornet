@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpixy", "libpixy\libpixy.vcxproj", "{EA7877AC-D3A8-427A-894F-954B49354986}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pixyFlash", "pixyflash\pixyFlash.vcxproj", "{CB6F3882-01FB-4E8D-9E3B-E1C1502D9C18}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EA7877AC-D3A8-427A-894F-954B49354986} = {EA7877AC-D3A8-427A-894F-954B49354986}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "video", "video\video.vcxproj", "{DED4144E-2C90-4998-90BB-F14A4E203451}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CB6F3882-01FB-4E8D-9E3B-E1C1502D9C18} = {CB6F3882-01FB-4E8D-9E3B-E1C1502D9C18}
+		{EA7877AC-D3A8-427A-894F-954B49354986} = {EA7877AC-D3A8-427A-894F-954B49354986}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EA7877AC-D3A8-427A-894F-954B49354986}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EA7877AC-D3A8-427A-894F-954B49354986}.Debug|Win32.Build.0 = Debug|Win32
+		{EA7877AC-D3A8-427A-894F-954B49354986}.Release|Win32.ActiveCfg = Release|Win32
+		{EA7877AC-D3A8-427A-894F-954B49354986}.Release|Win32.Build.0 = Release|Win32
+		{CB6F3882-01FB-4E8D-9E3B-E1C1502D9C18}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CB6F3882-01FB-4E8D-9E3B-E1C1502D9C18}.Debug|Win32.Build.0 = Debug|Win32
+		{CB6F3882-01FB-4E8D-9E3B-E1C1502D9C18}.Release|Win32.ActiveCfg = Release|Win32
+		{CB6F3882-01FB-4E8D-9E3B-E1C1502D9C18}.Release|Win32.Build.0 = Release|Win32
+		{DED4144E-2C90-4998-90BB-F14A4E203451}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DED4144E-2C90-4998-90BB-F14A4E203451}.Debug|Win32.Build.0 = Debug|Win32
+		{DED4144E-2C90-4998-90BB-F14A4E203451}.Release|Win32.ActiveCfg = Release|Win32
+		{DED4144E-2C90-4998-90BB-F14A4E203451}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
