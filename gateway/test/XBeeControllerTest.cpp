@@ -567,3 +567,40 @@ TEST(XBeeControllerTest, badStateTest) {
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
 }
 
+TEST(XBeeControllerTest, destructorSuccessTest) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        0x00,
+        0x14,
+        0x10,           // Frame Type
+        0x01,           // Frame ID
+        0x00,           // Address 1
+        0x00,           // Address 2
+        0x00,           // Address 3
+        0x00,           // Address 4
+        0x00,           // Address 5
+        0x00,           // Address 6
+        0xff,           // Address 7
+        0xff,           // Reserved 1
+        0xfe,           // Reserved 2
+        0x02,           // Options
+        'H',            // Payload
+        'e',
+        'l',
+        'l',
+        'o',
+        ' ',
+        ':',
+        ')',
+        0x79
+    };
+
+    // When callback is called, kill the thread.
+    EXPECT_CALL(*m_callbacks, successfulParse("Hello :)"));
+
+    m_uut->addData(data);
+    delete m_uut;
+    m_uut = nullptr; 
+}
+
+

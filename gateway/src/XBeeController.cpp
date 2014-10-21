@@ -27,9 +27,9 @@ XBeeController::~XBeeController() {
     join(); // Wait for run loop to exit.
 
     // Handle the remaining pieces of data
-    //while (!m_data.empty()) {
-    //    handleData();
-    //}
+    while (!m_data.empty()) {
+        handleData();
+    }
 }
 
 void XBeeController::addData(const std::vector<std::uint8_t> &data) {
