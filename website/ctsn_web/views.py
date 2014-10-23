@@ -27,8 +27,8 @@ class CtsnStatus():
         returnStatus = StatusSeverity.objects.get(id=1)
 
         for node in self.trailNodes:
-            if (node.status.severity.id > returnStatus.severity.id and \
-                node.status.severity.id < 5):
+            if (node.status.severity.id > returnStatus.id and \
+                node.status.severity.id < 6):
 
                 returnStatus = node.status.severity
 
