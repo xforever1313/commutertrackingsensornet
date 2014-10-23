@@ -35,8 +35,9 @@ class ErrorMessages(models.Model):
 
 class Node(models.Model):
     desc = models.CharField(db_column = "description", max_length = 255)
-    lat = models.IntegerField(db_column = 'lat')
-    lon = models.IntegerField(db_column = 'lon')
+    lat = models.FloatField(db_column = 'lat')
+    lon = models.FloatField(db_column = 'lon')
+    address = models.CharField(db_column = "address", max_length = 16)
     status = models.ForeignKey('NodeStatus', db_column="status", default = lambda: NodeStatus.objects.get(desc='unknown'))
 
     class Meta:
