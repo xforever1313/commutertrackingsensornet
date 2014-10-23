@@ -16,6 +16,8 @@ namespace Gateway {
 
 class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
     public:
+        static const uint8_t START_CHARACTER;
+
         /**
          * \note thread will not start until start() is called.
          */
@@ -50,7 +52,6 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
             INCOMPLETE_MESSAGE
         };
 
-        static const uint8_t START_CHARACTER;
         static const uint8_t BYTES_TO_IGNORE; /// <Bytes to ignore during the ignore state
 
         /**
