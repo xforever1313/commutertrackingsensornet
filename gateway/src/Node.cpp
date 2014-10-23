@@ -8,6 +8,24 @@ namespace Gateway {
 unsigned int Node::numberOfNodes = 1;
 const std::string Node::INVALID_NODE_MESSAGE = "Invalid Node";
 
+Node::Node(unsigned int id, uint64_t address) :
+    m_id(id),
+    m_address(address)
+{
+}
+
+Node::~Node() {
+
+}
+
+unsigned int Node::getID() const {
+    return m_id;
+}
+
+uint64_t Node::getAddress() const {
+    return m_address;
+}
+
 unsigned int Node::convertStringToNodeNumber(const std::string &nodeString) {
     unsigned int nodeNumber = 0;
     try {
