@@ -12,6 +12,7 @@
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/Node.h"
+#include "gateway/NodeContainer.h"
 #include "gateway/MariaDBInterface.h"
 
 namespace Gateway {
@@ -40,10 +41,10 @@ void ErrorHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &re
         const std::string &nodeStr = form[NODE_FORM_DATA];
         const std::string &messageStr =  form[MESSAGE_FORM_DATA];
 
-        unsigned int nodeNumber = Node::convertStringToNodeNumber(nodeStr);
+        Node node = NodeContainer::convertStringToNode(nodeStr);
         ErrorNumber messageType = ErrorMessage::convertStringToMessage(messageStr);
 
-        std::shared_ptr<ErrorEvent> event(new ErrorEvent(messageType, nodeNumber, m_mariadb));
+        std::shared_ptr<ErrorEvent> event(new ErrorEvent(messageType, node, m_mariadb));
         m_eventExecutor->addEvent(event);
 
         sendSuccessResponse(response, POST_SUCCESS_MESSAGE);

@@ -4,6 +4,7 @@
 #include "EventInterface.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/MariaDBInterface.h"
+#include "gateway/Node.h"
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
 
@@ -12,7 +13,7 @@ namespace Gateway {
 class LogEvent : public Common::EventInterface {
 
     public:
-        LogEvent(ErrorNumber error, unsigned int node, MariaDBInterface *mariadb,
+        LogEvent(ErrorNumber error, const Node &node, MariaDBInterface *mariadb,
                  Common::IO::LoggerBase &errLogger = Common::IO::ConsoleLogger::err);
 
         ~LogEvent();
@@ -24,7 +25,7 @@ class LogEvent : public Common::EventInterface {
        LogEvent(const LogEvent &) = delete;
 
        ErrorNumber m_errorNumber;
-       unsigned int m_node;
+       const Node m_node;
        MariaDBInterface *m_mariadb;
        Common::IO::LoggerBase &m_errLogger;
 };

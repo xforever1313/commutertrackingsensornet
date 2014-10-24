@@ -13,6 +13,7 @@
 #include "gateway/LogEvent.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
 #include "gateway/Node.h"
+#include "gateway/NodeContainer.h"
 #include "gateway/MariaDBInterface.h"
 
 namespace Gateway {
@@ -41,10 +42,10 @@ void LogMessageHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerReques
         const std::string &nodeStr = form[NODE_FORM_DATA];
         const std::string &messageStr =  form[MESSAGE_FORM_DATA];
 
-        unsigned int nodeNumber = Node::convertStringToNodeNumber(nodeStr);
+        const Node node = NodeContainer::convertStringToNode(nodeStr);
         ErrorNumber messageType = ErrorMessage::convertStringToMessage(messageStr);
 
-        std::shared_ptr<LogEvent> event(new LogEvent(messageType, nodeNumber, m_mariadb));
+        std::shared_ptr<LogEvent> event(new LogEvent(messageType, node, m_mariadb));
         m_eventExecutor->addEvent(event);
 
         sendSuccessResponse(response, POST_SUCCESS_MESSAGE);

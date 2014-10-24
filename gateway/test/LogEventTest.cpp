@@ -11,18 +11,20 @@
 
 TEST_GROUP(LogEventTest) {
     TEST_SETUP() {
+        m_node = new Gateway::Node(1, 0x01);
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_errorLogger = new Common::IO::StringLogger();
-        m_uut = new Gateway::LogEvent(Gateway::ErrorNumber::TEST_ERROR, m_node, m_mariadb, *m_errorLogger);
+        m_uut = new Gateway::LogEvent(Gateway::ErrorNumber::TEST_ERROR, *m_node, m_mariadb, *m_errorLogger);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
         delete m_errorLogger;
         delete m_mariadb;
+        delete m_node;
     }
 
-    const unsigned int m_node = 1;
+    Gateway::Node *m_node;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     Common::IO::StringLogger *m_errorLogger;
     Gateway::LogEvent *m_uut;

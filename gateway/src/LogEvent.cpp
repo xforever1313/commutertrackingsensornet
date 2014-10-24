@@ -4,11 +4,12 @@
 #include "gateway/ErrorNumbers.h"
 #include "gateway/LogEvent.h"
 #include "gateway/MariaDBInterface.h"
+#include "gateway/Node.h"
 #include "io/LoggerBase.h"
 
 namespace Gateway {
 
-LogEvent::LogEvent(ErrorNumber error, unsigned int node, MariaDBInterface *mariadb,
+LogEvent::LogEvent(ErrorNumber error, const Node &node, MariaDBInterface *mariadb,
                    Common::IO::LoggerBase &errLogger /* = Common::IO::ConosoleLogger::err*/) :
     m_errorNumber(error),
     m_node(node),
@@ -29,7 +30,7 @@ void LogEvent::execute() {
        // Error is the error number
        // NULL is for the current timestamp
        const std::string query = "INSERT INTO ctsn.error_log VALUES(NULL, " +
-                                 std::to_string(m_node) + ", " + 
+                                 std::to_string(m_node.getID()) + ", " + 
                                  std::to_string(m_errorNumber) + ", NULL);";
 
        m_mariadb->mysql_real_query(query);

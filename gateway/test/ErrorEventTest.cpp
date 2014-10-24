@@ -13,6 +13,8 @@
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/LogEvent.h"
+#include "gateway/Node.h"
+#include "gateway/NodeContainer.h"
 #include "gateway/TextMessageEvent.h"
 #include "io/StringLogger.h"
 #include "MockEvent.h"
@@ -20,13 +22,14 @@
 
 TEST_GROUP(ErrorEventTest) {
     TEST_SETUP() {
+        m_node = new Gateway::Node(2, 0x01);
         m_errorMessageResult = new testing::StrictMock<Gateway::MockMariaDBResult>();
         m_userResult = new testing::StrictMock<Gateway::MockMariaDBResult>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_outLogger = new Common::IO::StringLogger();
         m_errLogger = new Common::IO::StringLogger();
         m_uut = new Gateway::ErrorEvent(Gateway::ErrorNumber::TEST_ERROR,
-                                        NODE, m_mariadb,
+                                        *m_node, m_mariadb,
                                         *m_outLogger, *m_errLogger);
 
         delete m_uut->m_errorMessageResult;
@@ -35,7 +38,7 @@ TEST_GROUP(ErrorEventTest) {
         delete m_uut->m_userResult;
         m_uut->m_userResult = m_userResult;
 
-        CHECK_EQUAL(m_uut->m_node, NODE);
+        CHECK_EQUAL(m_uut->m_node.getID(), m_node->getID());
         CHECK_EQUAL(m_uut->m_errorNumber, Gateway::ErrorNumber::TEST_ERROR);
         POINTERS_EQUAL(m_uut->m_errorMessageResult, m_errorMessageResult);
         POINTERS_EQUAL(m_uut->m_userResult, m_userResult);
@@ -47,11 +50,12 @@ TEST_GROUP(ErrorEventTest) {
         delete m_errLogger;
         delete m_outLogger;
         delete m_mariadb;
+        delete m_node;
 
         //The results are deleted in m_uut
     }
 
-    const static unsigned int NODE = 2;
+    Gateway::Node *m_node;
     testing::StrictMock<Gateway::MockMariaDBResult> *m_errorMessageResult;
     testing::StrictMock<Gateway::MockMariaDBResult> *m_userResult;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
@@ -71,7 +75,7 @@ TEST(ErrorEventTest, queryErrorMessageTestSuccess) {
 
     m_uut->queryErrorMessage();
 
-    CHECK_EQUAL(m_uut->m_errorMessage, std::to_string(NODE) + ": " + ret[0]);
+    CHECK_EQUAL(m_uut->m_errorMessage, std::to_string(m_node->getID()) + ": " + ret[0]);
 }
 
 TEST(ErrorEventTest, queryErrorMessageTestBadErrorNumber) {
@@ -231,7 +235,7 @@ TEST(ErrorEventTest, setupLogEventTest) {
     CHECK(logEvent != nullptr);
 
     CHECK_EQUAL(logEvent->m_errorNumber, m_uut->m_errorNumber);
-    CHECK_EQUAL(logEvent->m_node, NODE);
+    CHECK_EQUAL(logEvent->m_node.getID(), m_node->getID());
     POINTERS_EQUAL(logEvent->m_mariadb, m_mariadb);
 }
 
