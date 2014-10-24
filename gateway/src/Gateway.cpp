@@ -6,6 +6,7 @@
 #include "gateway/EmailEvent.h"
 #include "gateway/Gateway.h"
 #include "gateway/MariaDBWrapper.h"
+#include "gateway/NodeContainer.h"
 #include "gateway/TextMessageEvent.h"
 #include "gateway/Uart.h"
 #include "gateway/UartRecvThread.h"
@@ -77,6 +78,10 @@ void Gateway::start() {
     try {
         // Mariadb MUST come before the http server.
         initMariaDB();
+
+        // Load in the nodes
+        NodeContainer::init(m_mariadb);
+        NodeContainer::refreshNodes(m_mariadb);
 
         initHTTPServer();
         m_server->start();

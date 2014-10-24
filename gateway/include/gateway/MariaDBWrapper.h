@@ -69,6 +69,11 @@ class MariaDBWrapper : public MariaDBInterface {
                 void storeResult() override;
 
                 /**
+                 * \brief Frees the result if storeResult() was called.
+                 */
+                void freeResult() override;
+
+                /**
                  * \brief retreives the entire column of the result
                  * \param columnName The column name
                  * \throw std::out_of_range if column name does not exist

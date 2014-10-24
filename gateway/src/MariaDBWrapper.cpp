@@ -100,9 +100,7 @@ MariaDBWrapper::MariaDBResult::MariaDBResult(MariaDBInterface *mariaDB) :
 }
 
 MariaDBWrapper::MariaDBResult::~MariaDBResult() {
-    if (m_result->m_mysql_res != nullptr) {
-        mysql_free_result(m_result->m_mysql_res);
-    }
+    freeResult();
     delete m_result;
 }
 
@@ -112,6 +110,13 @@ void MariaDBWrapper::MariaDBResult::storeResult() {
         throw std::runtime_error(mysql_error(m_connection->m_mysql));
     }
     m_result->m_mysql_res = res;
+}
+
+void MariaDBWrapper::MariaDBResult::freeResult() {
+    if (m_result->m_mysql_res != nullptr) {
+        mysql_free_result(m_result->m_mysql_res);
+        m_result->m_mysql_res = nullptr;
+    } 
 }
 
 std::vector<std::string> MariaDBWrapper::MariaDBResult::getValuesFromColumn(const std::string &columnName) {

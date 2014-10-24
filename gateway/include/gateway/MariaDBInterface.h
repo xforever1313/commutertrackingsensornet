@@ -57,6 +57,7 @@ class MariaDBResultInterface {
         virtual ~MariaDBResultInterface(){}
         
         virtual void storeResult() = 0;
+        virtual void freeResult() = 0;
         virtual std::vector<std::string> getValuesFromColumn(const std::string &columnName) =  0;
 };
 

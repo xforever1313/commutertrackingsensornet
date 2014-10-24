@@ -52,6 +52,7 @@ class MockMariaDBResult : public MariaDBResultInterface {
         virtual ~MockMariaDBResult() {}
 
         MOCK_METHOD0(storeResult, void());
+        MOCK_METHOD0(freeResult, void());
         MOCK_METHOD1(getValuesFromColumn, std::vector<std::string>(const std::string &columnName));
 };
 
