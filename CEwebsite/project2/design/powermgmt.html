@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="../css/styles.css" type="text/css">
+		<title>CTSN Design - Power Management</title>
+	</head>
+	<body>
+		<div id="header">
+			<h1>Commuter Tracking Sensor Network</h1>
+		</div>
+		
+		<div id="nav">
+			<ul id="navlist">
+				<li class="navli"><a href="../index.html">Home</a></li>
+				<li class="navlicurr"><a href="../design.html">Design</a></li>
+				<li class="navli"><a href="../teambios.html">Team</a></li>
+				<li class="navli"><a href="../media.html">Media</a></li>
+				<li class="navli"><a href="../resources.html">Resources</a></li>
+			</ul>
+		</div>
+		
+		<div id="content">
+			<div id="sidebar">
+				<ul id="navlist">
+					<li><a class="vertnava" href="compvision.html">Computer Vision</a></li>
+					<li><a class="vertnava" href="networking.html">Networking</a></li>
+					<li><a class="vertnavacurr" href="powermgmt.html">Power Management</a></li>
+					<li><a class="vertnava" href="sustainability.html">Sustainability</a></li>
+					<li><a class="vertnava" href="userinterface.html">User Interface</a></li>
+				</ul>
+			</div>
+			
+			<div id="section">
+				<p>The custom PCB that handles power management and routing
+				for each sensor node is made up of three stages, signal acquisition,
+				conditioning and storage, and level-shifting.</p>
+				<p>Signal is acquired from the Windbelt sustainability element
+				and sent to a half-wave rectifier, where approximately 1.8V AC at 25MPH
+				wind gusts is converted to about 1.5V of pulsating DC.</p>
+				<figure class="design">
+					<img src="../media/pictures/bqvspencil.bmp" 
+						 alt="TI Boost Converter" width="600" height="117">
+					<figcaption class="design">Texas Instruments BQ25504</figcaption>
+				</figure>
+				<p>The signal is routed into a boost converter, which is made specifically
+				for nano-scale harvesting. It works to trickle charge a Li-Ion battery
+				by providing 4.1V at a minimum of 550mV of AC from the power source. The
+				boost converter also provides fail-safe mechanisms that inhibit the current
+				produced when input voltage would otherwise drive output over the safe
+				level of 4.2V for a lithium-ion battery.</p> 
+				<p>The current is boosted when levels are lower than 3.2V through an 
+				algorithm called MPPT. This is done by continuously sampling voltage
+				at one of the pins of the device, and maintaining about 80% of the voltage
+				that is sampled at the pin.</p>
+				<p>
+			</div>
+		</div>
+		
+		<div id="footer">
+			<div id="copyright">CTSN &copy; 2014</div>
+			<div id="timestamp">Last updated on:
+				<script>document.write(document.lastModified);</script></div>
+		</div>
+	</body>
+</html>
