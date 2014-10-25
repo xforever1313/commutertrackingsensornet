@@ -101,5 +101,15 @@ const std::string
 #endif
 DATABASE_POKE_URI = "/database_poke";
 
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+XBEE_TX_URI = "/xbee_tx";
+
 #endif
 

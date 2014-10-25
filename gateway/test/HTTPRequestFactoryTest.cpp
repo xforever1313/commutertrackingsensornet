@@ -17,6 +17,7 @@
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
+#include "gateway/XBeeTxHTTPRequestHandler.h"
 #include "MockHTTPServerRequest.h"
 #include "MockEventExecutor.h"
 #include "MockMariaDB.h"
@@ -89,6 +90,20 @@ TEST(HTTPRequestFactoryTest, createUartTxTest) {
     CHECK(handler != nullptr);
     POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
     POINTERS_EQUAL(handler->m_uart, m_uart);
+
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createXBeeTxTest) {
+    m_request->setURI(XBEE_TX_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Gateway::XBeeTxHTTPRequestHandler* handler = dynamic_cast<Gateway::XBeeTxHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+
+    CHECK(handler != nullptr);
+    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
+    POINTERS_EQUAL(handler->m_uart, m_uart);
+    POINTERS_EQUAL(handler->m_nodes, m_nodes);
 
     delete handler;
 }

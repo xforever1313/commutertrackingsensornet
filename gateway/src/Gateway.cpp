@@ -84,6 +84,7 @@ void Gateway::start() {
 
         //Create the nodes.
         m_nodes = new NodeContainer(m_mariadb);
+        m_nodes->refreshNodes();
 
         initHTTPServer();
         m_server->start();

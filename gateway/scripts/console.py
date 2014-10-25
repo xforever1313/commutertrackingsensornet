@@ -30,6 +30,12 @@ def sendUartTx(message):
     data['message'] = message
     performPostRequest(data, UART_TX_URI)
 
+def sendXBeeMessage(message, nodeNumber):
+    data = {}
+    data['message'] = message
+    data['node'] = nodeNumber
+    performPostRequest(data, XBEE_TX_URI)
+
 def performShutdown():
     data = {}
     data['shutdown'] = "true"
@@ -142,7 +148,7 @@ if __name__ == '__main__':
     while (keepGoing):
         command = input("\nEnter a number:\n\t1.  Uart Tx\n\t2.  Send Email\n\t3." + \
                         "  Send Text Message\n\t4.  Shutdown Gateway\n\t5.  Log Test Message\n\t6.  Send Error Message\n\t" + \
-                        "7.  Poke Database\n\t0.  Exit\n>")
+                        "7.  Poke Database\n\t8.  Send XBee Tx\n\t0.  Exit\n>")
 
         if (command == "1"):
             messageToSend = input("\nEnter a message to send:\n>")
@@ -160,6 +166,10 @@ if __name__ == '__main__':
             sendErrorMessage()
         elif (command == "7"):
             pokeDatabase()
+        elif (command == "8"):
+            messageToSend = input("\nEnter a message to send:\n>")
+            nodeNumber = input("\nEnter a node number:\n>")
+            sendXBeeMessage(messageToSend, nodeNumber)
         elif (command == "0"):
             keepGoing = False
 

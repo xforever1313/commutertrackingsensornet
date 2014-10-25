@@ -15,6 +15,7 @@
 #include "gateway/RootHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
+#include "gateway/XBeeTxHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
 #include "Secrets.py"
 
@@ -56,6 +57,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (request.getURI() == DATABASE_POKE_URI) {
         return new DatabasePokeHTTPRequestHandler(m_mariadb, m_eventExecutor);
+    }
+    else if (request.getURI() == XBEE_TX_URI) {
+        return new XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);
     }
     else if (request.getURI() == UART_TX_URI) {
         return new UartTxHTTPRequestHandler(m_eventExecutor, m_uart);
