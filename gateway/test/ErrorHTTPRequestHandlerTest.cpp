@@ -10,27 +10,31 @@
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/Node.h"
-#include "gateway/NodeContainer.h"
+#include "gateway/NodeContainerInterface.h"
 #include "MockEventExecutor.h"
 #include "MockHTTPServerRequest.h"
 #include "MockHTTPServerResponse.h"
 #include "MockMariaDB.h"
+#include "MockNodeContainer.h"
 
 TEST_GROUP(ErrorHTTPRequestHandlerTest) {
     TEST_SETUP() {
         m_request =  new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>;
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>;
 
-        m_eventExecutor = new testing::StrictMock<MockEventExecutor>;
-        m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>;
-        m_uut = new Gateway::ErrorHTTPRequestHandler(m_eventExecutor, m_mariadb);
+        m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
+        m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
+        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_uut = new Gateway::ErrorHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
 
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
         POINTERS_EQUAL(m_uut->m_mariadb, m_mariadb);
+        POINTERS_EQUAL(m_uut->m_nodes, m_nodes);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
+        delete m_nodes;
         delete m_eventExecutor;
         delete m_mariadb;
 
@@ -43,6 +47,7 @@ TEST_GROUP(ErrorHTTPRequestHandlerTest) {
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
+    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
     Gateway::ErrorHTTPRequestHandler *m_uut;
 };
 
@@ -81,40 +86,18 @@ TEST(ErrorHTTPRequestHandlerTest, postMissingMessageFieldTest) {
 /// Invalid Node Tests
 TEST(ErrorHTTPRequestHandlerTest, postNodeNotAnIntTest1) {
     std::string badString = "1abc";
+    std::string error = "error";
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
   
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << badString << "&";
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "1";
 
-    m_uut->handleRequest(*m_request, *m_response);
-
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::NodeContainer::INVALID_NODE_MESSAGE + badString);
-    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-}
-
-TEST(ErrorHTTPRequestHandlerTest, postNodeNotAnIntTest2) {
-    std::string badString = "abc";
-    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
-    m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << badString << "&";
-    m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "1";
+    EXPECT_CALL(*m_nodes, convertStringToNode(badString))
+        .WillOnce(testing::Throw(std::out_of_range(error)));
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::NodeContainer::INVALID_NODE_MESSAGE + badString);
-    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
-}
-
-TEST(ErrorHTTPRequestHandlerTest, postNodeTooHigh) {
-    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
-    Gateway::NodeContainer::numberOfNodes = 5;
-    m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << Gateway::NodeContainer::numberOfNodes + 1 << "&";
-    m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "1";
-
-    m_uut->handleRequest(*m_request, *m_response);
-
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::NodeContainer::INVALID_NODE_MESSAGE + "6");
+    CHECK_EQUAL(m_response->m_response.str(), error);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
@@ -158,7 +141,6 @@ TEST(ErrorHTTPRequestHandlerTest, postMessageTooLow) {
 TEST(ErrorHTTPRequestHandlerTest, postMessageTooHigh) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
   
-    Gateway::NodeContainer::numberOfNodes = 5;
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << Gateway::ErrorNumber::END;
 
@@ -177,6 +159,9 @@ TEST(ErrorHTTPRequestHandlerTest, postSuccess) {
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << node.getID() << "&";
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << Gateway::ErrorNumber::TEST_ERROR;
 
+    EXPECT_CALL(*m_nodes, convertStringToNode(std::to_string(node.getID())))
+        .WillOnce(testing::Return(node));
+
     std::shared_ptr<Common::EventInterface> event = nullptr;
     EXPECT_CALL(*m_eventExecutor, addEvent(testing::_))
         .WillOnce(testing::SaveArg<0>(&event));
@@ -186,27 +171,6 @@ TEST(ErrorHTTPRequestHandlerTest, postSuccess) {
     Gateway::ErrorEvent *errorEvent = dynamic_cast<Gateway::ErrorEvent*>(event.get());
     CHECK_EQUAL(errorEvent->m_errorNumber, Gateway::ErrorNumber::TEST_ERROR);
     CHECK_EQUAL(errorEvent->m_node.getID(), node.getID());
-
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::ErrorHTTPRequestHandler::POST_SUCCESS_MESSAGE);
-    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);
-}
-
-TEST(ErrorHTTPRequestHandlerTest, post0Success) {
-    m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-
-    m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << "0" << "&";
-    m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << Gateway::ErrorNumber::TEST_ERROR;
-
-    std::shared_ptr<Common::EventInterface> event = nullptr;
-    EXPECT_CALL(*m_eventExecutor, addEvent(testing::_))
-        .WillOnce(testing::SaveArg<0>(&event));
-
-    m_uut->handleRequest(*m_request, *m_response);
-
-    Gateway::ErrorEvent *errorEvent = dynamic_cast<Gateway::ErrorEvent*>(event.get());
-    CHECK_EQUAL(errorEvent->m_errorNumber, Gateway::ErrorNumber::TEST_ERROR);
-    CHECK_EQUAL(errorEvent->m_node.getID(), 0);
-    CHECK_EQUAL(errorEvent->m_node.getAddress(), Gateway::NodeContainer::BROADCAST_ADDRESS);
 
     CHECK_EQUAL(m_response->m_response.str(), Gateway::ErrorHTTPRequestHandler::POST_SUCCESS_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);

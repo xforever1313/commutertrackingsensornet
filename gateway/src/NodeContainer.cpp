@@ -20,30 +20,32 @@ const std::string NodeContainer::INVALID_ADDRESS_MESSAGE = "Invalid Address - ";
 const std::string NodeContainer::MISMATCHED_COLUMNS_MESSAGE = "NodeContainer Mismatched columns";
 const std::string NodeContainer::INVALID_DATABASE_DATA = "NodeContainer invalid database data";
 
-std::map<unsigned int, Node> NodeContainer::nodes;
-OS::SMutex NodeContainer::nodeMutex;
-MariaDBResultInterface *NodeContainer::mariadbResult = nullptr;
-
-void NodeContainer::init(MariaDBInterface *const mariadb) {
-    static MariaDBWrapper::MariaDBResult result(mariadb);
-    NodeContainer::mariadbResult = &result;
+NodeContainer::NodeContainer(MariaDBInterface *const mariadb) :
+    m_mariadb(mariadb),
+    m_result(new MariaDBWrapper::MariaDBResult(m_mariadb))
+{
+    clearNodes();
 }
 
-void NodeContainer::refreshNodes(MariaDBInterface *const mariadb) {
+NodeContainer::~NodeContainer() {
+    delete m_result;
+}
+
+void NodeContainer::refreshNodes() {
     // querty the database
-    mariadb->mysql_real_query(DATABASE_QUERY);
+    m_mariadb->mysql_real_query(DATABASE_QUERY);
 
     //get the results
-    mariadbResult->storeResult();
+    m_result->storeResult();
     std::vector<std::string> ids;
     std::vector<std::string> addresses;
     try {
-        ids = mariadbResult->getValuesFromColumn("id");
-        addresses = mariadbResult->getValuesFromColumn("address");
-        mariadbResult->freeResult();
+        ids = m_result->getValuesFromColumn("id");
+        addresses = m_result->getValuesFromColumn("address");
+        m_result->freeResult();
     }
     catch(const std::invalid_argument &e) {
-        mariadbResult->freeResult();
+        m_result->freeResult();
         throw;
     }
 
@@ -64,7 +66,7 @@ void NodeContainer::refreshNodes(MariaDBInterface *const mariadb) {
             id = std::stol(ids[i], &idStringSize);
             address = std::stoll(addresses[i], &addressStringSize, 16);
         }
-        //Exception so it covers both std::out_of_range and std::argument
+        //std::exception so it covers both std::out_of_range and std::argument
         catch (const std::exception &e) {
             throw std::invalid_argument(INVALID_DATABASE_DATA + " id: " + ids[i] + " address: " + addresses[i]);
         }
@@ -76,26 +78,27 @@ void NodeContainer::refreshNodes(MariaDBInterface *const mariadb) {
         else if (addressStringSize != addresses[i].size()) {
             throw std::invalid_argument(INVALID_DATABASE_DATA + " id: " + ids[i] + " address: " + addresses[i]);
         }
+
         Node newNode(id, address);
         newNodes.insert(std::pair<unsigned int, Node> (newNode.getID(), newNode));
     }
 
     //remember to lock the mutex!
-    std::lock_guard<OS::SMutex> lock(nodeMutex);
+    std::lock_guard<OS::SMutex> lock(m_nodeMutex);
     clearNodes();
-    nodes.insert(newNodes.begin(), newNodes.end());
+    m_nodes.insert(newNodes.begin(), newNodes.end());
 }
 
 const Node NodeContainer::getNodeFromID(unsigned int id) {
-    std::lock_guard<OS::SMutex> lock(nodeMutex);
-    return nodes.at(id);
+    std::lock_guard<OS::SMutex> lock(m_nodeMutex);
+    return m_nodes.at(id);
 }
 
 const Node NodeContainer::convertStringToNode(const std::string &nodeString) {
     Node node (0, 0);
     try {
         size_t stringSize;
-        unsigned int nodeNumber = std::stoi(nodeString, &stringSize);
+        unsigned int nodeNumber = std::stol(nodeString, &stringSize);
 
         // Ensure theres nothing left over from the nodeString.
         if (stringSize != nodeString.size()) {
@@ -116,8 +119,9 @@ const Node NodeContainer::convertStringToNode(const std::string &nodeString) {
 }
 
 void NodeContainer::clearNodes() {
-    nodes.clear();
-    nodes.insert(std::pair<unsigned int, Node>(0, Node(0, BROADCAST_ADDRESS)));
+    m_nodes.clear();
+    m_nodes.insert(std::pair<unsigned int, Node>(0, Node(0, BROADCAST_ADDRESS)));
 }
 
 }
+

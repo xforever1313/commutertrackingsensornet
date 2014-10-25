@@ -13,7 +13,7 @@
 #include "gateway/LogEvent.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
 #include "gateway/Node.h"
-#include "gateway/NodeContainer.h"
+#include "gateway/NodeContainerInterface.h"
 #include "gateway/MariaDBInterface.h"
 
 namespace Gateway {
@@ -25,9 +25,11 @@ const std::string LogMessageHTTPRequestHandler::NODE_FORM_DATA = "node";
 const std::string LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA = "message";
 
 LogMessageHTTPRequestHandler::LogMessageHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
-                                                           MariaDBInterface *mariadb) :
+                                                           MariaDBInterface *mariadb,
+                                                           NodeContainerInterface *nodeContainer) :
     m_eventExecutor(eventExecutor),
-    m_mariadb(mariadb)
+    m_mariadb(mariadb),
+    m_nodes(nodeContainer)
 {
 
 }
@@ -42,8 +44,8 @@ void LogMessageHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerReques
         const std::string &nodeStr = form[NODE_FORM_DATA];
         const std::string &messageStr =  form[MESSAGE_FORM_DATA];
 
-        const Node node = NodeContainer::convertStringToNode(nodeStr);
         ErrorNumber messageType = ErrorMessage::convertStringToMessage(messageStr);
+        const Node node = m_nodes->convertStringToNode(nodeStr);
 
         std::shared_ptr<LogEvent> event(new LogEvent(messageType, node, m_mariadb));
         m_eventExecutor->addEvent(event);
@@ -53,10 +55,7 @@ void LogMessageHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerReques
     catch (const Poco::NotFoundException &e) {
         sendBadRequestResponse(response, POST_FAILURE_MISSING_FIELD_MESSAGE);
     }
-    catch (const std::out_of_range &e) {
-        sendBadRequestResponse(response, e.what());
-    }
-    catch (const std::invalid_argument &e) {
+    catch (const std::exception &e) {
         sendBadRequestResponse(response, e.what());
     }
 }

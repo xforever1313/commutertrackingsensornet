@@ -9,6 +9,7 @@
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/MariaDBInterface.h"
+#include "gateway/NodeContainerInterface.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
@@ -23,11 +24,16 @@ namespace Gateway {
 
 const std::string HTTPRequestFactory::INVALID_USER_AGENT = "Invalid user";
 
-HTTPRequestFactory::HTTPRequestFactory(ShutdownInterface *shutdown, Common::EventExecutorInterface *eventExecutor, UartInterface *uart, MariaDBInterface *mariadb) :
+HTTPRequestFactory::HTTPRequestFactory(ShutdownInterface *shutdown, 
+                                       Common::EventExecutorInterface *eventExecutor, 
+                                       UartInterface *uart, 
+                                       MariaDBInterface *mariadb,
+                                       NodeContainerInterface *nodes) :
     m_shutdown(shutdown),
     m_eventExecutor(eventExecutor),
     m_uart(uart),
-    m_mariadb(mariadb)
+    m_mariadb(mariadb),
+    m_nodes(nodes)
 {
 }
 
@@ -55,7 +61,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
         return new UartTxHTTPRequestHandler(m_eventExecutor, m_uart);
     }
     else if (request.getURI() == ERROR_MESSAGE_URI) {
-        return new ErrorHTTPRequestHandler(m_eventExecutor, m_mariadb);
+        return new ErrorHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
     }
     else if (request.getURI() == SHUTDOWN_URI) {
         return new ShutdownHTTPRequestHandler(m_shutdown);
@@ -67,7 +73,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
         return new EmailHTTPRequestHandler(m_eventExecutor);
     }
     else if (request.getURI() == LOG_MESSAGE_URI) {
-        return new LogMessageHTTPRequestHandler(m_eventExecutor, m_mariadb);
+        return new LogMessageHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
     }
     else {
         return new NotFoundHTTPRequestHandler();

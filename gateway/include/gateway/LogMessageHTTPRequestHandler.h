@@ -9,6 +9,7 @@
 #include "BaseHTTPRequestHandler.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/MariaDBInterface.h"
+#include "gateway/NodeContainerInterface.h"
 #include "gateway/LogEvent.h"
 
 namespace Gateway {
@@ -17,7 +18,8 @@ class LogMessageHTTPRequestHandler : public BaseHTTPRequestHandler {
 
     public:
         LogMessageHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
-                                     MariaDBInterface *mariadb);
+                                     MariaDBInterface *mariadb,
+                                     NodeContainerInterface *nodes);
 
         ~LogMessageHTTPRequestHandler();
 
@@ -36,6 +38,7 @@ class LogMessageHTTPRequestHandler : public BaseHTTPRequestHandler {
 
         Common::EventExecutorInterface *m_eventExecutor;
         MariaDBInterface *m_mariadb;
+        NodeContainerInterface *m_nodes;
 };
 
 }

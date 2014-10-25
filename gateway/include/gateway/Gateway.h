@@ -6,6 +6,7 @@
 
 #include "EventExecutorInterface.h"
 #include "gateway/MariaDBInterface.h"
+#include "gateway/NodeContainerInterface.h"
 #include "gateway/ShutdownInterface.h"
 #include "gateway/UartInterface.h"
 #include "gateway/UartRecvThread.h"
@@ -51,6 +52,7 @@ class Gateway : public ShutdownInterface {
         Poco::Net::HTTPServer *m_server;
 
         MariaDBInterface *m_mariadb;
+        NodeContainerInterface *m_nodes;
 };
 
 }

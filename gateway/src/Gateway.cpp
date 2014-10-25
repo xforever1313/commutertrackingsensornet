@@ -38,7 +38,8 @@ Gateway::Gateway() :
     m_recvThread(new UartRecvThread(m_uart, m_xbeeController)),
     m_socket(nullptr),
     m_server(nullptr),
-    m_mariadb(nullptr)
+    m_mariadb(nullptr),
+    m_nodes(nullptr)
 {
 }
 
@@ -52,6 +53,7 @@ Gateway::~Gateway() {
     delete m_uart;
     delete m_eventExecutor;
     delete m_mariadb; //Delete this last, as some left over events may use it.
+    delete m_nodes;
 }
 
 void Gateway::initHTTPServer() {
@@ -60,7 +62,8 @@ void Gateway::initHTTPServer() {
     params->setMaxThreads(2);
 
     m_socket = new Poco::Net::ServerSocket(GATEWAY_COMMAND_PORT);
-    m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this, m_eventExecutor, m_uart, m_mariadb), *m_socket, params);
+    m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this, m_eventExecutor, m_uart, m_mariadb, m_nodes),
+                                         *m_socket, params);
 }
 
 void Gateway::initMariaDB() {
@@ -79,9 +82,8 @@ void Gateway::start() {
         // Mariadb MUST come before the http server.
         initMariaDB();
 
-        // Load in the nodes
-        NodeContainer::init(m_mariadb);
-        NodeContainer::refreshNodes(m_mariadb);
+        //Create the nodes.
+        m_nodes = new NodeContainer(m_mariadb);
 
         initHTTPServer();
         m_server->start();

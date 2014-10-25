@@ -7,6 +7,7 @@
 
 #include "EventExecutorInterface.h"
 #include "gateway/MariaDBInterface.h"
+#include "gateway/NodeContainerInterface.h"
 #include "gateway/ShutdownInterface.h"
 #include "gateway/UartInterface.h"
 
@@ -15,7 +16,7 @@ namespace Gateway {
 class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
     public:
         HTTPRequestFactory(ShutdownInterface *shutdown, Common::EventExecutorInterface *eventExecutor, UartInterface *uart,
-                           MariaDBInterface *mariadb);
+                           MariaDBInterface *mariadb, NodeContainerInterface *nodes);
         ~HTTPRequestFactory();
 
         Poco::Net::HTTPRequestHandler *createRequestHandler(const Poco::Net::HTTPServerRequest &request) override;
@@ -29,6 +30,7 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
         Common::EventExecutorInterface *m_eventExecutor;
         UartInterface *m_uart;
         MariaDBInterface *m_mariadb;
+        NodeContainerInterface *m_nodes;
 };
 
 }

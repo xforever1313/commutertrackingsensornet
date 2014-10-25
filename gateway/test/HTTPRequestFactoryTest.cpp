@@ -20,6 +20,7 @@
 #include "MockHTTPServerRequest.h"
 #include "MockEventExecutor.h"
 #include "MockMariaDB.h"
+#include "MockNodeContainer.h"
 #include "MockShutdown.h"
 #include "MockUart.h"
 #include "Secrets.py"
@@ -31,28 +32,33 @@ TEST_GROUP(HTTPRequestFactoryTest) {
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_shutdown = new testing::StrictMock<Gateway::MockShutdown> ();
-        m_uut = new Gateway::HTTPRequestFactory(m_shutdown, m_eventExecutor, m_uart, m_mariadb);
+        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_uut = new Gateway::HTTPRequestFactory(m_shutdown, m_eventExecutor, 
+                                                m_uart, m_mariadb, m_nodes);
 
         POINTERS_EQUAL(m_uut->m_shutdown, m_shutdown);
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
         POINTERS_EQUAL(m_uut->m_uart, m_uart);
         POINTERS_EQUAL(m_uut->m_mariadb, m_mariadb);
+        POINTERS_EQUAL(m_uut->m_nodes, m_nodes);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
+        delete m_nodes;
         delete m_shutdown;
         delete m_request;
         delete m_mariadb;
         delete m_uart;
         delete m_eventExecutor;
     }
+
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockUart> *m_uart;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
-
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<Gateway::MockShutdown> *m_shutdown;
+    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
     Gateway::HTTPRequestFactory *m_uut;
 };
 

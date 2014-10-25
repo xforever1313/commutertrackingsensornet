@@ -5,6 +5,7 @@
 #include <map>
 
 #include "gateway/MariaDBInterface.h"
+#include "gateway/NodeContainerInterface.h"
 #include "gateway/Node.h"
 #include "SMutex.h"
 
@@ -13,12 +14,11 @@ namespace Gateway {
 /**
  * \brief a static class that contains all the nodes.
  */
-class NodeContainer {
+class NodeContainer : public NodeContainerInterface {
     public:
-        /**
-         * \brief call this to initialize the mariaDB result.
-         */
-        static void init(MariaDBInterface *const mariadb);
+        NodeContainer(MariaDBInterface *const mariadb);
+
+        ~NodeContainer();
 
         /**
          * \brief gets a node based on the passed in id
@@ -31,7 +31,7 @@ class NodeContainer {
          *         Really, the returned node object should only be used to get the addressing information of a
          *         node before discarding it.
          */
-        static const Node getNodeFromID(unsigned int id);
+        const Node getNodeFromID(unsigned int id) override;
 
         /**
          * \brief refreshes the node map by querying the database.
@@ -39,18 +39,18 @@ class NodeContainer {
          *           getNodeFromID and convertStringToNodeNumber until the operation is complete.
          * \throws std::runtime_error if a database error occurs
          * \throws std::runtime_error if the lengths of the columns from the database somehow do not match.
-         * \throws std::invalid_argument if value from database is not correct 
+         * \throws std::invalid_argument if value from database is not correct
                    (e.g. the address is not an int)
          * \note throwing an exception will not alter the current node map.  It will also unlock the mutexes.
          */
-        static void refreshNodes(MariaDBInterface *const mariadb);
+        void refreshNodes() override;
 
         /**
-         * \brief Converts the given string to the node number 
+         * \brief Converts the given string to the node number
          * \throws std::out_of_range if the node is not a valid node number
          * \throws std::invalid_arugment if the given string is not an int
          */
-        static const Node convertStringToNode(const std::string &nodeString);
+        const Node convertStringToNode(const std::string &nodeString) override;
 
     private:
         static const uint64_t BROADCAST_ADDRESS;
@@ -60,21 +60,23 @@ class NodeContainer {
         static const std::string INVALID_ADDRESS_MESSAGE;
         static const std::string MISMATCHED_COLUMNS_MESSAGE;
         static const std::string INVALID_DATABASE_DATA;
-        static std::map<unsigned int, Node> nodes;
-        static OS::SMutex nodeMutex;
-        static MariaDBResultInterface *mariadbResult;
 
         /**
          * \brief Clears the node map except for the broadcast node, id 0.
-         * \warning this method does not lock the mutex.  
+         * \warning this method does not lock the mutex.
          *          although refreshNodes() calls this, this is mainly here for
          *          the unit tests,
          */
-        static void clearNodes();
+        void clearNodes();
 
         NodeContainer() = delete;
         NodeContainer(const NodeContainer&) = delete;
         NodeContainer &operator=(const NodeContainer&) = delete;
+
+        std::map<unsigned int, Node> m_nodes;
+        OS::SMutex m_nodeMutex;
+        MariaDBInterface *const m_mariadb;
+        MariaDBResultInterface *m_result;
 };
 
 }

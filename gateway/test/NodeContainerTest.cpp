@@ -10,30 +10,31 @@
 
 TEST_GROUP(NodeContainerTest) {
     TEST_SETUP() {
-        Gateway::NodeContainer::clearNodes();
+        m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
+        m_result = new testing::StrictMock<Gateway::MockMariaDBResult>();
+        m_uut = new Gateway::NodeContainer(m_mariadb);
+        delete m_uut->m_result;
+        m_uut->m_result = m_result;
 
         //Ensure clearing the nodes leaves 1 node left, the broadcast node.
         //This node has an ID of 0 and an address of 0x000000000000FFFF
-        CHECK_EQUAL(Gateway::NodeContainer::nodes.size(), 1);
-        CHECK_EQUAL(Gateway::NodeContainer::nodes.at(0).getID(), 0);
-        CHECK_EQUAL(Gateway::NodeContainer::nodes.at(0).getAddress(),
+        CHECK_EQUAL(m_uut->m_nodes.size(), 1);
+        CHECK_EQUAL(m_uut->m_nodes.at(0).getID(), 0);
+        CHECK_EQUAL(m_uut->m_nodes.at(0).getAddress(),
                     Gateway::NodeContainer::BROADCAST_ADDRESS);
         Gateway::Node node(1, 0x01);
-        Gateway::NodeContainer::nodes.insert(std::pair<unsigned int, Gateway::Node> (1, node));
-
-        m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
-        m_result = new testing::StrictMock<Gateway::MockMariaDBResult>();
-        Gateway::NodeContainer::mariadbResult = m_result;
+        m_uut->m_nodes.insert(std::pair<unsigned int, Gateway::Node> (1, node));
     }
 
     TEST_TEARDOWN() {
-        Gateway::NodeContainer::mariadbResult = nullptr; // Set to null so there's no dangling pointers.
-        delete m_result;
+        // m_result is deleted in uut
         delete m_mariadb;
+        delete m_uut;
     }
 
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     testing::StrictMock<Gateway::MockMariaDBResult> *m_result;
+    Gateway::NodeContainer *m_uut;
 };
 
 TEST(NodeContainerTest, refreshNodesSuccess) {
@@ -47,14 +48,14 @@ TEST(NodeContainerTest, refreshNodesSuccess) {
         .WillOnce(testing::Return(addresses));
     EXPECT_CALL(*m_result, freeResult());
 
-    Gateway::NodeContainer::refreshNodes(m_mariadb);
+    m_uut->refreshNodes();
 
-    CHECK_EQUAL(Gateway::NodeContainer::nodes.size(), ids.size() + 1); // 1 for broadcast node
-    CHECK_EQUAL(Gateway::NodeContainer::nodes.at(0).getID(), 0);
-    CHECK_EQUAL(Gateway::NodeContainer::nodes.at(0).getAddress(), Gateway::NodeContainer::BROADCAST_ADDRESS);
-    for (size_t i = 1; i < Gateway::NodeContainer::nodes.size(); ++i) {
-        CHECK_EQUAL(Gateway::NodeContainer::nodes.at(i).getID(), i);
-        CHECK_EQUAL(Gateway::NodeContainer::nodes.at(i).getAddress(), i);
+    CHECK_EQUAL(m_uut->m_nodes.size(), ids.size() + 1); // 1 for broadcast node
+    CHECK_EQUAL(m_uut->m_nodes.at(0).getID(), 0);
+    CHECK_EQUAL(m_uut->m_nodes.at(0).getAddress(), Gateway::NodeContainer::BROADCAST_ADDRESS);
+    for (size_t i = 1; i < m_uut->m_nodes.size(); ++i) {
+        CHECK_EQUAL(m_uut->m_nodes.at(i).getID(), i);
+        CHECK_EQUAL(m_uut->m_nodes.at(i).getAddress(), i);
     }
 }
 
@@ -70,7 +71,7 @@ TEST(NodeContainerTest, refreshNodesMismatchedCols) {
     EXPECT_CALL(*m_result, freeResult());
 
     try {
-        Gateway::NodeContainer::refreshNodes(m_mariadb);
+        m_uut->refreshNodes();
         FAIL("Exepcted exception");
     }
     catch (const std::runtime_error &e) {
@@ -90,7 +91,7 @@ TEST(NodeContainerTest, refreshNodesBadID1) {
     EXPECT_CALL(*m_result, freeResult());
 
     try {
-        Gateway::NodeContainer::refreshNodes(m_mariadb);
+        m_uut->refreshNodes();
         FAIL("Exepcted exception");
     }
     catch (const std::invalid_argument &e) {
@@ -110,7 +111,7 @@ TEST(NodeContainerTest, refreshNodesBadID2) {
     EXPECT_CALL(*m_result, freeResult());
 
     try {
-        Gateway::NodeContainer::refreshNodes(m_mariadb);
+        m_uut->refreshNodes();
         FAIL("Exepcted exception");
     }
     catch (const std::invalid_argument &e) {
@@ -130,7 +131,7 @@ TEST(NodeContainerTest, refreshNodesBadAddress1) {
     EXPECT_CALL(*m_result, freeResult());
 
     try {
-        Gateway::NodeContainer::refreshNodes(m_mariadb);
+        m_uut->refreshNodes();
         FAIL("Exepcted exception");
     }
     catch (const std::invalid_argument &e) {
@@ -151,7 +152,7 @@ TEST(NodeContainerTest, refreshNodesBadAddress2) {
     EXPECT_CALL(*m_result, freeResult());
 
     try {
-        Gateway::NodeContainer::refreshNodes(m_mariadb);
+        m_uut->refreshNodes();
         FAIL("Exepcted exception");
     }
     catch (const std::invalid_argument &e) {
@@ -165,7 +166,7 @@ TEST(NodeContainerTest, refreshNodesMariaDBError) {
         .WillOnce(testing::Throw(std::runtime_error(error)));
 
     try {
-        Gateway::NodeContainer::refreshNodes(m_mariadb);
+        m_uut->refreshNodes();
         FAIL("Expected an exception.");
     }
     catch (const std::runtime_error &e) {
@@ -174,14 +175,14 @@ TEST(NodeContainerTest, refreshNodesMariaDBError) {
 }
 
 TEST(NodeContainerTest, convertStringToNodeSuccess) {
-    const Gateway::Node node = Gateway::NodeContainer::convertStringToNode("1");
+    const Gateway::Node node = m_uut->convertStringToNode("1");
     CHECK_EQUAL(node.getID(), 1);
 }
 
 TEST(NodeContainerTest, convertStringToNodeNoNumbersTest) {
     std::string s = "abc";
     try {
-        Gateway::NodeContainer::convertStringToNode(s);
+        m_uut->convertStringToNode(s);
     }
     catch (const std::invalid_argument &e) {
         CHECK_EQUAL(e.what(), Gateway::NodeContainer::INVALID_NODE_MESSAGE + s);
@@ -191,7 +192,7 @@ TEST(NodeContainerTest, convertStringToNodeNoNumbersTest) {
 TEST(NodeContainerTest, convertStringToNodeNumberInFrontTest) {
     std::string s = "1abc";
     try {
-        Gateway::NodeContainer::convertStringToNode(s);
+        m_uut->convertStringToNode(s);
     }
     catch (const std::invalid_argument &e) {
         CHECK_EQUAL(e.what(), Gateway::NodeContainer::INVALID_NODE_MESSAGE + s);
@@ -199,7 +200,7 @@ TEST(NodeContainerTest, convertStringToNodeNumberInFrontTest) {
 }
 
 TEST(NodeContainerTest, convertStringToNodeZeroTest) {
-    const Gateway::Node node = Gateway::NodeContainer::convertStringToNode("0");
+    const Gateway::Node node = m_uut->convertStringToNode("0");
     CHECK_EQUAL(node.getID(), 0);
     CHECK_EQUAL(node.getAddress(), Gateway::NodeContainer::BROADCAST_ADDRESS);
 }
@@ -207,16 +208,10 @@ TEST(NodeContainerTest, convertStringToNodeZeroTest) {
 TEST(NodeContainerTest, convertStringToNodeNumberTooHighTest) {
     std::string s = "10000000";
     try {
-        Gateway::NodeContainer::convertStringToNode(s);
+        m_uut->convertStringToNode(s);
     }
     catch (const std::out_of_range &e) {
         CHECK_EQUAL(e.what(), Gateway::NodeContainer::INVALID_NODE_MESSAGE + s);
     }
-}
-
-TEST(NodeContainerTest, initTest) {
-    Gateway::NodeContainer::mariadbResult = nullptr; 
-    Gateway::NodeContainer::init(m_mariadb);
-    CHECK(Gateway::NodeContainer::mariadbResult != nullptr); 
 }
 
