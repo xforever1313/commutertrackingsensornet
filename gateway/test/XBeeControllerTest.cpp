@@ -421,7 +421,7 @@ TEST(XBeeControllerTest, incompleteMessageCheckCheckSumState) {
     std::vector<std::uint8_t> data = {
         Gateway::XBeeController::START_CHARACTER,
         0x00,
-        0x14,
+        0x12,
         0x10,           // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
@@ -650,6 +650,112 @@ TEST(XBeeControllerTest, escapeCharacterSuccessTest) {
     CHECK(!m_uut->m_escapedCharacter);
     CHECK_EQUAL(m_uut->m_nonEscapedBytesProcessed, 0);
     CHECK_EQUAL(m_uut->m_lengthCounter, 0);
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+}
+
+///Escape characters test
+TEST(XBeeControllerTest, escapeCharacterMassiveLengthSuccessTest) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeController::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(Gateway::XBeeController::XOFF ^ Gateway::XBeeController::ESCAPE_XOR),          // Length 1
+        0x00,           // Length 2
+        0x10,           // Frame Type
+        0x01,           // Frame ID
+        0x00,           // Address 1
+        0x00,           // Address 2
+        0x00,           // Address 3
+        0x00,           // Address 4
+        0x00,           // Address 5
+        0x00,           // Address 6
+        0xff,           // Address 7
+        0xff,           // Reserved 1
+        0xfe,           // Reserved 2
+        0x02,           // Options
+    };
+
+    // Build string
+    std::string expectedString;
+
+    // Size is length 1 - 12, the 
+    // amount of chars betfore the payload
+    // and after the length.
+    // Remember to de-xor it.
+    uint16_t size = data[2] ^ Gateway::XBeeController::ESCAPE_XOR;
+    size = size << 8;
+    CHECK_EQUAL(size, 4864);
+    size -= 12;
+
+    for (size_t i = 0; i < size; ++i ){
+        data.push_back('A');
+        expectedString += 'A';
+    }
+
+    //Get Checksum
+    uint8_t checksum = 0;
+    for (size_t i = 4; i < data.size(); ++i) {
+        checksum += data[i];
+    }
+
+    data.push_back(0xff - checksum);
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, successfulParse(expectedString))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK(!m_uut->m_escapedCharacter);
+    CHECK_EQUAL(m_uut->m_nonEscapedBytesProcessed, 0);
+    CHECK_EQUAL(m_uut->m_lengthCounter, 0);
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+}
+
+TEST(XBeeControllerTest, escapedCheckSumTest) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeController::START_CHARACTER,
+        0x00,
+        0x0F,
+        0x10,           // Frame Type
+        0x01,           // Frame ID
+        0x00,           // Address 1
+        0x00,           // Address 2
+        0x00,           // Address 3
+        0x00,           // Address 4
+        0x00,           // Address 5
+        0x00,           // Address 6
+        0xff,           // Address 7
+        0xff,           // Reserved 1
+        0xfe,           // Reserved 2
+        0x02,           // Options
+        'A',            // Payload - 0x40
+        '1',            // 0x31
+        Gateway::XBeeController::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(0x7E ^ Gateway::XBeeController::ESCAPE_XOR) // The start character
+    };
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, successfulParse("A1"))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
 }
 
