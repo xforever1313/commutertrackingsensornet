@@ -17,6 +17,10 @@ namespace Gateway {
 class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
     public:
         static const uint8_t START_CHARACTER;
+        static const uint8_t ESCAPE_CHARACTER;
+        static const uint8_t XON;
+        static const uint8_t XOFF;
+        static const uint8_t ESCAPE_XOR;
 
         /**
          * \note thread will not start until start() is called.
@@ -81,6 +85,8 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         std::uint16_t m_dataLength;
         std::uint8_t m_checkSumTotal;
         std::vector<std::uint8_t> m_bytesProcessed;
+        std::uint64_t m_nonEscapedBytesProcessed;
+        std::uint64_t m_lengthCounter; /// <Keepss track of the number of bytes between the length and checksum.
 
         std::string m_payload;
 
@@ -90,6 +96,8 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         State m_currentState;
 
         XBeeCallbackInterface *m_callbacks;
+
+        bool m_escapedCharacter;
 };
 
 }
