@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "gateway/Node.h"
+#include "gateway/XBeeConstants.h"
 #include "gateway/XBeeController.h"
 #include "gateway/XBeeTxEvent.h"
 
@@ -25,7 +26,7 @@ XBeeTxEvent::~XBeeTxEvent() {
 }
 
 void XBeeTxEvent::addStartChar() {
-    m_packet.push_back(XBeeController::START_CHARACTER);
+    m_packet.push_back(XBeeConstants::START_CHARACTER);
 }
 
 void XBeeTxEvent::addLength() {
@@ -38,15 +39,15 @@ void XBeeTxEvent::addLength() {
     uint16_t length = m_message.size() + 14;
     uint8_t msb = length >> 8;
     if (isEscapedCharacter(msb)) {
-        m_packet.push_back(XBeeController::ESCAPE_CHARACTER);
-        msb = msb ^ XBeeController::ESCAPE_XOR;
+        m_packet.push_back(XBeeConstants::ESCAPE_CHARACTER);
+        msb = msb ^ XBeeConstants::ESCAPE_XOR;
     }
     m_packet.push_back(msb);
 
     uint8_t lsb = length;
     if (isEscapedCharacter(lsb)) {
-        m_packet.push_back(XBeeController::ESCAPE_CHARACTER);
-        lsb = lsb ^ XBeeController::ESCAPE_XOR;
+        m_packet.push_back(XBeeConstants::ESCAPE_CHARACTER);
+        lsb = lsb ^ XBeeConstants::ESCAPE_XOR;
     }
     m_packet.push_back(lsb);
 }
@@ -71,9 +72,9 @@ void XBeeTxEvent::addAddress() {
         m_checksum += byte;
         if (isEscapedCharacter(byte)) {
             //Escaped characters must be xored with 0x02
-            byte = byte ^ XBeeController::ESCAPE_XOR;
+            byte = byte ^ XBeeConstants::ESCAPE_XOR;
 
-            m_packet.push_back(XBeeController::ESCAPE_CHARACTER);
+            m_packet.push_back(XBeeConstants::ESCAPE_CHARACTER);
         }
 
         // shift the address over 1 byte to get the next byte
@@ -108,8 +109,8 @@ void XBeeTxEvent::addPayload() {
         uint8_t ch = m_message[i];
         m_checksum += ch;
         if (isEscapedCharacter(ch)) {
-            ch = ch ^ XBeeController::ESCAPE_XOR;
-            m_packet.push_back(XBeeController::ESCAPE_CHARACTER);
+            ch = ch ^ XBeeConstants::ESCAPE_XOR;
+            m_packet.push_back(XBeeConstants::ESCAPE_CHARACTER);
         }
         m_packet.push_back(ch);
     }
@@ -140,10 +141,10 @@ void XBeeTxEvent::execute() {
 
 bool XBeeTxEvent::isEscapedCharacter(uint8_t c) const {
     bool ret = false;
-    if ((c == XBeeController::START_CHARACTER) ||
-        (c == XBeeController::ESCAPE_CHARACTER) ||
-        (c == XBeeController::XON) ||
-        (c == XBeeController::XOFF)) {
+    if ((c == XBeeConstants::START_CHARACTER) ||
+        (c == XBeeConstants::ESCAPE_CHARACTER) ||
+        (c == XBeeConstants::XON) ||
+        (c == XBeeConstants::XOFF)) {
 
         ret = true;
     }

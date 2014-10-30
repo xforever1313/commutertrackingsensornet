@@ -16,12 +16,6 @@ namespace Gateway {
 
 class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
     public:
-        static const uint8_t START_CHARACTER;
-        static const uint8_t ESCAPE_CHARACTER;
-        static const uint8_t XON;
-        static const uint8_t XOFF;
-        static const uint8_t ESCAPE_XOR;
-
         /**
          * \note thread will not start until start() is called.
          */

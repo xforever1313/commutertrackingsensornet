@@ -2,15 +2,10 @@
 #include <vector>
 
 #include "gateway/XBeeCallbackInterface.h"
+#include "gateway/XBeeConstants.h"
 #include "gateway/XBeeController.h"
 
 namespace Gateway {
-
-const uint8_t XBeeController::START_CHARACTER = '~';
-const uint8_t XBeeController::ESCAPE_CHARACTER = 0x7D;
-const uint8_t XBeeController::XON = 0x11;
-const uint8_t XBeeController::XOFF = 0x13;
-const uint8_t XBeeController::ESCAPE_XOR = 0x20;
 
 // Include start char, length, address, and option bytes.
 const uint8_t XBeeController::BYTES_TO_IGNORE = 15;
@@ -107,7 +102,7 @@ void XBeeController::handleData() {
 void XBeeController::handleStartupState() {
     std::uint8_t data = m_data.front();
     m_data.pop();
-    if (data == START_CHARACTER) {
+    if (data == XBeeConstants::START_CHARACTER) {
         m_currentState = MSG_START;
         m_bytesProcessed.push_back(data);
         ++m_nonEscapedBytesProcessed;
@@ -119,13 +114,13 @@ void XBeeController::handleMessageStartState() {
     m_data.pop();
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
     }
-    // If we get a start character that is not escaped, 
+    // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
@@ -133,7 +128,7 @@ void XBeeController::handleMessageStartState() {
         // all escaped values are xored by.
         if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ ESCAPE_XOR;
+            data = data ^ XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -154,13 +149,13 @@ void XBeeController::handleGotLength1State() {
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
     }
     // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
@@ -168,7 +163,7 @@ void XBeeController::handleGotLength1State() {
         // all escaped values are xored by.
         if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ ESCAPE_XOR;
+            data = data ^ XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -189,12 +184,12 @@ void XBeeController::handleGotLength2State() {
     // This is the data frame.  This can only be,
     // on the RX end of things,
     // 0x88, 0x8A, 0x8B, 0x90, 0x91, 0x95, 0x97.
-    // If anything else, this is an invalid message and 
+    // If anything else, this is an invalid message and
     // return to the start state. An escape character is
     // invalid here, so no need to check for that.
     // \todo actually do this.
 
-    if (data == START_CHARACTER) {
+    if (data == XBeeConstants::START_CHARACTER) {
         handleIncompleteMessage();
     }
     else {
@@ -212,24 +207,24 @@ void XBeeController::handleIgnoreOptionsState() {
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
 
         // Escaped characters do not get added to the checksum
         // Nor get added to the length
     }
-    // If we get a start character that is not escaped, 
+    // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
         // If we are escaped, xor by 0x02, the value by which
         // all escaped values are xored by.
-        if (m_escapedCharacter) { 
+        if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ ESCAPE_XOR;
+            data = data ^ XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -249,7 +244,7 @@ void XBeeController::handleParsePayloadState() {
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
         // Escaped characters do not get added to the checksum
@@ -258,7 +253,7 @@ void XBeeController::handleParsePayloadState() {
     }
     // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
@@ -266,7 +261,7 @@ void XBeeController::handleParsePayloadState() {
         // all escaped values are xored by.
         if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ ESCAPE_XOR;
+            data = data ^ XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -291,16 +286,16 @@ void XBeeController::handleCheckCheckSumState() {
 
     // If we got the escape character from the last state,
     // xor it so we get the right checksum.
-    if (data == ESCAPE_CHARACTER) {
+    if (data == XBeeConstants::ESCAPE_CHARACTER) {
         data = m_data.front(); // Ditch the escaped character
         m_data.pop();
-        data = data ^ ESCAPE_XOR;
+        data = data ^ XBeeConstants::ESCAPE_XOR;
     }
 
     if ((0xff - m_checkSumTotal) == data) {
         m_callbacks->successfulParse(m_payload);
     }
-    else if (data == START_CHARACTER){
+    else if (data == XBeeConstants::START_CHARACTER){
         // Premature start character
         handleIncompleteMessage();
         return; // Return early so we don't reset twice.
@@ -317,7 +312,7 @@ void XBeeController::handleCheckCheckSumState() {
 void XBeeController::handleIncompleteMessage() {
     m_callbacks->incompleteMessage(m_bytesProcessed);
     reset();
-    m_bytesProcessed.push_back(START_CHARACTER);
+    m_bytesProcessed.push_back(XBeeConstants::START_CHARACTER);
     m_currentState = MSG_START;
 }
 

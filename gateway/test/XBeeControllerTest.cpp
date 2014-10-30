@@ -5,6 +5,7 @@
 #include <vector>
 #include "UnitTest.h"
 
+#include "gateway/XBeeConstants.h"
 #include "gateway/XBeeController.h"
 #include "MockXBeeCallback.h"
 
@@ -44,7 +45,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
     std::vector<std::uint8_t> data = {
         0x00,           //Garbage data
         0x01,           //Garbage data
-        Gateway::XBeeController::START_CHARACTER, // Start Character
+        Gateway::XBeeConstants::START_CHARACTER, // Start Character
         0x00,           // Length1
         0x14,           // Length of 22
         0x10,           // Frame type
@@ -197,7 +198,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
  */
 TEST(XBeeControllerTest, badChecksumTest) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER, // Start Character
+        Gateway::XBeeConstants::START_CHARACTER, // Start Character
         0x00,           // Length1
         0x14,           // Length of 20
         0x10,           // Frame type
@@ -245,8 +246,8 @@ TEST(XBeeControllerTest, badChecksumTest) {
 /////
 TEST(XBeeControllerTest, incompleteMessageStartupState) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
-        Gateway::XBeeController::START_CHARACTER // Premature start char
+        Gateway::XBeeConstants::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER // Premature start char
     };
 
     // Get the expected data to be passed through
@@ -265,7 +266,7 @@ TEST(XBeeControllerTest, incompleteMessageStartupState) {
     // Everything should returm back to the msg_start state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
-    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
@@ -273,9 +274,9 @@ TEST(XBeeControllerTest, incompleteMessageStartupState) {
 
 TEST(XBeeControllerTest, incompleteMessageGotLength1State) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,
-        Gateway::XBeeController::START_CHARACTER // Premature start char
+        Gateway::XBeeConstants::START_CHARACTER // Premature start char
     };
 
     // Get the expected data to be passed through
@@ -294,7 +295,7 @@ TEST(XBeeControllerTest, incompleteMessageGotLength1State) {
     // Everything should returm back to the msg_start state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
-    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
@@ -302,10 +303,10 @@ TEST(XBeeControllerTest, incompleteMessageGotLength1State) {
 
 TEST(XBeeControllerTest, incompleteMessageGotLength2State) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
-        Gateway::XBeeController::START_CHARACTER // Premature start char
+        Gateway::XBeeConstants::START_CHARACTER // Premature start char
     };
 
     // Get the expected data to be passed through
@@ -324,7 +325,7 @@ TEST(XBeeControllerTest, incompleteMessageGotLength2State) {
     // Everything should returm back to the msg_start state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
-    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
@@ -332,7 +333,7 @@ TEST(XBeeControllerTest, incompleteMessageGotLength2State) {
 
 TEST(XBeeControllerTest, incompleteMessageIgnoreOptionsState) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
         0x10,           // Frame type
@@ -344,7 +345,7 @@ TEST(XBeeControllerTest, incompleteMessageIgnoreOptionsState) {
         0x00,           // Address 5
         0x00,           // Address 6
         0xff,           // Address 7
-        Gateway::XBeeController::START_CHARACTER // Premature start char
+        Gateway::XBeeConstants::START_CHARACTER // Premature start char
     };
 
     // Get the expected data to be passed through
@@ -363,7 +364,7 @@ TEST(XBeeControllerTest, incompleteMessageIgnoreOptionsState) {
     // Everything should returm back to the msg_start state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
-    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
@@ -371,7 +372,7 @@ TEST(XBeeControllerTest, incompleteMessageIgnoreOptionsState) {
 
 TEST(XBeeControllerTest, incompleteMessageParsePayloadState) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
         0x10,           // Frame Type
@@ -392,7 +393,7 @@ TEST(XBeeControllerTest, incompleteMessageParsePayloadState) {
         'l',
         'o',
         ' ',
-        Gateway::XBeeController::START_CHARACTER // Premature start char
+        Gateway::XBeeConstants::START_CHARACTER // Premature start char
     };
 
     // Get the expected data to be passed through
@@ -411,7 +412,7 @@ TEST(XBeeControllerTest, incompleteMessageParsePayloadState) {
     // Everything should returm back to the msg_start state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
-    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
@@ -419,7 +420,7 @@ TEST(XBeeControllerTest, incompleteMessageParsePayloadState) {
 
 TEST(XBeeControllerTest, incompleteMessageCheckCheckSumState) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x12,
         0x10,           // Frame Type
@@ -440,7 +441,7 @@ TEST(XBeeControllerTest, incompleteMessageCheckCheckSumState) {
         'l',
         'o',
         ' ',
-        Gateway::XBeeController::START_CHARACTER // Premature start char
+        Gateway::XBeeConstants::START_CHARACTER // Premature start char
     };
 
     std::vector<std::uint8_t> expectedPrintedData = data;
@@ -458,7 +459,7 @@ TEST(XBeeControllerTest, incompleteMessageCheckCheckSumState) {
     // Everything should returm back to the msg_start state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // Invalid start char should be there
-    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeController::START_CHARACTER);
+    CHECK_EQUAL(m_uut->m_bytesProcessed[0], Gateway::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
@@ -492,7 +493,7 @@ TEST(XBeeControllerTest, handleGotLength1StateLSBTest) {
 
 TEST(XBeeControllerTest, nonVerboseSuccessTest) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
         0x10,           // Frame Type
@@ -537,7 +538,7 @@ TEST(XBeeControllerTest, nonVerboseSuccessTest) {
 
 TEST(XBeeControllerTest, badStateTest) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
         0x10,           // Frame Type
@@ -570,7 +571,7 @@ TEST(XBeeControllerTest, badStateTest) {
 
 TEST(XBeeControllerTest, destructorSuccessTest) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
         0x10,           // Frame Type
@@ -607,19 +608,19 @@ TEST(XBeeControllerTest, destructorSuccessTest) {
 ///Escape characters test
 TEST(XBeeControllerTest, escapeCharacterSuccessTest) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,   // Length 1
-        Gateway::XBeeController::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeController::XOFF ^ Gateway::XBeeController::ESCAPE_XOR), // Length 2, 19 in dec
+        Gateway::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(Gateway::XBeeConstants::XOFF ^ Gateway::XBeeConstants::ESCAPE_XOR), // Length 2, 19 in dec
         0x10,           // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
-        Gateway::XBeeController::ESCAPE_CHARACTER, // 0x7D
-        static_cast<uint8_t>(Gateway::XBeeController::START_CHARACTER ^ Gateway::XBeeController::ESCAPE_XOR),  // Address 2 - 0x7E
-        Gateway::XBeeController::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeController::ESCAPE_CHARACTER ^ Gateway::XBeeController::ESCAPE_XOR), // Address 3 - 0x7D
-        Gateway::XBeeController::ESCAPE_CHARACTER, //
-        static_cast<uint8_t>(Gateway::XBeeController::XON ^ Gateway::XBeeController::ESCAPE_XOR),             // Address 4 - 0x11
+        Gateway::XBeeConstants::ESCAPE_CHARACTER, // 0x7D
+        static_cast<uint8_t>(Gateway::XBeeConstants::START_CHARACTER ^ Gateway::XBeeConstants::ESCAPE_XOR),  // Address 2 - 0x7E
+        Gateway::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(Gateway::XBeeConstants::ESCAPE_CHARACTER ^ Gateway::XBeeConstants::ESCAPE_XOR), // Address 3 - 0x7D
+        Gateway::XBeeConstants::ESCAPE_CHARACTER, //
+        static_cast<uint8_t>(Gateway::XBeeConstants::XON ^ Gateway::XBeeConstants::ESCAPE_XOR),             // Address 4 - 0x11
         0x00,           // Address 5
         0x00,           // Address 6
         0xff,           // Address 7
@@ -632,8 +633,8 @@ TEST(XBeeControllerTest, escapeCharacterSuccessTest) {
         ' ',            // 0x20
         ':',            // 0x3A
         ')',            // 0x29
-        Gateway::XBeeController::ESCAPE_CHARACTER, // 0x7D
-        static_cast<uint8_t>(Gateway::XBeeController::START_CHARACTER ^ Gateway::XBeeController::ESCAPE_XOR),  // 0x7E
+        Gateway::XBeeConstants::ESCAPE_CHARACTER, // 0x7D
+        static_cast<uint8_t>(Gateway::XBeeConstants::START_CHARACTER ^ Gateway::XBeeConstants::ESCAPE_XOR),  // 0x7E
         0x32
     };
 
@@ -660,9 +661,9 @@ TEST(XBeeControllerTest, escapeCharacterSuccessTest) {
 ///Escape characters test
 TEST(XBeeControllerTest, escapeCharacterMassiveLengthSuccessTest) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
-        Gateway::XBeeController::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeController::XOFF ^ Gateway::XBeeController::ESCAPE_XOR),          // Length 1
+        Gateway::XBeeConstants::START_CHARACTER,
+        Gateway::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(Gateway::XBeeConstants::XOFF ^ Gateway::XBeeConstants::ESCAPE_XOR),          // Length 1
         0x00,           // Length 2
         0x10,           // Frame Type
         0x01,           // Frame ID
@@ -685,7 +686,7 @@ TEST(XBeeControllerTest, escapeCharacterMassiveLengthSuccessTest) {
     // amount of chars betfore the payload
     // and after the length.
     // Remember to de-xor it.
-    uint16_t size = data[2] ^ Gateway::XBeeController::ESCAPE_XOR;
+    uint16_t size = data[2] ^ Gateway::XBeeConstants::ESCAPE_XOR;
     size = size << 8;
     CHECK_EQUAL(size, 4864);
     size -= 12;
@@ -725,7 +726,7 @@ TEST(XBeeControllerTest, escapeCharacterMassiveLengthSuccessTest) {
 
 TEST(XBeeControllerTest, escapedCheckSumTest) {
     std::vector<std::uint8_t> data = {
-        Gateway::XBeeController::START_CHARACTER,
+        Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x0e,
         0x10,           // Frame Type
@@ -742,8 +743,8 @@ TEST(XBeeControllerTest, escapedCheckSumTest) {
         0x02,           // Options
         'A',            // Payload - 0x40
         '1',            // 0x31
-        Gateway::XBeeController::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(0x7E ^ Gateway::XBeeController::ESCAPE_XOR) // The start character
+        Gateway::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(0x7E ^ Gateway::XBeeConstants::ESCAPE_XOR) // The start character
     };
 
     // When callback is called, kill the thread.
