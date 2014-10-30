@@ -72,7 +72,7 @@ void XBeeController::run() {
         if (!m_dataSemaphore.isShutdown()) {
             handleData();
         }
-    }while (isAlive()); 
+    }while (isAlive());
 }
 
 void XBeeController::handleData() {
@@ -131,19 +131,19 @@ void XBeeController::handleMessageStartState() {
     else {
         // If we are escaped, xor by 0x02, the value by which
         // all escaped values are xored by.
-        if (m_escapedCharacter) { 
+        if (m_escapedCharacter) {
             m_escapedCharacter = false;
             data = data ^ ESCAPE_XOR;
         }
-        
+
         m_bytesProcessed.push_back(data);
         ++m_nonEscapedBytesProcessed;
 
         // Do not increment m_lengthCounter since we are not past the length states yet.
 
         //Get the MSB of the length
-        data = data << 8; 
-        m_dataLength |= data;        
+        data = data << 8;
+        m_dataLength |= data;
         m_currentState = GOT_LENGTH1;
     }
 }
@@ -157,9 +157,8 @@ void XBeeController::handleGotLength1State() {
     if ((data == ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
-        // Escaped characters do not get added to the checksum.
     }
-    // If we get a start character that is not escaped, 
+    // If we get a start character that is not escaped,
     // we got an incomplete message
     else if ((data == START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
@@ -167,7 +166,7 @@ void XBeeController::handleGotLength1State() {
     else {
         // If we are escaped, xor by 0x02, the value by which
         // all escaped values are xored by.
-        if (m_escapedCharacter) { 
+        if (m_escapedCharacter) {
             m_escapedCharacter = false;
             data = data ^ ESCAPE_XOR;
         }
@@ -216,9 +215,9 @@ void XBeeController::handleIgnoreOptionsState() {
     if ((data == ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
-        ++m_lengthCounter;
 
         // Escaped characters do not get added to the checksum
+        // Nor get added to the length
     }
     // If we get a start character that is not escaped, 
     // we got an incomplete message
@@ -253,17 +252,11 @@ void XBeeController::handleParsePayloadState() {
     if ((data == ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
-        ++m_lengthCounter;
         // Escaped characters do not get added to the checksum
+        // Nor do not get counted in the length count
 
-        // If we got an escape character, but we also reached
-        // the max height, the checksum was escaped, go to that state
-        // now.
-        if (m_lengthCounter == m_dataLength) {
-            m_currentState = CHECK_CHECKSUM;
-        }
     }
-    // If we get a start character that is not escaped, 
+    // If we get a start character that is not escaped,
     // we got an incomplete message
     else if ((data == START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
@@ -271,7 +264,7 @@ void XBeeController::handleParsePayloadState() {
     else {
         // If we are escaped, xor by 0x02, the value by which
         // all escaped values are xored by.
-        if (m_escapedCharacter) { 
+        if (m_escapedCharacter) {
             m_escapedCharacter = false;
             data = data ^ ESCAPE_XOR;
         }
@@ -298,7 +291,9 @@ void XBeeController::handleCheckCheckSumState() {
 
     // If we got the escape character from the last state,
     // xor it so we get the right checksum.
-    if (m_escapedCharacter) {
+    if (data == ESCAPE_CHARACTER) {
+        data = m_data.front(); // Ditch the escaped character
+        m_data.pop();
         data = data ^ ESCAPE_XOR;
     }
 

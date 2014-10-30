@@ -628,14 +628,18 @@ TEST(XBeeControllerTest, escapeCharacterSuccessTest) {
         0x02,           // Options
         'H',            // 0x48
         'I',            // 0x49
+        ' ',            // 0x20
+        ' ',            // 0x20
+        ':',            // 0x3A
+        ')',            // 0x29
         Gateway::XBeeController::ESCAPE_CHARACTER, // 0x7D
         static_cast<uint8_t>(Gateway::XBeeController::START_CHARACTER ^ Gateway::XBeeController::ESCAPE_XOR),  // 0x7E
-        0xD5
+        0x32
     };
 
     // When callback is called, kill the thread.
     auto killFunc = [&](){m_uut->kill(true);};
-    EXPECT_CALL(*m_callbacks, successfulParse("HI~"))
+    EXPECT_CALL(*m_callbacks, successfulParse("HI  :)~"))
         .WillOnce(testing::InvokeWithoutArgs(killFunc));
 
     m_uut->start();
@@ -723,7 +727,7 @@ TEST(XBeeControllerTest, escapedCheckSumTest) {
     std::vector<std::uint8_t> data = {
         Gateway::XBeeController::START_CHARACTER,
         0x00,
-        0x0F,
+        0x0e,
         0x10,           // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1

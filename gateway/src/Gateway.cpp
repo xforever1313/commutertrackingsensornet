@@ -91,7 +91,8 @@ void Gateway::start() {
         HTTPServerStarted = true;
 
         try {
-            m_uart->open("/dev/ttyAMA0");
+            // SERIAL_PORT is defined at compile time with the -D flag.
+            m_uart->open(SERIAL_PORT);
             m_xbeeController->start();
             m_recvThread->start();
         }

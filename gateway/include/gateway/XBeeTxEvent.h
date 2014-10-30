@@ -36,11 +36,17 @@ class XBeeTxEvent : public Common::EventInterface {
         void addPayload();
         void addChecksum();
 
-        const Node m_node;
-        const std::string m_message;
+        /**
+         * \return true if the character needs to be escaped
+         */
+        bool isEscapedCharacter(uint8_t c) const;
+
+        Node m_node;
+        std::string m_message;
         UartInterface *m_uart;
         Common::IO::LoggerBase &m_errLogger;
         std::vector<std::uint8_t> m_packet;
+        std::uint8_t m_checksum;
 };
 
 }
