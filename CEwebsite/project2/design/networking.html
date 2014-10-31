@@ -11,7 +11,7 @@
 		</div>
 		
 		<div id="nav">
-			<ul id="navlist">
+			<ul class="navlist">
 				<li class="navli"><a href="../index.html">Home</a></li>
 				<li class="navlicurr"><a href="../design.html">Design</a></li>
 				<li class="navli"><a href="../teambios.html">Team</a></li>
@@ -22,7 +22,7 @@
 		
 		<div id="content">
 			<div id="sidebar">
-				<ul id="navlist">
+				<ul class="navlist">
 					<li><a class="vertnava" href="compvision.html">Computer Vision</a></li>
 					<li><a class="vertnavacurr" href="networking.html">Networking</a></li>
 					<li><a class="vertnava" href="powermgmt.html">Power Management</a></li>
@@ -31,8 +31,141 @@
 				</ul>
 			</div>
 			
+			<aside>
+				<h4>Important terms</h4>
+				<div class="impterm">
+					<p><em>Raspberry Pi:</em></p>
+					<p>A credit-card sized computer that plugs into an HDMI capable
+					display and a keyboard. The R-PI has a large user base that is
+					heavily involved in electronics and programming projects.</p>
+				</div>
+				<div class="impterm">
+					<p><em>XBee:</em></p>
+					<p>Radio modules that utilize the Zigbee communication protocol, which
+					is built for smaller low-power radios and based on the IEEE 802.15 standard.
+					Due to its low power, range is limited to 10-100 meters line-of-sight, but
+					its ability to form a mesh network of intermediate devices offers the possibility
+					of transmitting data over long distances.</p>
+				</div>
+				<div class="impterm">
+					<p><em>Mesh Topology:</em></p>
+					<p>A network structure in which each node connected to every other node in 
+					the structure. Nodes utilize hopping to reach a path from one node to another in
+					the case that a connection between two nodes cannot be established. Due to this
+					phenomenon, mesh topology is considered to be "self-healing", and is considered
+					one of the more stable network structures available.</p>
+					<figure class="aside">
+						<img src="../media/pictures/meshnettopology.bmp" 
+							 alt="Mesh Network" width="150" height="138">
+						<figcaption class="design">Mesh Topology</figcaption>
+					</figure>
+				</div>
+			</aside>
+			
 			<div id="section">
-				<p>kljnb</p>
+				<p>Users must be able to access data that is processed and sent from the 
+				trail nodes. This is done through a "Gateway" node, which is connected to
+				the Internet.The "Gateway" node receives data from the trail nodes and stores 
+				it in an SQL database. It also serves a web page associated with a domain name, 
+				and can be accessed through any web browser by a limited user base.</p>
+				<figure class="design">
+					<img src="../media/pictures/meshnetchart.bmp" 
+						 alt="Mesh Network Diagram" width="400" height="295">
+					<figcaption class="design">Network Structure</figcaption>
+				</figure>
+				<p>When initially designing the Gateway node, it was considered to host
+				the database and website from a third party server. This idea was quickly reconsidered
+				due to the need for a physical Gateway node to send data to that operated under
+				the same protocol as child nodes within the mesh network. Also, hosting from a 
+				third party provider costs money, and relinquishes some element of control.</p>
+				<figure class="design">
+					<img src="../media/pictures/raspberrypibplus.bmp" 
+						 alt="R-Pi" width="400" height="268">
+					<figcaption class="design">Raspberry Pi B+</figcaption>
+				</figure>
+				<p>A <a class="inline" href="http://www.raspberrypi.org/" target="_blank">Raspberry-Pi</a>
+				was loaded with the Rasbian Operating System, which is
+				a specific distribution of Linux made especially for the computer. By serving
+				the website from the Pi, it incurred no additional cost and we had complete control
+				over the SQL database construction and maintenance and Django installation and
+				configuration. We were also able to connect it directly to an XBee module to 
+				receive data from other nodes via the UART pins.</p>
+				<p>When compared to other mini-computers such as the Beaglebone Black, the BBB
+				offered such features as JavaScript driven hardware, a web interface, and 
+				more video processor capability and power, but none of the added features were
+				needed. For this reason, our familiarity with the R-Pi became the deciding factor 
+				over which computer to choose. It would mainly be used to run Cron jobs, the main
+				gateway process, serve the website, and run a lightweight database, which was
+				handled very well by the Samsung processor. Due to the limited number of users
+				which will have access to the website, server bandwidth is not a concern.</p>
+				<figure class="design">
+					<img src="../media/pictures/nodeprocesses.bmp" 
+						 alt="Node Processes" width="400" height="237">
+					<figcaption class="design">Gateway Node Processes</figcaption>
+				</figure>
+				<p>The "Gateway Process" described in the figure above involved design and
+				implementation of a customized C++ program that would accept commands via HTTP
+				from other processes, and execute them. In this manner, the Gateway serves as the
+				bridge between the trail nodes and the database. It also notifies the admins by 
+				email or SMS if something bad happens to the nodes or the server, and allows the
+				admin to put the nodes into sleep mode and wake them from sleep should the need arise.</p>
+				<p>HTTP was chosen as the communications protocol between nodes since a great deal
+				of interprocess communication occurs within the network. Choices for interprocess
+				communication methods were:</p>
+				<ul>
+					<li>Reading and writing to a file, or groups of files</li>
+					<li>Using interrupts and signals to intercommunicate</li>
+					<li>Using network sockets to translate information</li>
+				</ul>
+				<p>Due to the fact that implementation is fairly straightforward, and the resident
+				C++ expert is somewhat of a lazy engineer, an HTTP library was used to implement
+				socket I/O between processes. HTTP Post requests required a URL to post to and send
+				data. For this, the local-host of the attached router was used. From the node side,
+				a string is sent to the Gateway over RF with the URL and data separated by a delimiter
+				character. The Gateway would then receive and split out the URL and data and perform a
+				post request to itself. This was done using a simple Curl sub-process.</p>
+				<figure class="design">
+					<img src="../media/pictures/gatewaysequence.bmp" 
+						 alt="Gateway Program Sequence Diagram" width="500" height="446">
+					<figcaption class="design">Gateway Program Sequence</figcaption>
+				</figure>
+				<p>As shown in the sequence diagram above, the UART waits for an HTTP string
+				to be received, and then parses it into a message that it can interpret and post to 
+				the HTTP server. The server then parses the post request, checks for validity,
+				adds an event to the event queue, and returns to the listening state. The program
+				was optimized for minimal CPU downtime, and no wasted cycles.</p>
+				<p>Gateway to node communication will most likely not be HTTP, since we will need
+				to run a server on the PIXYCam, which is excessive. A custom protocol will need to be
+				developed that is lightweight, and interpretable by the on-board processors. </p>
+				<p>Additional functionality for the trail nodes will be accomplished through Cron jobs
+				on the main server. For instance, when the trail nodes need to be placed in a low power
+				state during the evening hours, a script will run at a specified time on the Gateway
+				and send a remote command to power save to all of the nodes. The Cron jobs will
+				run a Curl command, and HTTP post to the Gateway process at times specified in the 
+				Crontab. </p>
+				<figure class="design">
+					<img src="../media/pictures/debugcons.bmp" 
+						 alt="Debug Console" width="400" height="342">
+					<figcaption class="design">Debug Console</figcaption>
+				</figure>
+				<p>The debug console shown above was developed in order to test certain node features,
+				such as the ability to send SMS messages in case a node is in a bad state. It operates
+				by manually sending commands to the Gateway process. A Curl command is used to send
+				HTTP post requests, as in the example above.</p>
+				<p>A MariaDB backend was chosen as a drop in replacement for MySQL due to its non-
+				Oracle origin, and the fact that it is more open. The Gateway process communicates with 
+				it via a C API, and the Website communicates with it via a Django helper class.</p>
+				<figure class="design">
+					<img src="../media/pictures/databaseschema.bmp" 
+						 alt="Database Tables" width="400" height="235">
+					<figcaption class="design">Database Tables</figcaption>
+				</figure>
+				<p>The figure above shows the initial schema of our database. It has changed over
+				the design process, but the general idea has been to utilize Django's web framework
+				to create database objects that can interrelate between "foreign key" relationships. In 
+				the case above, each Error Log object has an attribute that links to a Node object, and
+				another that links to an Error Message object. User objects are separate entities, and
+				have the listed attributes.</p>
 			</div>
 		</div>
 		
