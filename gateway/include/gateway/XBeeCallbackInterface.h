@@ -35,6 +35,29 @@ class XBeeCallbackInterface {
          * \param badData The data that may have caused the bad message
          */
         virtual void badState(const std::vector<std::uint8_t> &badData) = 0;
+
+        /**
+         * \brief Called if the modem status returns 0x00 (A Hardware Reset)
+         */
+        virtual void hardwareReset() = 0;
+
+        /**
+         * \brief called if the modem status returns 0x01
+         *        (Watchdog timer reset)
+         */
+        virtual void watchdogTimerReset() = 0;
+
+        /**
+         * \brief Called if the modem status returns 0x0b
+         *        (Network woke up)
+         */
+        virtual void networkWokeUp() = 0;
+
+        /**
+         * \brief Called if the modem status returns 0x0c
+         *        (Network went to sleep)
+         */
+        virtual void networkWentToSleep() = 0;
 };
 
 }

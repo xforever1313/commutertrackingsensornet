@@ -107,5 +107,41 @@ TEST(XBeeCallbacksTest, badStateTest) {
     CHECK(m_errLogger->getString().find(Gateway::XBeeCallbacks::BAD_STATE_MESSAGE +
                                         Gateway::XBeeCallbacks::dumpData(data)) 
           != std::string::npos);
-
 }
+
+TEST(XBeeCallbacksTest, hardwareResetTest) {
+    m_uut->hardwareReset();
+
+    CHECK(m_outLogger->getString().find(Gateway::XBeeCallbacks::HARDWARE_RESET_MESSAGE)
+          != std::string::npos);
+
+    CHECK_EQUAL(m_errLogger->getString(), "");
+}
+
+TEST(XBeeCallbacksTest, watchdogTimerResetTest) {
+    m_uut->watchdogTimerReset();
+
+    CHECK(m_outLogger->getString().find(Gateway::XBeeCallbacks::WATCHDOG_TIMER_RESET_MESSAGE)
+          != std::string::npos);
+
+    CHECK_EQUAL(m_errLogger->getString(), "");
+}
+
+TEST(XBeeCallbacksTest, networkWokeUpTest) {
+    m_uut->networkWokeUp();
+
+    CHECK(m_outLogger->getString().find(Gateway::XBeeCallbacks::NETWORK_WOKE_UP_MESSAGE)
+          != std::string::npos);
+
+    CHECK_EQUAL(m_errLogger->getString(), "");
+}
+
+TEST(XBeeCallbacksTest, networkWentToSleepTest) {
+    m_uut->networkWentToSleep();
+
+    CHECK(m_outLogger->getString().find(Gateway::XBeeCallbacks::NETWORK_WENT_TO_SLEEP_MESSAGE)
+          != std::string::npos);
+
+    CHECK_EQUAL(m_errLogger->getString(), "");
+}
+
