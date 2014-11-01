@@ -30,6 +30,7 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         void networkWentToSleep() override;
         void invalidModemStatus(uint8_t badStatus) override;
         void badModemStatusPacket(const std::vector<std::uint8_t> &badData) override;
+        void invalidPacketFrame(uint8_t packetFrame) override;
 
     private:
         /**

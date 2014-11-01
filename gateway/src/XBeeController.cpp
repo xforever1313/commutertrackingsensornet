@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <mutex>
 #include <vector>
 
 #include "gateway/XBeeCallbackInterface.h"
@@ -44,21 +45,16 @@ void XBeeController::addData(const std::vector<std::uint8_t> &data) {
 }
 
 void XBeeController::kill(bool shutdownSemaphore /* = true */) {
-    m_isAliveMutex.lock();
+    std::lock_guard<OS::SMutex> lock(m_isAliveMutex);
     m_isAlive = false;
-    m_isAliveMutex.unlock();
     if (shutdownSemaphore) {
         m_dataSemaphore.shutdown();
     }
 }
 
 bool XBeeController::isAlive() {
-    bool ret;
-    m_isAliveMutex.lock();
-    ret = m_isAlive;
-    m_isAliveMutex.unlock();
-
-    return ret;
+    std::lock_guard<OS::SMutex> lock(m_isAliveMutex);
+    return m_isAlive;
 }
 
 void XBeeController::run() {
@@ -94,6 +90,9 @@ void XBeeController::handleData() {
             break;
         case CHECK_CHECKSUM:
             handleCheckCheckSumState();
+            break;
+        case PARSE_MODEM_STATUS:
+            handleParseModemStatusState();
             break;
         default: // Bad State
             handleBadState();
@@ -189,8 +188,6 @@ void XBeeController::handleGotLength2State() {
     // If anything else, this is an invalid message and
     // return to the start state. An escape character is
     // invalid here, so no need to check for that.
-    // \todo actually do this.
-
     if (data == XBeeConstants::START_CHARACTER) {
         handleIncompleteMessage();
     }
@@ -198,8 +195,19 @@ void XBeeController::handleGotLength2State() {
         ++m_nonEscapedBytesProcessed;
         m_bytesProcessed.push_back(data);
         m_checkSumTotal += data;
-        m_currentState = IGNORE_OPTIONS;
         ++m_lengthCounter;
+        if (data == XBeeConstants::PacketFrame::RECEIVE_PACKET){
+            m_currentState = IGNORE_OPTIONS;
+            m_packetFrame = static_cast<XBeeConstants::PacketFrame>(data);
+        }
+        else if (data == XBeeConstants::PacketFrame::MODEM_STATUS) {
+            m_currentState = PARSE_MODEM_STATUS;
+            m_packetFrame = static_cast<XBeeConstants::PacketFrame>(data);
+        }
+        else {
+            m_callbacks->invalidPacketFrame(data);
+            reset();
+        }
     }
 }
 
@@ -215,8 +223,13 @@ void XBeeController::handleParseModemStatusState() {
     // There should only be two bytes in a modem status frame:
     // the frame type and the status.  If the length is bigger than two,
     // Something bad occurred.  Return to the start state.
-    if (m_lengthCounter != 2) {
+    if (m_dataLength != 2) {
          m_callbacks->badModemStatusPacket(m_bytesProcessed);
+         reset();
+    }
+    else {
+        m_modemStatus = static_cast<XBeeConstants::ModemStatus>(data);
+        m_currentState = CHECK_CHECKSUM;
     }
 }
 
@@ -312,7 +325,7 @@ void XBeeController::handleCheckCheckSumState() {
     }
 
     if ((0xff - m_checkSumTotal) == data) {
-        m_callbacks->successfulParse(m_payload);
+        handleSuccessfulParse();
     }
     else if (data == XBeeConstants::START_CHARACTER){
         // Premature start character
@@ -326,6 +339,39 @@ void XBeeController::handleCheckCheckSumState() {
     }
 
     reset();
+}
+
+void XBeeController::handleSuccessfulParse() {
+    switch(m_packetFrame) {
+        case XBeeConstants::PacketFrame::RECEIVE_PACKET:
+            m_callbacks->successfulParse(m_payload);
+            break;
+
+        case XBeeConstants::PacketFrame::MODEM_STATUS:
+            switch(m_modemStatus) {
+                case XBeeConstants::ModemStatus::HARDWARE_RESET:
+                    m_callbacks->hardwareReset();
+                    break;
+                case XBeeConstants::ModemStatus::WATCHDOG_TIMER_RESET:
+                    m_callbacks->watchdogTimerReset();
+                    break;
+                case XBeeConstants::ModemStatus::NETWORK_WENT_TO_SLEEP:
+                    m_callbacks->networkWentToSleep();
+                    break;
+                case XBeeConstants::ModemStatus::NETWORK_WOKE_UP:
+                    m_callbacks->networkWokeUp();
+                    break;
+                default:
+                    m_callbacks->invalidModemStatus(m_modemStatus);
+                    break;
+            };
+            break;
+
+        default:
+            // Technically, this shouldnt happen, but just in case.
+            m_callbacks->badState(m_bytesProcessed);
+            break;
+    };
 }
 
 void XBeeController::handleIncompleteMessage() {

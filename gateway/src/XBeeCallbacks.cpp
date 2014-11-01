@@ -73,6 +73,12 @@ void XBeeCallbacks::badModemStatusPacket(const std::vector<std::uint8_t> &badDat
     m_errLogger.writeLineWithTimeStamp(BAD_MODEM_STATUS_PACKET_MESSAGE + dumpData(badData));
 }
 
+void XBeeCallbacks::invalidPacketFrame(uint8_t packetFrame) {
+    std::stringstream ss;
+    ss << std::hex << INVALID_MODEM_STATUS_MESSAGE << "0x" << static_cast<unsigned short>(packetFrame);
+    m_errLogger.writeLineWithTimeStamp(ss.str());
+}
+
 std::string XBeeCallbacks::dumpData(const std::vector<std::uint8_t> &badData) {
     std::stringstream ss;
     ss << "[" << std::hex;

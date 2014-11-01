@@ -69,6 +69,11 @@ class XBeeCallbackInterface {
          *        modem status packet.
          */
         virtual void badModemStatusPacket(const std::vector<std::uint8_t> &badData) = 0;
+
+        /**
+         * \brief called if the packet frame is not a valid one.
+         */
+        virtual void invalidPacketFrame(uint8_t packetFrame) = 0;
 };
 
 }

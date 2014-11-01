@@ -768,8 +768,6 @@ TEST(XBeeControllerTest, escapedCheckSumTest) {
 /////
 /// Modem Status Tests
 /////
-
-/*
 TEST(XBeeControllerTest, modemStatusHardwareReset) {
     std::vector<std::uint8_t> data = {
         Gateway::XBeeConstants::START_CHARACTER,
@@ -796,6 +794,115 @@ TEST(XBeeControllerTest, modemStatusHardwareReset) {
     CHECK_EQUAL(m_uut->m_payload, "");
     CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
 }
+
+TEST(XBeeControllerTest, modemWatchdogTimerReset) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x02,
+        Gateway::XBeeConstants::PacketFrame::MODEM_STATUS,     // Frame Type - 0x8A
+        Gateway::XBeeConstants::ModemStatus::WATCHDOG_TIMER_RESET, // Status - 0x01
+        0x74
+    };
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, watchdogTimerReset())
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+}
+
+TEST(XBeeControllerTest, modemNetworkWentToSleep) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x02,
+        Gateway::XBeeConstants::PacketFrame::MODEM_STATUS,     // Frame Type - 0x8A
+        Gateway::XBeeConstants::ModemStatus::NETWORK_WENT_TO_SLEEP, // Status - 0x0b
+        0x6a
+    };
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, networkWentToSleep())
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+}
+
+TEST(XBeeControllerTest, modemNetworkWokeUp) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x02,
+        Gateway::XBeeConstants::PacketFrame::MODEM_STATUS,     // Frame Type - 0x8A
+        Gateway::XBeeConstants::ModemStatus::NETWORK_WOKE_UP, // Status - 0x0c
+        0x69
+    };
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, networkWokeUp())
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+}
+
+TEST(XBeeControllerTest, invalidModemStatus) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x02,
+        Gateway::XBeeConstants::PacketFrame::MODEM_STATUS,     // Frame Type - 0x8A
+        Gateway::XBeeConstants::ModemStatus::UNKNOWN_STATUS, // Status - 0xFF
+        0x76
+    };
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, invalidModemStatus(Gateway::XBeeConstants::ModemStatus::UNKNOWN_STATUS))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+}
+
 
 TEST(XBeeControllerTest, badModemStatusPacket) {
     std::vector<std::uint8_t> data = {
@@ -825,4 +932,57 @@ TEST(XBeeControllerTest, badModemStatusPacket) {
     CHECK_EQUAL(m_uut->m_packetFrame, Gateway::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, Gateway::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
 }
-*/
+
+TEST(XBeeControllerTest, badHandleSuccessfulParse) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x03, // One more than is correct.
+        Gateway::XBeeConstants::PacketFrame::UNKNOWN,
+        Gateway::XBeeConstants::ModemStatus::HARDWARE_RESET // Status - 0x00
+        // Checksum not needed here since we shouldn't get that far.
+    };
+
+    m_uut->m_bytesProcessed = data;
+    m_uut->m_packetFrame = Gateway::XBeeConstants::PacketFrame::UNKNOWN;
+
+    EXPECT_CALL(*m_callbacks, badState(data));
+
+    m_uut->handleSuccessfulParse();
+}
+
+////
+// TxStatusTests
+////
+
+////
+// Other tests
+////
+TEST(XBeeControllerTest, invalidPacketFrameTest) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x02,
+        Gateway::XBeeConstants::PacketFrame::UNKNOWN,
+        // Checksum  and other values not needed here since we shouldn't get that far.
+    };
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, invalidPacketFrame(Gateway::XBeeConstants::PacketFrame::UNKNOWN))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_packetFrame, Gateway::XBeeConstants::PacketFrame::UNKNOWN);
+    CHECK_EQUAL(m_uut->m_modemStatus, Gateway::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
+}
+

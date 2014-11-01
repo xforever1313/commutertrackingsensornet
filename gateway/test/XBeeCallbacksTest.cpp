@@ -175,3 +175,15 @@ TEST(XBeeCallbacksTest, badModemStatusPacketTest) {
 
 }
 
+TEST(XBeeCallbacksTest, invalidPacketFrameTest) {
+    uint8_t badPacket = 0x90;
+    m_uut->invalidPacketFrame(badPacket);
+
+    CHECK_EQUAL(m_outLogger->getString(), "");
+
+    CHECK(m_errLogger->getString().find(Gateway::XBeeCallbacks::INVALID_MODEM_STATUS_MESSAGE +
+                                        "0x90") 
+          != std::string::npos);
+
+}
+

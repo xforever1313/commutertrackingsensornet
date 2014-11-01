@@ -73,6 +73,7 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         void handleCheckCheckSumState();
         void handleIncompleteMessage();
         void handleBadState();
+        void handleSuccessfulParse();
 
         void reset();
 
