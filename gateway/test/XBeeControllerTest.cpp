@@ -42,14 +42,14 @@ TEST(XBeeControllerTest, killTest) {
 }
 
 TEST(XBeeControllerTest, verboseStateTest) {
-    std::uint8_t checksum = 0x79;
+    std::uint8_t checksum = 0xF9;
     std::vector<std::uint8_t> data = {
         0x00,           //Garbage data
         0x01,           //Garbage data
         Gateway::XBeeConstants::START_CHARACTER, // Start Character
         0x00,           // Length1
         0x14,           // Length of 22
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type - 0x90
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -61,14 +61,14 @@ TEST(XBeeControllerTest, verboseStateTest) {
         0Xff,           // Reserved 1
         0xfe,           // Reserved 2
         0x02,           // Recv Options
-        'H',            // Payload
-        'e',
-        'l',
-        'l',
-        'o',
-        ' ',
-        ':',
-        ')',
+        'H',            // Payload - 0x48
+        'e',            // 0x65
+        'l',            // 0x6c
+        'l',            // 0x6c
+        'o',            // 0x6f
+        ' ',            // 0x20
+        ':',            // 0x3a
+        ')',            // 0x29
         checksum        // Checksum
     };
 
@@ -202,7 +202,7 @@ TEST(XBeeControllerTest, badChecksumTest) {
         Gateway::XBeeConstants::START_CHARACTER, // Start Character
         0x00,           // Length1
         0x14,           // Length of 20
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -337,7 +337,7 @@ TEST(XBeeControllerTest, incompleteMessageIgnoreOptionsState) {
         Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -376,7 +376,7 @@ TEST(XBeeControllerTest, incompleteMessageParsePayloadState) {
         Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -424,7 +424,7 @@ TEST(XBeeControllerTest, incompleteMessageCheckCheckSumState) {
         Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x12,
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -497,7 +497,7 @@ TEST(XBeeControllerTest, nonVerboseSuccessTest) {
         Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -517,7 +517,7 @@ TEST(XBeeControllerTest, nonVerboseSuccessTest) {
         ' ',
         ':',
         ')',
-        0x79
+        0xF9
     };
 
     // When callback is called, kill the thread.
@@ -542,7 +542,7 @@ TEST(XBeeControllerTest, badStateTest) {
         Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -575,7 +575,7 @@ TEST(XBeeControllerTest, destructorSuccessTest) {
         Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x14,
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -595,7 +595,7 @@ TEST(XBeeControllerTest, destructorSuccessTest) {
         ' ',
         ':',
         ')',
-        0x79
+        0xF9
     };
 
     // When callback is called, kill the thread.
@@ -613,7 +613,7 @@ TEST(XBeeControllerTest, escapeCharacterSuccessTest) {
         0x00,   // Length 1
         Gateway::XBeeConstants::ESCAPE_CHARACTER,
         static_cast<uint8_t>(Gateway::XBeeConstants::XOFF ^ Gateway::XBeeConstants::ESCAPE_XOR), // Length 2, 19 in dec
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type 0x90
         0x01,           // Frame ID
         0x00,           // Address 1
         Gateway::XBeeConstants::ESCAPE_CHARACTER, // 0x7D
@@ -636,7 +636,7 @@ TEST(XBeeControllerTest, escapeCharacterSuccessTest) {
         ')',            // 0x29
         Gateway::XBeeConstants::ESCAPE_CHARACTER, // 0x7D
         static_cast<uint8_t>(Gateway::XBeeConstants::START_CHARACTER ^ Gateway::XBeeConstants::ESCAPE_XOR),  // 0x7E
-        0x32
+        0xB2
     };
 
     // When callback is called, kill the thread.
@@ -666,7 +666,7 @@ TEST(XBeeControllerTest, escapeCharacterMassiveLengthSuccessTest) {
         Gateway::XBeeConstants::ESCAPE_CHARACTER,
         static_cast<uint8_t>(Gateway::XBeeConstants::XOFF ^ Gateway::XBeeConstants::ESCAPE_XOR),          // Length 1
         0x00,           // Length 2
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -730,7 +730,7 @@ TEST(XBeeControllerTest, escapedCheckSumTest) {
         Gateway::XBeeConstants::START_CHARACTER,
         0x00,
         0x0e,
-        Gateway::XBeeConstants::PacketFrame::TRANSMIT_REQUEST, // Frame Type
+        Gateway::XBeeConstants::PacketFrame::RECEIVE_PACKET, // Frame Type 0x90
         0x01,           // Frame ID
         0x00,           // Address 1
         0x00,           // Address 2
@@ -742,15 +742,15 @@ TEST(XBeeControllerTest, escapedCheckSumTest) {
         0xff,           // Reserved 1
         0xfe,           // Reserved 2
         0x02,           // Options
-        'A',            // Payload - 0x40
-        '1',            // 0x31
+        'x',            // Payload - 0x78
+        'z',            // 0x7A
         Gateway::XBeeConstants::ESCAPE_CHARACTER,
         static_cast<uint8_t>(0x7E ^ Gateway::XBeeConstants::ESCAPE_XOR) // The start character
     };
 
     // When callback is called, kill the thread.
     auto killFunc = [&](){m_uut->kill(true);};
-    EXPECT_CALL(*m_callbacks, successfulParse("A1"))
+    EXPECT_CALL(*m_callbacks, successfulParse("xz"))
         .WillOnce(testing::InvokeWithoutArgs(killFunc));
 
     m_uut->start();
