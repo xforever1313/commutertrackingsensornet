@@ -17,6 +17,8 @@ const std::string XBeeCallbacks::HARDWARE_RESET_MESSAGE = "XBee Hardware Reset";
 const std::string XBeeCallbacks::WATCHDOG_TIMER_RESET_MESSAGE = "XBee Watchdog Timer Reset";
 const std::string XBeeCallbacks::NETWORK_WOKE_UP_MESSAGE = "XBee network woke up";
 const std::string XBeeCallbacks::NETWORK_WENT_TO_SLEEP_MESSAGE = "XBee network went to sleep";
+const std::string XBeeCallbacks::INVALID_MODEM_STATUS_MESSAGE = "XBee invalid modem status - ";
+const std::string XBeeCallbacks::BAD_MODEM_STATUS_PACKET_MESSAGE = "XBee invalid modem packet -\n\t";
 
 XBeeCallbacks::XBeeCallbacks(Common::IO::LoggerBase &outLogger,/* = Common::IO::ConsoleLogger::out */
                              Common::IO::LoggerBase &errLogger/* = Common::IO::ConsoleLogger::err */) :
@@ -59,6 +61,16 @@ void XBeeCallbacks::networkWokeUp() {
 
 void XBeeCallbacks::networkWentToSleep() {
     m_outLogger.writeLineWithTimeStamp(NETWORK_WENT_TO_SLEEP_MESSAGE);
+}
+
+void XBeeCallbacks::invalidModemStatus(uint8_t badStatus) {
+    std::stringstream ss;
+    ss << std::hex << INVALID_MODEM_STATUS_MESSAGE << "0x" << static_cast<unsigned short>(badStatus);
+    m_errLogger.writeLineWithTimeStamp(ss.str());
+}
+
+void XBeeCallbacks::badModemStatusPacket(const std::vector<std::uint8_t> &badData) {
+    m_errLogger.writeLineWithTimeStamp(BAD_MODEM_STATUS_PACKET_MESSAGE + dumpData(badData));
 }
 
 std::string XBeeCallbacks::dumpData(const std::vector<std::uint8_t> &badData) {

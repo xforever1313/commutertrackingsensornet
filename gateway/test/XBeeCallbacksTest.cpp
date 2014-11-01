@@ -145,3 +145,33 @@ TEST(XBeeCallbacksTest, networkWentToSleepTest) {
     CHECK_EQUAL(m_errLogger->getString(), "");
 }
 
+TEST(XBeeCallbacksTest, invalidModemStatusTest) {
+    uint8_t badStatus = 0x90;
+    m_uut->invalidModemStatus(badStatus);
+
+    CHECK_EQUAL(m_outLogger->getString(), "");
+
+    CHECK(m_errLogger->getString().find(Gateway::XBeeCallbacks::INVALID_MODEM_STATUS_MESSAGE +
+                                        "0x90") 
+          != std::string::npos);
+
+}
+
+TEST(XBeeCallbacksTest, badModemStatusPacketTest) {
+    std::vector<std::uint8_t> data = {
+        0x37,
+        0x00,
+        0x20,
+        0x90,
+        0x7F
+    };
+
+    m_uut->badModemStatusPacket(data);
+
+    CHECK_EQUAL(m_outLogger->getString(), "");
+    CHECK(m_errLogger->getString().find(Gateway::XBeeCallbacks::BAD_MODEM_STATUS_PACKET_MESSAGE +
+                                        Gateway::XBeeCallbacks::dumpData(data))
+          != std::string::npos);
+
+}
+

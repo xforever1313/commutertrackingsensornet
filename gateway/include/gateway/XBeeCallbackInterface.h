@@ -58,6 +58,17 @@ class XBeeCallbackInterface {
          *        (Network went to sleep)
          */
         virtual void networkWentToSleep() = 0;
+
+        /**
+         * \brief called if the modem status is not valid.
+         */
+        virtual void invalidModemStatus(uint8_t badStatus) = 0;
+
+        /**
+         * \brief called if there's something structurally wrong with the 
+         *        modem status packet.
+         */
+        virtual void badModemStatusPacket(const std::vector<std::uint8_t> &badData) = 0;
 };
 
 }

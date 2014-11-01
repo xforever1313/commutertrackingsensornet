@@ -19,7 +19,9 @@ XBeeController::XBeeController(XBeeCallbackInterface *callbacks) :
     m_isAlive(true),
     m_currentState(STARTUP),
     m_callbacks(callbacks),
-    m_escapedCharacter(false)
+    m_escapedCharacter(false),
+    m_packetFrame(XBeeConstants::PacketFrame::UNKNOWN),
+    m_modemStatus(XBeeConstants::ModemStatus::UNKNOWN_STATUS)
 {
 
 }
@@ -201,6 +203,23 @@ void XBeeController::handleGotLength2State() {
     }
 }
 
+void XBeeController::handleParseModemStatusState() {
+    std::uint8_t data = m_data.front();
+    m_data.pop();
+    m_bytesProcessed.push_back(data);
+    ++m_nonEscapedBytesProcessed;
+    ++m_lengthCounter;
+
+    m_checkSumTotal += data;
+
+    // There should only be two bytes in a modem status frame:
+    // the frame type and the status.  If the length is bigger than two,
+    // Something bad occurred.  Return to the start state.
+    if (m_lengthCounter != 2) {
+         m_callbacks->badModemStatusPacket(m_bytesProcessed);
+    }
+}
+
 void XBeeController::handleIgnoreOptionsState() {
     std::uint8_t data = m_data.front();
     m_data.pop();
@@ -325,6 +344,8 @@ void XBeeController::reset() {
     m_escapedCharacter = false;
     m_nonEscapedBytesProcessed = 0;
     m_lengthCounter = 0;
+    m_packetFrame = XBeeConstants::PacketFrame::UNKNOWN;
+    m_modemStatus = XBeeConstants::ModemStatus::UNKNOWN_STATUS;
 }
 
 void XBeeController::handleBadState() {

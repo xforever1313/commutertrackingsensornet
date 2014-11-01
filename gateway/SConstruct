@@ -166,7 +166,7 @@ Alias(CREATE_LIB_ALIAS, [debugTarget, releaseTarget])
 Alias(DOXYGEN_ALIAS, doxygenTarget)
 Alias(CPP_CHECK_ALIAS, cppCheckTarget)
 Alias(UNIT_TEST_ALIAS, unitTestTarget)
-Alias(RUN_TEST_ALIAS, [unitTestTarget, cppCheckTarget, runTestTarget])
+Alias(RUN_TEST_ALIAS, [unitTestTarget, runTestTarget])
 
 Alias (NIGHTLY_ALIAS, [debugTarget, releaseTarget, doxygenTarget, cppCheckTarget, runTestTarget, netBeansTarget, vsTarget, CodeBlocksTarget])
 Alias (DELTA_ALIAS, [debugTarget, releaseTarget, cppCheckTarget, runTestTarget])

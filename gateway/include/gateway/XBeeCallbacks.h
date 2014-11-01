@@ -28,6 +28,8 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         void watchdogTimerReset() override;
         void networkWokeUp() override;
         void networkWentToSleep() override;
+        void invalidModemStatus(uint8_t badStatus) override;
+        void badModemStatusPacket(const std::vector<std::uint8_t> &badData) override;
 
     private:
         /**
@@ -41,10 +43,13 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         static const std::string INCOMPLETE_MESSAGE;
         static const std::string BAD_CHECKSUM_MESSAGE;
         static const std::string BAD_STATE_MESSAGE;
+
         static const std::string HARDWARE_RESET_MESSAGE;
         static const std::string WATCHDOG_TIMER_RESET_MESSAGE;
         static const std::string NETWORK_WOKE_UP_MESSAGE;
         static const std::string NETWORK_WENT_TO_SLEEP_MESSAGE;
+        static const std::string INVALID_MODEM_STATUS_MESSAGE;
+        static const std::string BAD_MODEM_STATUS_PACKET_MESSAGE;
 
         Common::IO::LoggerBase &m_outLogger;
         Common::IO::LoggerBase &m_errLogger;

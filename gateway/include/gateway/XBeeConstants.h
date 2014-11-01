@@ -13,6 +13,7 @@ class XBeeConstants {
          *       are here for reference
          */
         enum PacketFrame {
+            UNKNOWN = 0x00,
             AT_COMMAND = 0x08,
             QUEUE_PARAMETER = 0x09,
             TRANSMIT_REQUEST = 0x10,
@@ -25,6 +26,14 @@ class XBeeConstants {
             EXPLICIT_RX_INDICATIOR = 0x91,
             NODE_IDENTIFICATION_INDICATIOR = 0x95,
             REMOTE_COMMAND_RESPONSE = 0x97
+        };
+
+        enum ModemStatus {
+            UNKNOWN_STATUS = 0xff,
+            HARDWARE_RESET = 0x00,
+            WATCHDOG_TIMER_RESET = 0x01,
+            NETWORK_WENT_TO_SLEEP = 0x0B,
+            NETWORK_WOKE_UP = 0x0C
         };
 
         static const uint8_t START_CHARACTER;

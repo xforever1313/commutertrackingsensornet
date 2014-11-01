@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "gateway/XBeeCallbackInterface.h"
+#include "gateway/XBeeConstants.h"
 #include "gateway/UartRecvCallbackInterface.h"
 #include "SSemaphore.h"
 #include "SThread.h"
@@ -44,6 +45,7 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
             MSG_START,
             GOT_LENGTH1,
             GOT_LENGTH2,
+            PARSE_MODEM_STATUS,
             IGNORE_OPTIONS,
             PARSE_PAYLOAD,
             CHECK_CHECKSUM,
@@ -65,6 +67,7 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         void handleMessageStartState();
         void handleGotLength1State();
         void handleGotLength2State();
+        void handleParseModemStatusState();
         void handleIgnoreOptionsState();
         void handleParsePayloadState();
         void handleCheckCheckSumState();
@@ -92,6 +95,8 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         XBeeCallbackInterface *m_callbacks;
 
         bool m_escapedCharacter;
+        XBeeConstants::PacketFrame m_packetFrame;
+        XBeeConstants::ModemStatus m_modemStatus;
 };
 
 }

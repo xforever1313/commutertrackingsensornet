@@ -22,6 +22,8 @@ class MockXBeeCallback : public XBeeCallbackInterface {
         MOCK_METHOD0(watchdogTimerReset, void());
         MOCK_METHOD0(networkWokeUp, void());
         MOCK_METHOD0(networkWentToSleep, void());
+        MOCK_METHOD1(invalidModemStatus, void(std::uint8_t));
+        MOCK_METHOD1(badModemStatusPacket, void(const std::vector<std::uint8_t> &));
 };
 
 }
