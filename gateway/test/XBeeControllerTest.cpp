@@ -1071,6 +1071,155 @@ TEST(XBeeControllerTest, TxStatusFailure) {
     CHECK_EQUAL(m_uut->m_discoveryStatus, Gateway::XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS);
 }
 
+TEST(XBeeControllerTest, TxStatusPrematureMessageStart) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x07,
+        Gateway::XBeeConstants::PacketFrame::TRANSMIT_STATUS, // Frame Type - 0x8B
+        Gateway::XBeeConstants::START_CHARACTER 
+    };
+
+    std::vector<std::uint8_t> expectedData = data;
+    expectedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // For the new start character
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_packetFrame, Gateway::XBeeConstants::PacketFrame::UNKNOWN);
+    CHECK_EQUAL(m_uut->m_modemStatus, Gateway::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
+    CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
+    CHECK_EQUAL(m_uut->m_txStatus, Gateway::XBeeConstants::TxStatus::UNKNOWN_TX_STATUS);
+    CHECK_EQUAL(m_uut->m_discoveryStatus, Gateway::XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS);
+}
+
+TEST(XBeeControllerTest, TxStatusPrematureMessageStartTxRetry) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x07,
+        Gateway::XBeeConstants::PacketFrame::TRANSMIT_STATUS, // Frame Type - 0x8B
+        0x47,   // Frame ID
+        0xff,   // Reserved
+        0xfe,   // Reserved
+        Gateway::XBeeConstants::START_CHARACTER 
+    };
+
+    std::vector<std::uint8_t> expectedData = data;
+    expectedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // For the new start character
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_packetFrame, Gateway::XBeeConstants::PacketFrame::UNKNOWN);
+    CHECK_EQUAL(m_uut->m_modemStatus, Gateway::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
+    CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
+    CHECK_EQUAL(m_uut->m_txStatus, Gateway::XBeeConstants::TxStatus::UNKNOWN_TX_STATUS);
+    CHECK_EQUAL(m_uut->m_discoveryStatus, Gateway::XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS);
+}
+
+TEST(XBeeControllerTest, TxStatusPrematureMessageStartParseStatus) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x07,
+        Gateway::XBeeConstants::PacketFrame::TRANSMIT_STATUS, // Frame Type - 0x8B
+        0x47,   // Frame ID
+        0xff,   // Reserved
+        0xfe,   // Reserved
+        0x01,   // Attempts
+        Gateway::XBeeConstants::START_CHARACTER 
+    };
+
+    std::vector<std::uint8_t> expectedData = data;
+    expectedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // For the new start character
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_packetFrame, Gateway::XBeeConstants::PacketFrame::UNKNOWN);
+    CHECK_EQUAL(m_uut->m_modemStatus, Gateway::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
+    CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
+    CHECK_EQUAL(m_uut->m_txStatus, Gateway::XBeeConstants::TxStatus::UNKNOWN_TX_STATUS);
+    CHECK_EQUAL(m_uut->m_discoveryStatus, Gateway::XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS);
+}
+
+TEST(XBeeControllerTest, TxStatusPrematureMessageStartParseDiscovery) {
+    std::vector<std::uint8_t> data = {
+        Gateway::XBeeConstants::START_CHARACTER,
+        0x00,
+        0x07,
+        Gateway::XBeeConstants::PacketFrame::TRANSMIT_STATUS, // Frame Type - 0x8B
+        0x47,   // Frame ID
+        0xff,   // Reserved
+        0xfe,   // Reserved
+        0x01,   // Attempts
+        Gateway::XBeeConstants::TxStatus::ROUTE_NOT_FOUND,  // Status - 0x25
+        Gateway::XBeeConstants::START_CHARACTER 
+    };
+
+    std::vector<std::uint8_t> expectedData = data;
+    expectedData.pop_back();
+
+    // When callback is called, kill the thread.
+    auto killFunc = [&](){m_uut->kill(true);};
+    EXPECT_CALL(*m_callbacks, incompleteMessage(expectedData))
+        .WillOnce(testing::InvokeWithoutArgs(killFunc));
+
+    m_uut->start();
+    m_uut->addData(data);
+    m_uut->join();
+
+    // Everything should returm back to the startup state
+    CHECK_EQUAL(m_uut->m_dataLength, 0);
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // For the new start character
+    CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
+    CHECK_EQUAL(m_uut->m_payload, "");
+    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_packetFrame, Gateway::XBeeConstants::PacketFrame::UNKNOWN);
+    CHECK_EQUAL(m_uut->m_modemStatus, Gateway::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
+    CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
+    CHECK_EQUAL(m_uut->m_txStatus, Gateway::XBeeConstants::TxStatus::UNKNOWN_TX_STATUS);
+    CHECK_EQUAL(m_uut->m_discoveryStatus, Gateway::XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS);
+}
+
+
 TEST(XBeeControllerTest, TxStatusBadPacket) {
     std::vector<std::uint8_t> data = {
         Gateway::XBeeConstants::START_CHARACTER,

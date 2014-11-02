@@ -390,6 +390,11 @@ void XBeeController::handleTxParseTxRetryState() {
         // Nor do not get counted in the length count
 
     }
+    // If we get a start character that is not escaped,
+    // we got an incomplete message
+    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
+        handleIncompleteMessage();
+    }
     else {
         // If we are escaped, xor by 0x02, the value by which
         // all escaped values are xored by.
@@ -413,29 +418,38 @@ void XBeeController::handleTxParseStatusState() {
     std::uint8_t data = m_data.front();
     m_data.pop();
     
-    m_bytesProcessed.push_back(data);
-    ++m_nonEscapedBytesProcessed;
-    ++m_lengthCounter;
-    m_checkSumTotal += data;
+    if (data == XBeeConstants::START_CHARACTER) {
+         handleIncompleteMessage();
+    }
+    else {
+        m_bytesProcessed.push_back(data);
+        ++m_nonEscapedBytesProcessed;
+        ++m_lengthCounter;
+        m_checkSumTotal += data;
 
-    m_txStatus = static_cast<XBeeConstants::TxStatus>(data);
+        m_txStatus = static_cast<XBeeConstants::TxStatus>(data);
     
-    m_currentState = TX_PARSE_DISCOVERY;
-
+        m_currentState = TX_PARSE_DISCOVERY;
+    }
 }
 
 void XBeeController::handleTxParseDiscoveryState() {
     std::uint8_t data = m_data.front();
     m_data.pop();
     
-    m_bytesProcessed.push_back(data);
-    ++m_nonEscapedBytesProcessed;
-    ++m_lengthCounter;
-    m_checkSumTotal += data;
+    if (data == XBeeConstants::START_CHARACTER) {
+         handleIncompleteMessage();
+    }
+    else {
+        m_bytesProcessed.push_back(data);
+        ++m_nonEscapedBytesProcessed;
+        ++m_lengthCounter;
+        m_checkSumTotal += data;
 
-    m_discoveryStatus = static_cast<XBeeConstants::DiscoveryStatus>(data);
+        m_discoveryStatus = static_cast<XBeeConstants::DiscoveryStatus>(data);
     
-    m_currentState = CHECK_CHECKSUM;
+        m_currentState = CHECK_CHECKSUM;
+    }
 }
 
 void XBeeController::handleCheckCheckSumState() {
