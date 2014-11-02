@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "gateway/XBeeCallbackInterface.h"
+#include "gateway/XBeeConstants.h"
 
 namespace Gateway {
 
@@ -25,6 +26,9 @@ class MockXBeeCallback : public XBeeCallbackInterface {
         MOCK_METHOD1(invalidModemStatus, void(std::uint8_t));
         MOCK_METHOD1(badModemStatusPacket, void(const std::vector<std::uint8_t> &));
         MOCK_METHOD1(invalidPacketFrame, void(uint8_t));
+        MOCK_METHOD2(transmitSuccess, void(uint8_t, XBeeConstants::DiscoveryStatus ));
+        MOCK_METHOD3(transmitFailure, void(uint8_t, XBeeConstants::TxStatus errorNumber,
+                                           XBeeConstants::DiscoveryStatus discovery));
 };
 
 }

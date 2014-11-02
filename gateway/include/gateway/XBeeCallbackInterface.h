@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "gateway/XBeeConstants.h"
+
 namespace Gateway {
 
 class XBeeCallbackInterface {
@@ -74,6 +76,29 @@ class XBeeCallbackInterface {
          * \brief called if the packet frame is not a valid one.
          */
         virtual void invalidPacketFrame(uint8_t packetFrame) = 0;
+
+        /**
+         * \brief called when a tx success occurs.
+         * \param numattempts the number of attempts the tx made.
+         *        this is byte offset 7.
+         * \param discovery whether or not there was discovery overhead
+         *        or not.  byte offset 9
+         */
+        virtual void transmitSuccess(uint8_t numAttempts, 
+                                     XBeeConstants::DiscoveryStatus discovery) = 0;
+
+        /**
+         * \brief called when a tx failure occurs.
+         * \param numattempts the number of attempts the tx made.
+         *        this is byte offset 7.
+         * \param errorNumber The error number from the tx status packet,
+         *        byte offset 8
+         * \param discovery whether or not there was discovery overhead
+         *        or not.  byte offset 9
+         */
+        virtual void transmitFailure(uint8_t numAttempts, 
+                                     XBeeConstants::TxStatus errorNumber,
+                                     XBeeConstants::DiscoveryStatus discovery) = 0;
 };
 
 }

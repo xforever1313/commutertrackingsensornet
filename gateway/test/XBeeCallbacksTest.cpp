@@ -5,6 +5,7 @@
 #include "UnitTest.h"
 
 #include "gateway/XBeeCallbacks.h"
+#include "gateway/XBeeConstants.h"
 #include "io/StringLogger.h"
 
 TEST_GROUP(XBeeCallbacksTest) {
@@ -185,5 +186,84 @@ TEST(XBeeCallbacksTest, invalidPacketFrameTest) {
                                         "0x90") 
           != std::string::npos);
 
+}
+
+TEST(XBeeCallbacksTest, tramsmitSuccess) {
+    uint8_t numAttempts = 0x01;
+    Gateway::XBeeConstants::DiscoveryStatus discovery = Gateway::XBeeConstants::DiscoveryStatus::NO_OVERHEAD;
+
+    std::string expectedString = Gateway::XBeeCallbacks::TRANSMIT_SUCCESS_MESSAGE +
+                                 "Attempts: 1\n\tDiscovery: " + 
+                                 Gateway::XBeeCallbacks::getDiscoveryString(discovery);
+
+    m_uut->transmitSuccess(numAttempts, discovery);
+
+    CHECK(m_outLogger->getString().find(expectedString)
+          != std::string::npos);
+
+    CHECK_EQUAL(m_errLogger->getString(), "");
+
+}
+
+TEST(XBeeCallbacksTest, tramsmitFailure) {
+    uint8_t numAttempts = 0x01;
+    Gateway::XBeeConstants::TxStatus status = Gateway::XBeeConstants::TxStatus::ROUTE_NOT_FOUND;
+    Gateway::XBeeConstants::DiscoveryStatus discovery = Gateway::XBeeConstants::DiscoveryStatus::NO_OVERHEAD;
+
+    std::string expectedString = Gateway::XBeeCallbacks::TRANSMIT_FAILURE_MESSAGE +
+                                 "Attempts: 1\n\tDiscovery: " + 
+                                 Gateway::XBeeCallbacks::getDiscoveryString(discovery) +
+                                 "\n\tReason: " +
+                                 Gateway::XBeeCallbacks::getTxFailureReason(status);
+
+    m_uut->transmitFailure(numAttempts, status, discovery);
+
+    CHECK_EQUAL(m_outLogger->getString(), "");
+
+    CHECK(m_errLogger->getString().find(expectedString)
+          != std::string::npos);
+}
+
+
+TEST(XBeeCallbacksTest, getDiscoveryStringTest) {
+    const std::string s1 = 
+        Gateway::XBeeCallbacks::getDiscoveryString(Gateway::XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS);
+
+    const std::string s2 = 
+        Gateway::XBeeCallbacks::getDiscoveryString(Gateway::XBeeConstants::DiscoveryStatus::NO_OVERHEAD);
+
+    const std::string s3 = 
+        Gateway::XBeeCallbacks::getDiscoveryString(Gateway::XBeeConstants::DiscoveryStatus::ROUTE_DISCOVERY);
+
+    CHECK_EQUAL(s1, Gateway::XBeeCallbacks::TRANSMIT_UNKNOWN_ROUTE_DISCOVERY);
+    CHECK_EQUAL(s2, Gateway::XBeeCallbacks::TRANSMIT_NO_DISCOVERY_OVERHEAD);
+    CHECK_EQUAL(s3, Gateway::XBeeCallbacks::TRANSMIT_ROUTE_DISCOVERY_NEEDED);
+}
+
+TEST(XBeeCallbacksTest, getTxFailureReasonTest) {
+    const std::string s1 = 
+        Gateway::XBeeCallbacks::getTxFailureReason(Gateway::XBeeConstants::TxStatus::UNKNOWN_TX_STATUS);
+
+    const std::string s2 = 
+        Gateway::XBeeCallbacks::getTxFailureReason(Gateway::XBeeConstants::TxStatus::SUCCESS);
+
+    const std::string s3 = 
+        Gateway::XBeeCallbacks::getTxFailureReason(Gateway::XBeeConstants::TxStatus::MAC_ACK_FAILURE);
+
+    const std::string s4 = 
+        Gateway::XBeeCallbacks::getTxFailureReason(Gateway::XBeeConstants::TxStatus::INVALID_ENDPOINT);
+
+    const std::string s5 = 
+        Gateway::XBeeCallbacks::getTxFailureReason(Gateway::XBeeConstants::TxStatus::NETWORK_ACK_FAILURE);
+
+    const std::string s6 = 
+        Gateway::XBeeCallbacks::getTxFailureReason(Gateway::XBeeConstants::TxStatus::ROUTE_NOT_FOUND);
+
+    CHECK_EQUAL(s1, Gateway::XBeeCallbacks::TX_STATUS_UNKNOWN);
+    CHECK_EQUAL(s2, Gateway::XBeeCallbacks::TX_STATUS_SUCCESS);
+    CHECK_EQUAL(s3, Gateway::XBeeCallbacks::TX_STATUS_MAC_ACK_FAILURE);
+    CHECK_EQUAL(s4, Gateway::XBeeCallbacks::TX_STATUS_INVALID_ENDPOINT);
+    CHECK_EQUAL(s5, Gateway::XBeeCallbacks::TX_STATUS_NETWORK_ACK_FAILURE);
+    CHECK_EQUAL(s6, Gateway::XBeeCallbacks::TX_STATUS_ROUTE_NOT_FOUND);
 }
 

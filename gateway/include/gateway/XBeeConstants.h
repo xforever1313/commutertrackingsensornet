@@ -36,6 +36,21 @@ class XBeeConstants {
             NETWORK_WOKE_UP = 0x0C
         };
 
+        enum TxStatus {
+            UNKNOWN_TX_STATUS = 0xff,
+            SUCCESS = 0x00,
+            MAC_ACK_FAILURE = 0x01,
+            INVALID_ENDPOINT = 0x15,
+            NETWORK_ACK_FAILURE = 0x21,
+            ROUTE_NOT_FOUND = 0x25
+        };
+
+        enum DiscoveryStatus {
+            UNKNOWN_DISCOVERY_STATUS = 0xff,
+            NO_OVERHEAD = 0x00,
+            ROUTE_DISCOVERY = 0x02
+        };
+
         static const uint8_t START_CHARACTER;
         static const uint8_t ESCAPE_CHARACTER;
         static const uint8_t XON;

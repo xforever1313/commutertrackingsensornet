@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "gateway/XBeeCallbacks.h"
+#include "gateway/XBeeConstants.h"
 #include "io/LoggerBase.h"
 
 namespace Gateway {
@@ -19,6 +20,20 @@ const std::string XBeeCallbacks::NETWORK_WOKE_UP_MESSAGE = "XBee network woke up
 const std::string XBeeCallbacks::NETWORK_WENT_TO_SLEEP_MESSAGE = "XBee network went to sleep";
 const std::string XBeeCallbacks::INVALID_MODEM_STATUS_MESSAGE = "XBee invalid modem status - ";
 const std::string XBeeCallbacks::BAD_MODEM_STATUS_PACKET_MESSAGE = "XBee invalid modem packet -\n\t";
+
+const std::string XBeeCallbacks::TRANSMIT_SUCCESS_MESSAGE = "Tx Success - \n\t";
+const std::string XBeeCallbacks::TRANSMIT_FAILURE_MESSAGE = "Tx Failure - \n\t";
+
+const std::string XBeeCallbacks::TRANSMIT_NO_DISCOVERY_OVERHEAD = "No discovery overhead.";
+const std::string XBeeCallbacks::TRANSMIT_ROUTE_DISCOVERY_NEEDED = "Route discovery needed.";
+const std::string XBeeCallbacks::TRANSMIT_UNKNOWN_ROUTE_DISCOVERY = "Unknown route discovery message";
+
+const std::string XBeeCallbacks::TX_STATUS_SUCCESS = "Tx Success";
+const std::string XBeeCallbacks::TX_STATUS_MAC_ACK_FAILURE = "Mac Ack Failure";
+const std::string XBeeCallbacks::TX_STATUS_INVALID_ENDPOINT = "Invalid Endpoint";
+const std::string XBeeCallbacks::TX_STATUS_NETWORK_ACK_FAILURE = "Network Ack Failure";
+const std::string XBeeCallbacks::TX_STATUS_ROUTE_NOT_FOUND = "Route Not Found";
+const std::string XBeeCallbacks::TX_STATUS_UNKNOWN = "Unknown Tx Error";
 
 XBeeCallbacks::XBeeCallbacks(Common::IO::LoggerBase &outLogger,/* = Common::IO::ConsoleLogger::out */
                              Common::IO::LoggerBase &errLogger/* = Common::IO::ConsoleLogger::err */) :
@@ -79,6 +94,28 @@ void XBeeCallbacks::invalidPacketFrame(uint8_t packetFrame) {
     m_errLogger.writeLineWithTimeStamp(ss.str());
 }
 
+void XBeeCallbacks::transmitSuccess(uint8_t numAttempts, 
+                                    XBeeConstants::DiscoveryStatus discovery) {
+    std::stringstream ss;
+    ss << TRANSMIT_SUCCESS_MESSAGE << "Attempts: " 
+       << static_cast<unsigned short>(numAttempts) << "\n\tDiscovery: "
+       << getDiscoveryString(discovery);
+    m_outLogger.writeLineWithTimeStamp(ss.str());
+}
+
+void XBeeCallbacks::transmitFailure(uint8_t numAttempts, 
+                                    XBeeConstants::TxStatus errorNumber,
+                                    XBeeConstants::DiscoveryStatus discovery) {
+    std::stringstream ss;
+    ss << TRANSMIT_FAILURE_MESSAGE << "Attempts: " 
+       << static_cast<unsigned short>(numAttempts) << "\n\tDiscovery: "
+       << getDiscoveryString(discovery) << "\n\tReason: "
+       << getTxFailureReason(errorNumber);
+    m_errLogger.writeLineWithTimeStamp(ss.str());
+
+}
+
+
 std::string XBeeCallbacks::dumpData(const std::vector<std::uint8_t> &badData) {
     std::stringstream ss;
     ss << "[" << std::hex;
@@ -97,6 +134,48 @@ std::string XBeeCallbacks::dumpData(const std::vector<std::uint8_t> &badData) {
     ss << "]";
 
     return ss.str();
+}
+
+const std::string XBeeCallbacks::getDiscoveryString(XBeeConstants::DiscoveryStatus discovery) {
+    std::string ret;
+    switch(discovery) {
+        case XBeeConstants::DiscoveryStatus::NO_OVERHEAD:
+            ret = TRANSMIT_NO_DISCOVERY_OVERHEAD;
+            break;
+        case XBeeConstants::DiscoveryStatus::ROUTE_DISCOVERY:
+            ret = TRANSMIT_ROUTE_DISCOVERY_NEEDED;
+            break;
+        default:
+            ret = TRANSMIT_UNKNOWN_ROUTE_DISCOVERY;
+    };
+    return ret;
+}
+
+const std::string XBeeCallbacks::getTxFailureReason(XBeeConstants::TxStatus txStatus) {
+    std::string ret;
+    
+    switch(txStatus) {
+        case XBeeConstants::SUCCESS:
+            ret = TX_STATUS_SUCCESS;
+            break;
+        case XBeeConstants::MAC_ACK_FAILURE:
+            ret = TX_STATUS_MAC_ACK_FAILURE;
+            break;
+        case XBeeConstants::INVALID_ENDPOINT:
+            ret = TX_STATUS_INVALID_ENDPOINT;
+            break;
+        case XBeeConstants::NETWORK_ACK_FAILURE:
+            ret = TX_STATUS_NETWORK_ACK_FAILURE;
+            break;
+        case XBeeConstants::ROUTE_NOT_FOUND:
+            ret = TX_STATUS_ROUTE_NOT_FOUND;
+            break;
+        default:
+            ret = TX_STATUS_UNKNOWN;
+            break;
+    };
+
+    return ret;
 }
 
 }
