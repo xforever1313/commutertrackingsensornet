@@ -176,6 +176,23 @@ TEST(XBeeCallbacksTest, badModemStatusPacketTest) {
 
 }
 
+TEST(XBeeCallbacksTest, badTxStatusPacketTest) {
+    std::vector<std::uint8_t> data = {
+        0x37,
+        0x00,
+        0x20,
+        0x90,
+        0x7F
+    };
+
+    m_uut->badTxStatusPacket(data);
+
+    CHECK_EQUAL(m_outLogger->getString(), "");
+    CHECK(m_errLogger->getString().find(Gateway::XBeeCallbacks::BAD_TX_STATUS_PACKET_MESSAGE +
+                                        Gateway::XBeeCallbacks::dumpData(data))
+          != std::string::npos);
+}
+
 TEST(XBeeCallbacksTest, invalidPacketFrameTest) {
     uint8_t badPacket = 0x90;
     m_uut->invalidPacketFrame(badPacket);

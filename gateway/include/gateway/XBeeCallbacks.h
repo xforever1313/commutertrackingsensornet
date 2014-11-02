@@ -30,6 +30,7 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         void networkWentToSleep() override;
         void invalidModemStatus(uint8_t badStatus) override;
         void badModemStatusPacket(const std::vector<std::uint8_t> &badData) override;
+         void badTxStatusPacket(const std::vector<std::uint8_t> &badData) override;
         void invalidPacketFrame(uint8_t packetFrame) override;
         void transmitSuccess(uint8_t numAttempts, XBeeConstants::DiscoveryStatus discovery) override;
         void transmitFailure(uint8_t numAttempts, XBeeConstants::TxStatus errorNumber,
@@ -56,6 +57,7 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         static const std::string NETWORK_WENT_TO_SLEEP_MESSAGE;
         static const std::string INVALID_MODEM_STATUS_MESSAGE;
         static const std::string BAD_MODEM_STATUS_PACKET_MESSAGE;
+        static const std::string BAD_TX_STATUS_PACKET_MESSAGE;
 
         static const std::string TRANSMIT_SUCCESS_MESSAGE;
         static const std::string TRANSMIT_FAILURE_MESSAGE;

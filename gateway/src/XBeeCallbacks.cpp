@@ -20,6 +20,7 @@ const std::string XBeeCallbacks::NETWORK_WOKE_UP_MESSAGE = "XBee network woke up
 const std::string XBeeCallbacks::NETWORK_WENT_TO_SLEEP_MESSAGE = "XBee network went to sleep";
 const std::string XBeeCallbacks::INVALID_MODEM_STATUS_MESSAGE = "XBee invalid modem status - ";
 const std::string XBeeCallbacks::BAD_MODEM_STATUS_PACKET_MESSAGE = "XBee invalid modem packet -\n\t";
+const std::string XBeeCallbacks::BAD_TX_STATUS_PACKET_MESSAGE = "XBee invalid tx status packet - \n\t";
 
 const std::string XBeeCallbacks::TRANSMIT_SUCCESS_MESSAGE = "Tx Success - \n\t";
 const std::string XBeeCallbacks::TRANSMIT_FAILURE_MESSAGE = "Tx Failure - \n\t";
@@ -86,6 +87,10 @@ void XBeeCallbacks::invalidModemStatus(uint8_t badStatus) {
 
 void XBeeCallbacks::badModemStatusPacket(const std::vector<std::uint8_t> &badData) {
     m_errLogger.writeLineWithTimeStamp(BAD_MODEM_STATUS_PACKET_MESSAGE + dumpData(badData));
+}
+
+void XBeeCallbacks::badTxStatusPacket(const std::vector<std::uint8_t> &badData) {
+    m_errLogger.writeLineWithTimeStamp(BAD_TX_STATUS_PACKET_MESSAGE + dumpData(badData));
 }
 
 void XBeeCallbacks::invalidPacketFrame(uint8_t packetFrame) {

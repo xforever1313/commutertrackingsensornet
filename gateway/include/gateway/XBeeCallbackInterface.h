@@ -73,6 +73,12 @@ class XBeeCallbackInterface {
         virtual void badModemStatusPacket(const std::vector<std::uint8_t> &badData) = 0;
 
         /**
+         * \brief Called if there's something structurally wrong with the
+         *        Tx Status packet.
+         */
+        virtual void badTxStatusPacket(const std::vector<std::uint8_t> &badData) = 0;
+
+        /**
          * \brief called if the packet frame is not a valid one.
          */
         virtual void invalidPacketFrame(uint8_t packetFrame) = 0;

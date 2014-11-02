@@ -47,12 +47,17 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
             GOT_LENGTH2,
             PARSE_MODEM_STATUS,
             IGNORE_OPTIONS,
+            IGNORE_TX_STATUS_OPTIONS,
             PARSE_PAYLOAD,
+            TX_PARSE_TX_RETRY,
+            TX_PARSE_STATUS,
+            TX_PARSE_DISCOVERY,
             CHECK_CHECKSUM,
             INCOMPLETE_MESSAGE
         };
 
         static const uint8_t BYTES_TO_IGNORE; /// <Bytes to ignore during the ignore state
+        static const uint8_t TX_BYTES_TO_IGNORE;
 
         /**
          * \brief Thread loop
@@ -69,7 +74,11 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         void handleGotLength2State();
         void handleParseModemStatusState();
         void handleIgnoreOptionsState();
+        void handleIgnoreTxStatusOptions();
         void handleParsePayloadState();
+        void handleTxParseTxRetryState();
+        void handleTxParseStatusState();
+        void handleTxParseDiscoveryState();
         void handleCheckCheckSumState();
         void handleIncompleteMessage();
         void handleBadState();
@@ -98,6 +107,9 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         bool m_escapedCharacter;
         XBeeConstants::PacketFrame m_packetFrame;
         XBeeConstants::ModemStatus m_modemStatus;
+        uint8_t m_transmitRetryCount;
+        XBeeConstants::TxStatus m_txStatus;
+        XBeeConstants::DiscoveryStatus m_discoveryStatus;
 };
 
 }

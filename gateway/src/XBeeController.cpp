@@ -10,6 +10,7 @@ namespace Gateway {
 
 // Include start char, length, address, and option bytes.
 const uint8_t XBeeController::BYTES_TO_IGNORE = 15;
+const uint8_t XBeeController::TX_BYTES_TO_IGNORE = 7;
 
 XBeeController::XBeeController(XBeeCallbackInterface *callbacks) :
     m_dataLength(0),  // Put in bad state until everything begins
@@ -22,7 +23,10 @@ XBeeController::XBeeController(XBeeCallbackInterface *callbacks) :
     m_callbacks(callbacks),
     m_escapedCharacter(false),
     m_packetFrame(XBeeConstants::PacketFrame::UNKNOWN),
-    m_modemStatus(XBeeConstants::ModemStatus::UNKNOWN_STATUS)
+    m_modemStatus(XBeeConstants::ModemStatus::UNKNOWN_STATUS),
+    m_transmitRetryCount(0),
+    m_txStatus(XBeeConstants::TxStatus::UNKNOWN_TX_STATUS),
+    m_discoveryStatus(XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS)
 {
 
 }
@@ -85,8 +89,20 @@ void XBeeController::handleData() {
         case IGNORE_OPTIONS:
             handleIgnoreOptionsState();
             break;
+        case IGNORE_TX_STATUS_OPTIONS:
+            handleIgnoreTxStatusOptions();
+            break;
         case PARSE_PAYLOAD:
             handleParsePayloadState();
+            break;
+        case TX_PARSE_TX_RETRY:
+            handleTxParseTxRetryState();
+            break;
+        case TX_PARSE_STATUS:
+            handleTxParseStatusState();
+            break;
+        case TX_PARSE_DISCOVERY:
+            handleTxParseDiscoveryState();
             break;
         case CHECK_CHECKSUM:
             handleCheckCheckSumState();
@@ -204,6 +220,17 @@ void XBeeController::handleGotLength2State() {
             m_currentState = PARSE_MODEM_STATUS;
             m_packetFrame = static_cast<XBeeConstants::PacketFrame>(data);
         }
+        else if (data == XBeeConstants::PacketFrame::TRANSMIT_STATUS) {
+            // Ensure the length is 7, otherwise the packet is invalid
+            if (m_dataLength != 0x07) {
+                m_callbacks->badTxStatusPacket(m_bytesProcessed);
+                reset();
+            }
+            else {
+                m_currentState = IGNORE_TX_STATUS_OPTIONS;
+                m_packetFrame = static_cast<XBeeConstants::PacketFrame>(data);
+            }
+        }
         else {
             m_callbacks->invalidPacketFrame(data);
             reset();
@@ -270,6 +297,44 @@ void XBeeController::handleIgnoreOptionsState() {
     }
 }
 
+void XBeeController::handleIgnoreTxStatusOptions() {
+    std::uint8_t data = m_data.front();
+    m_data.pop();
+
+    // If we are not escaped and we get an escaped character
+    // set the escaped character flag true
+    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
+        m_escapedCharacter = true;
+        m_bytesProcessed.push_back(data);
+
+        // Escaped characters do not get added to the checksum
+        // Nor get added to the length
+    }
+    // If we get a start character that is not escaped,
+    // we got an incomplete message
+    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
+        handleIncompleteMessage();
+    }
+    else {
+        // If we are escaped, xor by 0x02, the value by which
+        // all escaped values are xored by.
+        if (m_escapedCharacter) {
+            m_escapedCharacter = false;
+            data = data ^ XBeeConstants::ESCAPE_XOR;
+        }
+
+        m_bytesProcessed.push_back(data);
+        ++m_nonEscapedBytesProcessed;
+        ++m_lengthCounter;
+
+        m_checkSumTotal += data;
+        if (m_nonEscapedBytesProcessed == TX_BYTES_TO_IGNORE) {
+            m_currentState = TX_PARSE_TX_RETRY;
+        }
+    }
+
+}
+
 void XBeeController::handleParsePayloadState() {
     std::uint8_t data = m_data.front();
     m_data.pop();
@@ -310,6 +375,67 @@ void XBeeController::handleParsePayloadState() {
 
         m_payload += static_cast<char>(data);
     }
+}
+
+void XBeeController::handleTxParseTxRetryState() {
+    std::uint8_t data = m_data.front();
+    m_data.pop();
+
+    // If we are not escaped and we get an escaped character
+    // set the escaped character flag true
+    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
+        m_escapedCharacter = true;
+        m_bytesProcessed.push_back(data);
+        // Escaped characters do not get added to the checksum
+        // Nor do not get counted in the length count
+
+    }
+    else {
+        // If we are escaped, xor by 0x02, the value by which
+        // all escaped values are xored by.
+        if (m_escapedCharacter) {
+            m_escapedCharacter = false;
+            data = data ^ XBeeConstants::ESCAPE_XOR;
+        }
+
+        m_bytesProcessed.push_back(data);
+        ++m_nonEscapedBytesProcessed;
+        ++m_lengthCounter;
+        m_checkSumTotal += data;
+
+        m_transmitRetryCount = data;
+    
+        m_currentState = TX_PARSE_STATUS;
+    }
+}
+
+void XBeeController::handleTxParseStatusState() {
+    std::uint8_t data = m_data.front();
+    m_data.pop();
+    
+    m_bytesProcessed.push_back(data);
+    ++m_nonEscapedBytesProcessed;
+    ++m_lengthCounter;
+    m_checkSumTotal += data;
+
+    m_txStatus = static_cast<XBeeConstants::TxStatus>(data);
+    
+    m_currentState = TX_PARSE_DISCOVERY;
+
+}
+
+void XBeeController::handleTxParseDiscoveryState() {
+    std::uint8_t data = m_data.front();
+    m_data.pop();
+    
+    m_bytesProcessed.push_back(data);
+    ++m_nonEscapedBytesProcessed;
+    ++m_lengthCounter;
+    m_checkSumTotal += data;
+
+    m_discoveryStatus = static_cast<XBeeConstants::DiscoveryStatus>(data);
+    
+    m_currentState = CHECK_CHECKSUM;
 }
 
 void XBeeController::handleCheckCheckSumState() {
@@ -367,6 +493,17 @@ void XBeeController::handleSuccessfulParse() {
             };
             break;
 
+        case XBeeConstants::TRANSMIT_STATUS:
+            if (m_txStatus == XBeeConstants::TxStatus::SUCCESS) {
+                m_callbacks->transmitSuccess(m_transmitRetryCount, m_discoveryStatus);
+            }
+            else {
+                m_callbacks->transmitFailure(m_transmitRetryCount, 
+                                             m_txStatus,
+                                             m_discoveryStatus);
+            }
+            break;
+
         default:
             // Technically, this shouldnt happen, but just in case.
             m_callbacks->badState(m_bytesProcessed);
@@ -392,6 +529,9 @@ void XBeeController::reset() {
     m_lengthCounter = 0;
     m_packetFrame = XBeeConstants::PacketFrame::UNKNOWN;
     m_modemStatus = XBeeConstants::ModemStatus::UNKNOWN_STATUS;
+    m_transmitRetryCount = 0;
+    m_txStatus = XBeeConstants::TxStatus::UNKNOWN_TX_STATUS;
+    m_discoveryStatus = XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS;
 }
 
 void XBeeController::handleBadState() {
