@@ -45,7 +45,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ctsn_web'
+    'ctsn_web',
+    'captcha'
 )
 
 MIDDLEWARE_CLASSES = (

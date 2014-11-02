@@ -15,9 +15,12 @@
             <p><label for="password">Password:</label></p>
             <p>{{form.password}}</p>
 
+            <p>{{form.captcha}}</p>
+            {% if form.captcha.errors%}<p>{{form.captcha.errors}}</p>{%endif%}
+
             <p><input type = "submit" alt="login"/></p>
         </form>
     </div>
 </body>
 </html>
-
+ 
