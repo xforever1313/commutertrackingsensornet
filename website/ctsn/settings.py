@@ -32,6 +32,20 @@ TEMPLATE_DEBUG = False
 ALLOWED_HOSTS = ['localhost', 'ctsn.student.rit.edu']
 
 
+CSRF_COOKIE_HTTPONLY = True
+# TODO Make this true when we have https
+CSRF_COOKIE_SECURE = False
+
+SESSION_COOKIE_HTTPONLY = True
+# TODO Make this true when we have https
+SESSION_COOKIE_SECURE = False
+
+
+# Robots.txt settings
+ROBOTS_USE_SITEMAP=False
+
+SITE_ID=1
+
 # Application definition
 
 TEMPLATE_DIRS = (
@@ -42,11 +56,13 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sites',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ctsn_web',
-    'captcha'
+    'captcha',
+    'robots'
 )
 
 MIDDLEWARE_CLASSES = (

@@ -20,4 +20,5 @@ urlpatterns = patterns('',
     url(r'^windbelt_result.html$', 'ctsn_web.views.WindbeltResultPage'),
     url(r'^maintenance.html$', 'ctsn_web.views.MaintenanceView'),
     url(r'^captcha/', include('captcha.urls')),
+    url(r'^robots\.txt$', include('robots.urls')),
 )
