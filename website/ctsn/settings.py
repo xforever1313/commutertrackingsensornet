@@ -33,12 +33,10 @@ ALLOWED_HOSTS = ['localhost', 'ctsn.student.rit.edu']
 
 
 CSRF_COOKIE_HTTPONLY = True
-# TODO Make this true when we have https
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = True
 
 SESSION_COOKIE_HTTPONLY = True
-# TODO Make this true when we have https
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 
 
 # Robots.txt settings
