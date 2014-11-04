@@ -33,12 +33,29 @@ class ErrorMessages(models.Model):
         managed = True
         db_table = 'error_messages'
 
+class TrailResultType(models.Model):
+    desc = models.CharField(db_column = "description", max_length=255)
+    class Meta:
+        managed = True
+        db_table = "trail_result_table"
+
+    def __unicode__(self):
+        return self.desc
+
+class TrailResult(models.Model):
+    time = models.DateTimeField(db_column='time')
+    type = models.ForeignKey('TrailResultType', db_column='type')
+    node = models.ForeignKey('Node', db_column = 'node')
+    class Meta:
+        managed  = True
+        db_table = "trail_result"
+
 class Node(models.Model):
     desc = models.CharField(db_column = "description", max_length = 255)
     lat = models.FloatField(db_column = 'lat')
     lon = models.FloatField(db_column = 'lon')
     status = models.ForeignKey('NodeStatus', db_column="status", default = lambda: NodeStatus.objects.get(desc='unknown'))
-    address = models.CharField(db_column = "address", max_length = 16, default = "00000000000000ff")
+    address = models.CharField(db_column = "address", max_length = 16, default = "000000000000ffff")
 
     class Meta:
         managed = True

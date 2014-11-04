@@ -56,7 +56,17 @@ class NodeAdmin(admin.ModelAdmin):
     getStatus.admin_order_field = "status__desc"
     getStatus.short_description = "Status"
 
+class ResultType(admin.ModelAdmin):
+    list_display = ("id", "getDescription")
+
+    def getDescription(self, obj):
+        return obj.desc
+
+    getDescription.admin_order_field="desc"
+    getDescription.short_description = "Description"
+
 # Register your models here.
 admin.site.register(CtsnUser, CtsnUserAdmin)
 admin.site.register(Node, NodeAdmin)
+admin.site.register(TrailResultType, ResultType)
 
