@@ -1,12 +1,12 @@
 {%extends "map_base.html"%}
 
 {%block nodePlacement%}
-   {% for node in nodes %}
+   {% for node, result in results.iteritems %}
         var marker{{node.id}}HTML = '<p><strong>ID:</strong> {{node.id}}</p>';
         marker{{node.id}}HTML += '<p><strong>Name:</strong> {{node.desc}}</p>';
-        marker{{node.id}}HTML += '<p><strong>People:</strong> 0</p>';
-        marker{{node.id}}HTML += '<p><strong>Bikes:</strong> 0</p>';
-        marker{{node.id}}HTML += '<p><strong>Horses:</strong> 0</p>';
+        {% for res, count in result.results.iteritems%}
+            marker{{node.id}}HTML += '<p><strong>{{res}}</strong> {{count}}</p>';
+        {% endfor %}
 
         var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).addTo(map).bindPopup(marker{{node.id}}HTML);
 
@@ -22,19 +22,41 @@
 <h2 style="text-align: left;">Results Summary</h2>
 
 <table cellspacing = "0" cellpadding = "4px" border = "2px">
-<tr><th>Node</th><th>Description</th><th>People</th><th>Bikes</th><th>Horses</th><th>Total</th></tr>
-{%for node in nodes%}
+<tr><th>Node</th><th>Description</th>
+{%for result in result_type_objects%}
+    <th>{{result}}</th>
+{%endfor%}
+
+<th>Total</th>
+</tr>
+
+{%for node, result in results.iteritems%}
     <tr><td><strong>{{node.id}}</strong></td>
         <td>{{node.desc}}</td>
-        <td>0</td>
-        <td>0</td>
-        <td>0</td>
-        <td>0</td>
+        {%for res, count in result.results.iteritems%}
+            <td>{{count}}</td>
+        {%endfor%}
+        <td>{{result.nodeTotal}}</td>
     </tr>
 {%endfor%}
 
-<tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td><strong>Total</strong></td><td></td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr>
+<td></td> <!--two for node id and the node description-->
+<td></td>
+{%for result in result_type_objects%}
+<td></td>
+{%endfor%}
+<td></td><!-- one for the totoal-->
+</tr>
+
+
+<tr><td><strong>Total</strong></td><td></td>
+{%for result_type, count in result_type_totals.iteritems%}
+<td>{{count}}</td>
+{%endfor%}
+
+<td>{{grand_total}}</td>
+
 </table>
 
 {%endblock%}

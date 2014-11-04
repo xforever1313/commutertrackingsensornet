@@ -37,7 +37,7 @@ class TrailResultType(models.Model):
     desc = models.CharField(db_column = "description", max_length=255)
     class Meta:
         managed = True
-        db_table = "trail_result_table"
+        db_table = "trail_result_type"
 
     def __unicode__(self):
         return self.desc

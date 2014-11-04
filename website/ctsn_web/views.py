@@ -103,6 +103,16 @@ def NodeStatusView(request):
 
     return render_to_response(NavBarURLs[1][1], context, context_instance=RequestContext(request))
 
+class Result:
+    def __init__(self, node):
+        self.node = node
+        self.results = {}
+        self.nodeTotal = 0
+
+    def addResult(self, result_type):
+        self.results[result_type] = TrailResult.objects.filter(node=self.node, type=result_type).count()
+        self.nodeTotal += self.results[result_type]
+
 def NodeStatsView(request):
     #If not authenticated, return to login
     if not request.user.is_authenticated():
@@ -116,10 +126,28 @@ def NodeStatsView(request):
     else:
         urls = NavBarURLs[:-1] #Do not show admin link.
 
+    results = {}
+    resultTypeTotals = {}
+    grandTotal = 0
+    for node in Node.objects.all():
+        results[node] = Result(node)
+        for result_type in TrailResultType.objects.all():
+            results[node].addResult(result_type)
+            try:
+                resultTypeTotals[result_type] += results[node].results[result_type]
+            except KeyError:
+                resultTypeTotals[result_type] = results[node].results[result_type]
+            grandTotal += results[node].results[result_type]
+
     context = {'NavBarURLs' : urls, 'pageID' : NavBarURLs[2][1], 
                'title' : 'CTSN Statistics',
-               'nodes' : Node.objects.all(), 'status' : CtsnStatus(),
-               'isMaintenance' : isMaintenance()}
+               'nodes' : Node.objects.all(), 
+               'status' : CtsnStatus(),
+               'isMaintenance' : isMaintenance(),
+               'result_type_objects' : TrailResultType.objects.all(),
+               'results' : results,
+               'result_type_totals' : resultTypeTotals,
+               'grand_total' : grandTotal}
 
     return render_to_response(NavBarURLs[2][1], context, context_instance=RequestContext(request))
 
