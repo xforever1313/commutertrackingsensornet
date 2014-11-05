@@ -8,6 +8,7 @@
 #include "CTSNSharedGlobals.py"
 #include "gateway/BadClientHTTPRequestHandler.h"
 #include "gateway/DatabasePokeHTTPRequestHandler.h"
+#include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
@@ -98,11 +99,27 @@ TEST(HTTPRequestFactoryTest, createXBeeTxTest) {
     m_request->setURI(XBEE_TX_URI);
     m_request->set("user-agent", USER_AGENT);
 
-    Gateway::XBeeTxHTTPRequestHandler* handler = dynamic_cast<Gateway::XBeeTxHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+    Gateway::XBeeTxHTTPRequestHandler* handler = 
+        dynamic_cast<Gateway::XBeeTxHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
     CHECK(handler != nullptr);
     POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
     POINTERS_EQUAL(handler->m_uart, m_uart);
+    POINTERS_EQUAL(handler->m_nodes, m_nodes);
+
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createDataTest) {
+    m_request->setURI(DATA_RESULT_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Gateway::DataHTTPRequestHandler* handler = 
+        dynamic_cast<Gateway::DataHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+
+    CHECK(handler != nullptr);
+    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
+    POINTERS_EQUAL(handler->m_mariadb, m_mariadb);
     POINTERS_EQUAL(handler->m_nodes, m_nodes);
 
     delete handler;

@@ -151,6 +151,9 @@ TEST(DataHTTPRequestHandlerTest, postSuccess) {
     CHECK_EQUAL(dataEvent->m_node.getID(), m_node->getID());
     CHECK_EQUAL(dataEvent->m_type, type);
     POINTERS_EQUAL(dataEvent->m_mariadb, m_mariadb);
+
+    CHECK_EQUAL(m_response->m_response.str(), Gateway::DataHTTPRequestHandler::POST_SUCCESS_MESSAGE);
+    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);
 }
 
 /////

@@ -15,6 +15,7 @@
 namespace Gateway {
 
 const std::string DataHTTPRequestHandler::GET_MESSAGE = "Usage:\nnode=x&type=y";
+const std::string DataHTTPRequestHandler::POST_SUCCESS_MESSAGE = "Result sent";
 const std::string DataHTTPRequestHandler::POST_FAILURE_MISSING_FIELD = "Missing Field";
 const std::string DataHTTPRequestHandler::POST_FAILURE_INVALID_NODE = "Node does not exist";
 const std::string DataHTTPRequestHandler::POST_FAILURE_INVALID_RESULT_TYPE = "Result type does not exist";
@@ -49,6 +50,8 @@ void DataHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &req
 
         std::shared_ptr<DataEvent> event (new DataEvent(node, type, m_mariadb));
         m_eventExecutor->addEvent(event);
+
+        sendSuccessResponse(response, POST_SUCCESS_MESSAGE);
    }
    catch (const Poco::NotFoundException &e) {
         sendBadRequestResponse(response, POST_FAILURE_MISSING_FIELD);

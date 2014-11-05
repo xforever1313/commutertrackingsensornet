@@ -111,5 +111,15 @@ const std::string
 #endif
 XBEE_TX_URI = "/xbee_tx";
 
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+DATA_RESULT_URI = "/data_result";
+
 #endif
 

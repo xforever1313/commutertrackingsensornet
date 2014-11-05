@@ -5,6 +5,7 @@
 #include "CTSNSharedGlobals.py"
 #include "gateway/BadClientHTTPRequestHandler.h"
 #include "gateway/DatabasePokeHTTPRequestHandler.h"
+#include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
@@ -57,6 +58,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (request.getURI() == DATABASE_POKE_URI) {
         return new DatabasePokeHTTPRequestHandler(m_mariadb, m_eventExecutor);
+    }
+    else if (request.getURI() == DATA_RESULT_URI) {
+        return new DataHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
     }
     else if (request.getURI() == XBEE_TX_URI) {
         return new XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);

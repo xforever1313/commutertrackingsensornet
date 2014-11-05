@@ -26,6 +26,7 @@ class DataHTTPRequestHandler : public BaseHTTPRequestHandler {
 
     private:
         static const std::string GET_MESSAGE;
+        static const std::string POST_SUCCESS_MESSAGE;
         static const std::string POST_FAILURE_MISSING_FIELD;
         static const std::string POST_FAILURE_INVALID_NODE;
         static const std::string POST_FAILURE_INVALID_RESULT_TYPE;
