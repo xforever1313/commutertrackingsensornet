@@ -9,16 +9,18 @@
 #include "gateway/BaseHTTPRequestHandler.h"
 #include "gateway/DataEvent.h"
 #include "gateway/MariaDBInterface.h"
+#include "gateway/NodeContainerInterface.h"
 
 namespace Gateway {
 
 class DataHTTPRequestHandler : public BaseHTTPRequestHandler {
     public:
         DataHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
-                               MariaDBInterface *mariadb);
+                               MariaDBInterface *mariadb,
+                               NodeContainerInterface *nodes);
 
         ~DataHTTPRequestHandler();
-        
+
         void handlePostRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
         void handleGetRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
 
@@ -35,6 +37,7 @@ class DataHTTPRequestHandler : public BaseHTTPRequestHandler {
 
         Common::EventExecutorInterface *m_eventExecutor;
         MariaDBInterface *m_mariadb;
+        NodeContainerInterface *m_nodes;
 };
 
 }
