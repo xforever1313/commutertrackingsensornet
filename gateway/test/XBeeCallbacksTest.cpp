@@ -7,22 +7,31 @@
 #include "gateway/XBeeCallbacks.h"
 #include "gateway/XBeeConstants.h"
 #include "io/StringLogger.h"
+#include "MockHTTPPoster.h"
 
 TEST_GROUP(XBeeCallbacksTest) {
     TEST_SETUP() {
         m_outLogger = new Common::IO::StringLogger();
         m_errLogger = new Common::IO::StringLogger();
+        m_httpPoster = new testing::StrictMock<Gateway::MockHTTPPoster>();
         m_uut = new Gateway::XBeeCallbacks(*m_outLogger,*m_errLogger);
+
+        // Replace real poster with mock one.
+        delete m_uut->m_poster;
+        m_uut->m_poster = m_httpPoster;
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
         delete m_outLogger;
         delete m_errLogger;
+
+        // http poster is deleted in uut
     }
 
     Common::IO::StringLogger *m_outLogger;
     Common::IO::StringLogger *m_errLogger;
+    testing::StrictMock<Gateway::MockHTTPPoster> *m_httpPoster;
     Gateway::XBeeCallbacks *m_uut;
 };
 
@@ -41,16 +50,56 @@ TEST(XBeeCallbacksTest, dumpDataTest) {
     CHECK_EQUAL(Gateway::XBeeCallbacks::dumpData(data), expectedString);
 }
 
+/////
+/// Successful parse tests
+/////
 TEST(XBeeCallbacksTest, successfulParseTest) {
-    std::string s = "Hello :)";
+    std::string s = "/shutdown\tshutdown=true|derp=herp";
+
+    EXPECT_CALL(*m_httpPoster, post("/shutdown", "shutdown=true&derp=herp"));
+
     m_uut->successfulParse(s);
 
-    CHECK(m_outLogger->getString().find(Gateway::XBeeCallbacks::SUCCESS_MESSAGE + s) 
-          != std::string::npos);
-
+    CHECK_EQUAL(m_outLogger->getString(), "");
     CHECK_EQUAL(m_errLogger->getString(), "");
 }
 
+TEST(XBeeCallbacksTest, curlFailTest) {
+    const std::string error = "error";
+    const std::string s = "/shutdown\tshutdown=true|something=Something";
+
+    EXPECT_CALL(*m_httpPoster, post("/shutdown", "shutdown=true&something=Something"))
+        .WillOnce(testing::Throw(std::runtime_error(error)));
+
+    m_uut->successfulParse(s);
+
+    CHECK_EQUAL(m_outLogger->getString(), "");
+    CHECK(m_errLogger->getString().find(error + "Payload:\n\t" + s) != std::string::npos);
+}
+
+TEST(XBeeCallbacksTest, noTabs) {
+    const std::string s = "/shutdownshutdown=true";
+
+    m_uut->successfulParse(s);
+
+    CHECK_EQUAL(m_outLogger->getString(), "");
+    CHECK(m_errLogger->getString().find(Gateway::XBeeCallbacks::BAD_PAYLOAD + "Payload:\n\t" + s)        
+        != std::string::npos);
+}
+
+TEST(XBeeCallbacksTest, tooManyTabs) {
+    const std::string s = "/shutdown\t\tshutdown=true";
+
+    m_uut->successfulParse(s);
+
+    CHECK_EQUAL(m_outLogger->getString(), "");
+    CHECK(m_errLogger->getString().find(Gateway::XBeeCallbacks::BAD_PAYLOAD + "Payload:\n\t" + s)        
+        != std::string::npos);
+}
+
+/////
+/// Fail cases
+/////
 TEST(XBeeCallbacksTest, incompleteMessageTest) {
     std::vector<std::uint8_t> data = {
         0x00,

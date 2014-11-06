@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "gateway/XBeeCallbackInterface.h"
+#include "gateway/HTTPPosterInterface.h"
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
 
@@ -46,7 +47,10 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         static const std::string getDiscoveryString(XBeeConstants::DiscoveryStatus discovery);
         static const std::string getTxFailureReason(XBeeConstants::TxStatus txStatus);
 
-        static const std::string SUCCESS_MESSAGE;
+        static const char DATA_SEPARATOR; ///< The character that separates the url with the data.
+        static const char AMP_REPLACE; ///< The character that is replaced with an &, since XBees cant transmit those >_>
+
+        static const std::string BAD_PAYLOAD;
         static const std::string INCOMPLETE_MESSAGE;
         static const std::string BAD_CHECKSUM_MESSAGE;
         static const std::string BAD_STATE_MESSAGE;
@@ -75,6 +79,8 @@ class XBeeCallbacks : public XBeeCallbackInterface {
 
         Common::IO::LoggerBase &m_outLogger;
         Common::IO::LoggerBase &m_errLogger;
+
+        HTTPPosterInterface *m_poster;
 };
 
 }

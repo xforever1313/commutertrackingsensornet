@@ -4,13 +4,16 @@
 #include <string>
 #include <vector>
 
+#include "gateway/HTTPPoster.h"
 #include "gateway/XBeeCallbacks.h"
 #include "gateway/XBeeConstants.h"
 #include "io/LoggerBase.h"
+#include "StringOps.h"
 
 namespace Gateway {
-
-const std::string XBeeCallbacks::SUCCESS_MESSAGE = "XBee Message -\n\t";
+const char XBeeCallbacks::DATA_SEPARATOR = '\t';
+const char XBeeCallbacks::AMP_REPLACE = '|';
+const std::string XBeeCallbacks::BAD_PAYLOAD = "Bad payload.  Missing a tab or has too many - ";
 const std::string XBeeCallbacks::INCOMPLETE_MESSAGE = "Incomplete XBee Message -\n\t";
 const std::string XBeeCallbacks::BAD_CHECKSUM_MESSAGE = "Bad XBee Checksum -\n\t";
 const std::string XBeeCallbacks::BAD_STATE_MESSAGE = "Bad XBee Controller State -\n\t";
@@ -39,16 +42,37 @@ const std::string XBeeCallbacks::TX_STATUS_UNKNOWN = "Unknown Tx Error";
 XBeeCallbacks::XBeeCallbacks(Common::IO::LoggerBase &outLogger,/* = Common::IO::ConsoleLogger::out */
                              Common::IO::LoggerBase &errLogger/* = Common::IO::ConsoleLogger::err */) :
     m_outLogger(outLogger),
-    m_errLogger(errLogger)
+    m_errLogger(errLogger),
+    m_poster(new HTTPPoster())
 {
 }
 
 XBeeCallbacks::~XBeeCallbacks() {
-
+    delete m_poster;
 }
 
 void XBeeCallbacks::successfulParse(const std::string &payload) {
-    m_outLogger.writeLineWithTimeStamp(SUCCESS_MESSAGE + payload);
+    try {
+        std::vector<std::string> data = 
+            Common::StringOps::split(payload, DATA_SEPARATOR);
+
+        // If there are no tabs or too many, bad payload.  Throw.
+        if (data.size() != 2) {
+            throw std::runtime_error(BAD_PAYLOAD);
+        }
+
+        for (size_t i = 0; i < data[1].size(); ++i) {
+            if (data[1][i] == AMP_REPLACE) {
+                data[1][i] = '&';
+            }
+        }
+
+        m_poster->post(data[0], data[1]);
+    }
+    catch (const std::runtime_error &e) {
+        m_errLogger.writeLineWithTimeStamp(std::string(e.what()) + 
+                                           "Payload:\n\t" + payload);
+    }
 }
 
 void XBeeCallbacks::incompleteMessage(const std::vector<std::uint8_t> &badData) {
