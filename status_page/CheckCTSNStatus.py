@@ -6,7 +6,7 @@ from CTSNSharedGlobals import *
 from Globals import *
 import datetime
 
-curlProc = subprocess.Popen(['curl', '-sL', '-w', '%{http_code}', CTSN_DOMAIN, "-o", "/dev/null"], 
+curlProc = subprocess.Popen(['curl', '-k', '-sL', '-w', '%{http_code}', "https://" + CTSN_DOMAIN, "-o", "/dev/null"],
                             stdout = subprocess.PIPE, stderr=subprocess.PIPE)
 status = int(curlProc.communicate()[0])
 
