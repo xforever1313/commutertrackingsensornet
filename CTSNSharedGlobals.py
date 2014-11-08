@@ -20,7 +20,7 @@ const std::string
 #ifdef PYTHON
 \''''
 #endif
-CTSN_DOMAIN = "ctsn.student.rit.edu:1415";
+CTSN_DOMAIN = "ctsn.student.rit.edu";
 
 
 
