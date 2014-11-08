@@ -5,7 +5,7 @@
         var marker{{node.id}}HTML = '<p><strong>ID:</strong> {{node.id}}</p>';
         marker{{node.id}}HTML += '<p><strong>Name:</strong> {{node.desc}}</p>';
         marker{{node.id}}HTML += '<p><strong>Status:</strong><span style="color:#{{node.status.severity.color}};"> {{node.status.desc}}</span></p>';
-        var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).addTo(map).bindPopup(marker{{node.id}}HTML);
+        var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).setIcon(icon).addTo(map).bindPopup(marker{{node.id}}HTML);
 
     {%endfor%}
 

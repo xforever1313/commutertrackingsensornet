@@ -11,7 +11,7 @@ function powerOff(nodeID) {
         var marker{{node.id}}HTML = '<p><strong>ID:</strong> {{node.id}}</p>';
         marker{{node.id}}HTML += '<p><strong>Name:</strong> {{node.desc}}</p>';
         marker{{node.id}}HTML += '<button type="button" onclick="powerOff({{node.id}})">Turn Off</button>'
-        var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).addTo(map).bindPopup(marker{{node.id}}HTML);
+        var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).setIcon(icon).addTo(map).bindPopup(marker{{node.id}}HTML);
 
     {%endfor%}
 

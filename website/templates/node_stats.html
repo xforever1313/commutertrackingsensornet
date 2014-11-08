@@ -8,7 +8,7 @@
             marker{{node.id}}HTML += '<p><strong>{{res}}</strong> {{count}}</p>';
         {% endfor %}
 
-        var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).addTo(map).bindPopup(marker{{node.id}}HTML);
+        var marker{{node.id}} = L.marker([{{node.lat}}, {{node.lon}}]).setIcon(icon).addTo(map).bindPopup(marker{{node.id}}HTML);
 
     {%endfor%}
 

@@ -1,8 +1,8 @@
 {%extends "base.html"%}
 
 {%block extraHead%}
-<link type="text/css" rel="stylesheet" href="https://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
-<script src="https://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<link type="text/css" rel="stylesheet" href="static/css/leaflet.css"/>
+<script src="static/js/leaflet.js"></script>
 
 <script type = "text/javascript">
     {%block extraJS%}
@@ -16,6 +16,13 @@
         //Start the map
         map.setView(new L.LatLng(43.08, -77.678419), 12);
         map.addLayer(osm);
+
+        var icon = L.icon({
+            iconUrl:"/static/img/marker-icon.png",
+            iconSize: [25,41],
+            iconAnchor:[12.5, 41],
+            popupAnchor:[0, -30],
+        });
 
         {% block nodePlacement %}
         {%endblock%}
