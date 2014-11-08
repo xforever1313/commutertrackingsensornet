@@ -51,6 +51,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'BruteBuster',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,10 +61,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'ctsn_web',
     'captcha',
-    'robots'
+    'robots',
 )
 
 MIDDLEWARE_CLASSES = (
+    'BruteBuster.middleware.RequestMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -102,7 +104,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
