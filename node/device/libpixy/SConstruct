@@ -1,0 +1,103 @@
+import os
+import sys
+
+keilDir = "C:/Keil/ARM/ARMCC/bin"
+
+###
+# M4 Files
+###
+m4env = Environment(
+    tools = ['mingw'],
+    CC = os.path.join(keilDir, 'armcc'),
+    CXX = os.path.join(keilDir, 'armcc'),
+    AR = os.path.join(keilDir, 'armar'),
+    LINK = os.path.join(keilDir, 'armlink'),
+    AS = os.path.join(keilDir, 'armasm'),
+    OBJPREFIX = 'obj/m4',
+    
+    CCFLAGS = ['--cpu', 'Cortex-M4.fp', '--li', '-O3',
+               '--apcs=interwork', '--split_sections', '--asm',
+               '--interleave', '--asm_dir', '.\\', '--gnu'],
+
+    CPPPATH = ['.', '../../common', 'c:/Keil/ARM/RV31/INC',
+               'C:/Keil/ARM/Pack/ARM/CMSIS/3.20.4/CMSIS/Include'],
+
+    CPPDEFINES = ['CORE_M4', 'IPC_MASTER', 'PIXY'],
+    
+    ASFLAGS = ['--cpu', 'Cortex-M4.fp', '--li',
+               '--apcs=interwork',
+               '-I', 'c:/Keil/ARM/RV31/INC',
+               '-I', 'C:/Keil/ARM/Pack/ARM/CMSIS/3.20.4/CMSIS/Include',
+               '--pd', 'NO_CRP SETA 1'],
+    ARFLAGS = ['-r'],
+)
+
+m4Files = ['debug_frmwrk.c',
+            'fpu_init.c',
+            'lpc43xx_adc.c',
+            'lpc43xx_cgu.c',
+            'lpc43xx_scu.c',
+            'lpc43xx_uart.c',
+            'platform_config.c',
+            'system_LPC43xx.c',
+            'usbcore.c',
+            'usbdesc.c',
+            'usbhw.c',
+            'usbuser.c',
+            'sccb.cpp',
+            'usblink.cpp',
+            'ipc_mbx.c',
+            'pixy_init.cpp',
+            'startup_LPC43xx_m4.s',
+            'smlink.cpp',
+            'camera.cpp',
+            'led.cpp',
+            'rcservo.cpp',
+            'misc.cpp',
+            'power.cpp',
+            'lpc43xx_ssp.c',
+            'param.cpp',
+            'flash.cpp',
+            '../../common/chirp.cpp']
+      
+Alias('m4', m4env.StaticLibrary(target = 'lib/libpixy_m4.lib', source = m4Files + ['./spifi_drv_M4.lib']))
+
+###
+# M0 Files
+###
+m0env = Environment(
+    tools = ['mingw'],
+    CC = os.path.join(keilDir, 'armcc'),
+    CXX = os.path.join(keilDir, 'armcc'),
+    AR = os.path.join(keilDir, 'armar'),
+    LINK = os.path.join(keilDir, 'armlink'),
+    AS = os.path.join(keilDir, 'armasm'),
+    OBJPREFIX = 'obj/m0',
+    
+    CCFLAGS = ['--cpu', 'Cortex-M0', '--li', '-O3',
+               '--apcs=interwork', '--split_sections', '--asm',
+               '--interleave', '--asm_dir', '.\\', '--gnu'],
+
+    CPPPATH = ['.', '../../common', 'c:/Keil/ARM/RV31/INC',
+               'C:/Keil/ARM/Pack/ARM/CMSIS/3.20.4/CMSIS/Include'],
+
+    CPPDEFINES = ['CORE_M0', 'IPC_SLAVE', 'PIXY', '__MICROLIB'],
+    
+    ASFLAGS = ['--cpu', 'Cortex-M0', '--li', '--16',
+               '--apcs=interwork',
+               '-I', 'c:/Keil/ARM/RV31/INC',
+               '-I', 'C:/Keil/ARM/Pack/ARM/CMSIS/3.20.4/CMSIS/Include',
+               '--pd', 'NO_CRP SETA 1',
+               '--pd', 'IPC_SLAVE SETA 1',
+               '--pd', '__MICROLIB SETA 1'],
+    ARFLAGS = ['-r'],
+)
+
+m0Files = ['debug_frmwrk.c',
+           'ipc_mbx.c',
+           'lpc43xx_uart.c',
+           'debug.c',
+           'chirp.c',
+           'smlink.c']
+           
+Alias('m0', m0env.StaticLibrary(target = 'lib/libpixy_m0.lib', source = m0Files))

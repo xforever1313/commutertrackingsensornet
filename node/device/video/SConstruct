@@ -1,0 +1,168 @@
+import os
+import subprocess
+import sys
+
+keilDir = "C:/Keil/ARM/ARMCC/bin"
+
+###
+# m0_image.c target
+###
+
+def m0hex(target, source, env):
+    command = os.path.join(keilDir, "fromelf") + \
+               ' --cadcombined' + \
+               ' --output="' + str(target[0]) + '" ' + \
+               str(source[0])
+               
+    print(command)
+    return subprocess.call(command, shell=True)
+
+m0Builder = Builder(action = m0hex)
+                            
+m0env = Environment(
+    tools = ['mingw'],
+    CC = os.path.join(keilDir, 'armcc'),
+    CXX = os.path.join(keilDir, 'armcc'),
+    AR = os.path.join(keilDir, 'armar'),
+    LINK = os.path.join(keilDir, 'armlink'),
+    AS = os.path.join(keilDir, 'armasm'),
+    OBJPREFIX = os.path.abspath(".") + "/obj/m0/",
+    
+    CCFLAGS = ['--cpu', 'Cortex-M0', '--li', '-O3',
+               '--apcs=interwork', '--split_sections', '--asm',
+               '--interleave', '--asm_dir', '.\\', '--gnu'],
+
+    CPPPATH = ['.', '../../common', 'c:/Keil/ARM/RV31/INC',
+               '../libpixy',
+               'C:/Keil/ARM/Pack/ARM/CMSIS/3.20.4/CMSIS/Include'],
+
+    CPPDEFINES = ['CORE_M0', 'IPC_SLAVE', 'PIXY', '__MICROLIB'],
+    
+    ASFLAGS = ['--cpu', 'Cortex-M0', '--li', '--16',
+               '--apcs=interwork',
+               '-I', 'c:/Keil/ARM/RV31/INC',
+               '-I', 'C:/Keil/ARM/Pack/ARM/CMSIS/3.20.4/CMSIS/Include',
+               '--pd', 'NO_CRP SETA 1',
+               '--pd', 'IPC_SLAVE SETA 1',
+               '--pd', '__MICROLIB SETA 1'],
+    ARFLAGS = ['-r'],
+    
+    LINKFLAGS = ['--cpu', 'Cortex-M0',
+                 '--library_type=microlib',
+                 '--strict',
+                 '--scatter',
+                 './m0.sct',
+                 '--summary_stderr',
+                 '--info',
+                 'summarysizes',
+                 '--map',
+                 '--xref',
+                 '--callgraph',
+                 '--symbols',
+                 '--info',
+                 'sizes',
+                 '--info',
+                 'totals',
+                 '--info',
+                 'unused',
+                 '--info',
+                 'veneers',
+                 '--list',
+                 './obj/m0/m0.map']
+)
+m0env.Append(BUILDERS = {"elfcopy" : m0Builder})
+
+m0Files = ['startup_LPC43xx_m0.s',
+           'main_m0.c',
+           '../libpixy/qqueue.c',
+           '../libpixy/exec_m0.c',
+           '../libpixy/frame_m0.c',
+           '../libpixy/rls_m0.c']
+
+m0Bin = m0env.Program(target = "obj/m0/m0.axf", source = m0Files + ["../libpixy/lib/libpixy_m0.lib"])
+m0Source = m0env.elfcopy(target="./m0_image.c", source=m0Bin)
+Alias("m0", m0Source)
+    
+###
+# Video target
+###
+def videohex(target, source, env):
+    command = os.path.join(keilDir, "fromelf") + \
+               ' --nodebug' + \
+               ' --i32 ' + \
+               ' --nolinkview' + \
+               ' --output="' + str(target[0]) + '" ' + \
+               str(source[0])
+               
+    print(command)
+    return subprocess.call(command, shell=True)
+
+videoBuilder = Builder(action = videohex)
+
+m4env = Environment(
+    tools = ['mingw'],
+    CC = os.path.join(keilDir, 'armcc'),
+    CXX = os.path.join(keilDir, 'armcc'),
+    AR = os.path.join(keilDir, 'armar'),
+    LINK = os.path.join(keilDir, 'armlink'),
+    AS = os.path.join(keilDir, 'armasm'),
+    OBJPREFIX = os.path.abspath(".") + "/obj/m4/",
+    
+    CCFLAGS = ['--cpu', 'Cortex-M4', '--li', '-O3',
+               '--apcs=interwork', '--split_sections', '--asm',
+               '--interleave', '--asm_dir', '.\\', '--gnu'],
+
+    CPPPATH = ['.', '../../common', 'c:/Keil/ARM/RV31/INC',
+               '../libpixy',
+               'C:/Keil/ARM/Pack/ARM/CMSIS/3.20.4/CMSIS/Include'],
+
+    CPPDEFINES = ['CORE_M4', 'IPC_MASTER', 'PIXY'],
+    
+    LINKFLAGS = ['--cpu', 'Cortex-M4',
+                 '--strict',
+                 '--scatter',
+                 './spifi.sct',
+                 '--summary_stderr',
+                 '--info',
+                 'summarysizes',
+                 '--map',
+                 '--xref',
+                 '--callgraph',
+                 '--symbols',
+                 '--info',
+                 'sizes',
+                 '--info',
+                 'totals',
+                 '--info',
+                 'unused',
+                 '--info',
+                 'veneers',
+                 '--list',
+                 './obj/m4/video.map']
+)
+
+m4env.Append(BUILDERS = {'video' : videoBuilder})
+
+m4Files = [
+    'main_m4.cpp',
+    'conncomp.cpp',
+    'exec.cpp',
+    'progblobs.cpp',
+    'progvideo.cpp',
+    'progpt.cpp',
+    'button.cpp',
+    '../../common/blob.cpp',
+    '../../common/blobs.cpp',
+    '../../common/colorlut.cpp',
+    '../../common/qqueue.cpp',
+    '../libpixy/lpc43xx_i2c.c',
+    '../libpixy/i2c.cpp',
+    '../libpixy/serial.cpp',
+    '../libpixy/analogdig.cpp',
+    '../libpixy/spi.cpp',
+    '../libpixy/uart.cpp',
+    'progchase.cpp']
+    
+m4Bin = m4env.Program(target = "obj/m4/video.axf", source = m4Files + ["../libpixy/lib/libpixy_m4.lib", m0Source])
+video = m4env.video(target='hex/video.hex', source=m4Bin)
+Alias("video", video)
