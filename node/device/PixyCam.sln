@@ -10,9 +10,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pixyFlash", "pixyflash\pixy
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "video", "video\video.vcxproj", "{DED4144E-2C90-4998-90BB-F14A4E203451}"
 	ProjectSection(ProjectDependencies) = postProject
-		{CB6F3882-01FB-4E8D-9E3B-E1C1502D9C18} = {CB6F3882-01FB-4E8D-9E3B-E1C1502D9C18}
 		{EA7877AC-D3A8-427A-894F-954B49354986} = {EA7877AC-D3A8-427A-894F-954B49354986}
+		{69AD81DB-AA7D-41E2-99EF-889D78D5100C} = {69AD81DB-AA7D-41E2-99EF-889D78D5100C}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libccv", "libccv\libccv.vcxproj", "{69AD81DB-AA7D-41E2-99EF-889D78D5100C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{DED4144E-2C90-4998-90BB-F14A4E203451}.Debug|Win32.Build.0 = Debug|Win32
 		{DED4144E-2C90-4998-90BB-F14A4E203451}.Release|Win32.ActiveCfg = Release|Win32
 		{DED4144E-2C90-4998-90BB-F14A4E203451}.Release|Win32.Build.0 = Release|Win32
+		{69AD81DB-AA7D-41E2-99EF-889D78D5100C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{69AD81DB-AA7D-41E2-99EF-889D78D5100C}.Debug|Win32.Build.0 = Debug|Win32
+		{69AD81DB-AA7D-41E2-99EF-889D78D5100C}.Release|Win32.ActiveCfg = Release|Win32
+		{69AD81DB-AA7D-41E2-99EF-889D78D5100C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

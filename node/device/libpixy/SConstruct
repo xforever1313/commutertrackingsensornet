@@ -101,3 +101,5 @@ m0Files = ['debug_frmwrk.c',
            'smlink.c']
            
 Alias('m0', m0env.StaticLibrary(target = 'lib/libpixy_m0.lib', source = m0Files))
+
+Alias("all", ["m0", "m4"])

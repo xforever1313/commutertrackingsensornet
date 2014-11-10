@@ -33,6 +33,9 @@
     <ClInclude Include="progvideo.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="SiftProg.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="m0_image.c">
@@ -63,6 +66,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="progvideo.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="SiftProg.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

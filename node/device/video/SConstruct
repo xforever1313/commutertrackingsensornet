@@ -114,7 +114,8 @@ m4env = Environment(
 
     CPPPATH = ['.', '../../common', 'c:/Keil/ARM/RV31/INC',
                '../libpixy',
-               'C:/Keil/ARM/Pack/ARM/CMSIS/3.20.4/CMSIS/Include'],
+               'C:/Keil/ARM/Pack/ARM/CMSIS/3.20.4/CMSIS/Include',
+               '../libccv'],
 
     CPPDEFINES = ['CORE_M4', 'IPC_MASTER', 'PIXY'],
     
@@ -161,8 +162,11 @@ m4Files = [
     '../libpixy/analogdig.cpp',
     '../libpixy/spi.cpp',
     '../libpixy/uart.cpp',
-    'progchase.cpp']
+    'progchase.cpp',
+    'SiftProg.cpp']
     
-m4Bin = m4env.Program(target = "obj/m4/video.axf", source = m4Files + ["../libpixy/lib/libpixy_m4.lib", m0Source])
+m4Bin = m4env.Program(target = "obj/m4/video.axf", source = m4Files + ["../libpixy/lib/libpixy_m4.lib", m0Source] + ["../libccv/lib/libccv.lib"])
 video = m4env.video(target='hex/video.hex', source=m4Bin)
 Alias("video", video)
+
+Alias("all", video)

@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ccv_algebra.c" />
+    <ClCompile Include="ccv_basic.c" />
+    <ClCompile Include="ccv_bbf.c" />
+    <ClCompile Include="ccv_cache.c" />
+    <ClCompile Include="ccv_classic.c" />
+    <ClCompile Include="ccv_convnet.c" />
+    <ClCompile Include="ccv_daisy.c" />
+    <ClCompile Include="ccv_dpm.c" />
+    <ClCompile Include="ccv_ferns.c" />
+    <ClCompile Include="ccv_icf.c" />
+    <ClCompile Include="ccv_io.c" />
+    <ClCompile Include="ccv_memory.c" />
+    <ClCompile Include="ccv_mser.c" />
+    <ClCompile Include="ccv_numeric.c" />
+    <ClCompile Include="ccv_numeric2.c" />
+    <ClCompile Include="ccv_numeric3.c" />
+    <ClCompile Include="ccv_resample.c" />
+    <ClCompile Include="ccv_sift.c" />
+    <ClCompile Include="ccv_sparse_coding.c" />
+    <ClCompile Include="ccv_swt.c" />
+    <ClCompile Include="ccv_tld.c" />
+    <ClCompile Include="ccv_transform.c" />
+    <ClCompile Include="ccv_util.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ccv.h" />
+    <ClInclude Include="ccv_internal.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{69AD81DB-AA7D-41E2-99EF-889D78D5100C}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeBuildCommandLine>scons all</NMakeBuildCommandLine>
+    <NMakeOutput>libccv.exe</NMakeOutput>
+    <NMakeCleanCommandLine>scons all --clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>scons all --clean &amp;&amp; scons all</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>.;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <IncludePath>.;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>scons all</NMakeBuildCommandLine>
+    <NMakeOutput>libccv.exe</NMakeOutput>
+    <NMakeCleanCommandLine>scons all --clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>scons all --clean &amp;&amp; scons all</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>.;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <IncludePath>.;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

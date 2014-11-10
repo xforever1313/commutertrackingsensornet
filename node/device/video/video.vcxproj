@@ -36,18 +36,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeBuildCommandLine>c:\keil\uv4\uv4.exe -b video.uvproj </NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>scons all</NMakeBuildCommandLine>
     <NMakeOutput>video.exe</NMakeOutput>
-    <NMakeReBuildCommandLine>c:\keil\uv4\uv4.exe -b video.uvproj -z</NMakeReBuildCommandLine>
+    <NMakeReBuildCommandLine>
+    </NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <IncludePath>$(SolutionDir)\pixyflash;$(SolutionDir)\libpixy;$(SolutionDir)\..\common;$(IncludePath)</IncludePath>
+    <NMakeCleanCommandLine>scons all --clean</NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeBuildCommandLine>c:\keil\uv4\uv4.exe -b video.uvproj</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>scons all</NMakeBuildCommandLine>
     <NMakeOutput>video.exe</NMakeOutput>
-    <NMakeReBuildCommandLine>c:\keil\uv4\uv4.exe -b video.uvproj -z</NMakeReBuildCommandLine>
+    <NMakeReBuildCommandLine>
+    </NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <IncludePath>$(SolutionDir)\pixyflash;$(SolutionDir)\libpixy;$(SolutionDir)\..\common;$(IncludePath)</IncludePath>
+    <NMakeCleanCommandLine>scons all --clean</NMakeCleanCommandLine>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
@@ -62,6 +66,7 @@
     <ClInclude Include="progchase.h" />
     <ClInclude Include="progpt.h" />
     <ClInclude Include="progvideo.h" />
+    <ClInclude Include="SiftProg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="button.cpp" />
@@ -74,6 +79,7 @@
     <ClCompile Include="progchase.cpp" />
     <ClCompile Include="progpt.cpp" />
     <ClCompile Include="progvideo.cpp" />
+    <ClCompile Include="SiftProg.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
