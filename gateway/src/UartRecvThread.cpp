@@ -30,8 +30,10 @@ struct UartRecvThread::UartRecvImpl {
     }
 
     ~UartRecvImpl() {
+        #ifndef UNIT_TEST
         // Send a sigio to the thread so uart read() returns.
         ::kill(m_tid, SIGIO);
+        #endif
     }
 
     const pid_t m_tid;
