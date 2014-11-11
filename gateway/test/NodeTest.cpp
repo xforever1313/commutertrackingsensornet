@@ -36,3 +36,60 @@ TEST(NodeTest, getterTest) {
     CHECK_EQUAL(m_uut->getStatus(), Gateway::Node::NodeStatus::OKAY);
 }
 
+TEST(NodeTest, convertStringToNodeStatusSuccess) {
+    std::string str = "1";
+    try {
+        CHECK_EQUAL(Gateway::Node::convertStringToNodeStatus(str), 
+                    Gateway::Node::NodeStatus::OKAY);
+    }
+    catch(const std::exception &e) {
+        std::string error = std::string("Did not expect exception: ") + e.what();
+        FAIL(error.c_str());
+    }
+
+}
+
+TEST(NodeTest, convertStringToNodeStatusTooLow) {
+    std::string str = "0";
+    try {
+        Gateway::Node::convertStringToNodeStatus(str);
+        FAIL("Expected exception");
+    }
+    catch(const std::out_of_range &e) {
+        CHECK_EQUAL(e.what(), Gateway::Node::INVALID_NODE_STATUS + str);
+    }
+}
+
+TEST(NodeTest, convertStringToNodeStatusTooHigh) {
+    std::string str = std::to_string(Gateway::Node::NodeStatus::END);
+    try {
+        Gateway::Node::convertStringToNodeStatus(str);
+        FAIL("Expected exception");
+    }
+    catch(const std::out_of_range &e) {
+        CHECK_EQUAL(e.what(), Gateway::Node::INVALID_NODE_STATUS + str);
+    }
+}
+
+TEST(NodeTest, convertStringToNodeStatusBadString) {
+    std::string str = "1abc";
+    try {
+        Gateway::Node::convertStringToNodeStatus(str);
+        FAIL("Expected exception");
+    }
+    catch(const std::invalid_argument &e) {
+        CHECK_EQUAL(e.what(), Gateway::Node::INVALID_NODE_STATUS + str);
+    }
+}
+
+TEST(NodeTest, convertStringToNodeTestBadString2) {
+    std::string str = "1abc";
+    try {
+        Gateway::Node::convertStringToNodeStatus(str);
+        FAIL("Expected exception");
+    }
+    catch(const std::invalid_argument &e) {
+        CHECK_EQUAL(e.what(), Gateway::Node::INVALID_NODE_STATUS + str);
+    }
+}
+

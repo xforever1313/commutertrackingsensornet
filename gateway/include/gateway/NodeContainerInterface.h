@@ -14,6 +14,7 @@ class NodeContainerInterface {
         virtual const Node getNodeFromID(unsigned int id) = 0;
         virtual void refreshNodes() = 0;
         virtual const Node convertStringToNode(const std::string &nodeString) = 0;
+        virtual bool setNodeStatus(unsigned int id, Node::NodeStatus newStatus) = 0;
 };
 
 }

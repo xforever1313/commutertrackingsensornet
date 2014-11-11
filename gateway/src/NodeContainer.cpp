@@ -14,7 +14,6 @@ namespace Gateway {
 
 const uint64_t NodeContainer::BROADCAST_ADDRESS = 0x000000000000ffff;
 const std::string NodeContainer::DATABASE_QUERY = "SELECT * FROM node;";
-unsigned int NodeContainer::numberOfNodes = 1;
 const std::string NodeContainer::INVALID_NODE_MESSAGE = "Invalid Node - ";
 const std::string NodeContainer::INVALID_ADDRESS_MESSAGE = "Invalid Address - ";
 const std::string NodeContainer::MISMATCHED_COLUMNS_MESSAGE = "NodeContainer Mismatched columns";
@@ -121,6 +120,11 @@ const Node NodeContainer::convertStringToNode(const std::string &nodeString) {
 void NodeContainer::clearNodes() {
     m_nodes.clear();
     m_nodes.insert(std::pair<unsigned int, Node>(0, Node(0, BROADCAST_ADDRESS)));
+}
+
+bool NodeContainer::setNodeStatus(unsigned int id, 
+                                  Node::NodeStatus newStatus) {
+    return true;
 }
 
 }

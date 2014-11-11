@@ -16,6 +16,7 @@ class MockNodeContainer : public NodeContainerInterface {
         MOCK_METHOD1(getNodeFromID, const Node(unsigned int));
         MOCK_METHOD0(refreshNodes, void());
         MOCK_METHOD1(convertStringToNode, const Node(const std::string&));
+        MOCK_METHOD2(setNodeStatus, bool(unsigned int, Node::NodeStatus));
 };
 
 }

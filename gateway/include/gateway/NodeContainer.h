@@ -52,10 +52,22 @@ class NodeContainer : public NodeContainerInterface {
          */
         const Node convertStringToNode(const std::string &nodeString) override;
 
+        /**
+         * \brief Sets the given node's status
+         * \param id the id of the node
+         * \param status the status to set the node to
+         * \throws std::out_of_range if the passed in node does not exist.
+         * \throws std::runtime_error if a database error occurs
+         * \note its recommended to call refreshNodes() before calling this function
+         * \return true if a database write occurred, false if not.  False is
+         *         returned if the node's status stored in the database
+         *         is the same as what is passed in.
+         */
+        bool setNodeStatus(unsigned int id, Node::NodeStatus newStatus) override;
+
     private:
         static const uint64_t BROADCAST_ADDRESS;
         static const std::string DATABASE_QUERY;
-        static unsigned int numberOfNodes;
         static const std::string INVALID_NODE_MESSAGE;
         static const std::string INVALID_ADDRESS_MESSAGE;
         static const std::string MISMATCHED_COLUMNS_MESSAGE;

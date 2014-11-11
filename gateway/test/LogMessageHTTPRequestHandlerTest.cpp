@@ -142,7 +142,6 @@ TEST(LogMessageHTTPRequestHandlerTest, postMessageTooLow) {
 TEST(LogMessageHTTPRequestHandlerTest, postMessageTooHigh) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
   
-    Gateway::NodeContainer::numberOfNodes = 5;
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << Gateway::ErrorNumber::END;
 

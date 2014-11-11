@@ -2,6 +2,7 @@
 #define NODE_H_
 
 #include <cstdint>
+#include <string>
 
 namespace Gateway {
 
@@ -35,7 +36,16 @@ class Node {
 
         NodeStatus getStatus() const;
 
+        /**
+         * \brief converts the given string to a node status.
+         * \throw std::invalid_argument if passed in string is not an int
+         * \throw std::out_of_range if the converted NodeStatus does not exist
+         */
+        static NodeStatus convertStringToNodeStatus(const std::string &str);
+
     private:
+        static const std::string INVALID_NODE_STATUS;
+
         unsigned int m_id;
         uint64_t m_address;
         NodeStatus m_status;
