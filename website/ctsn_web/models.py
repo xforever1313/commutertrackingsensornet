@@ -56,6 +56,7 @@ class Node(models.Model):
     lon = models.FloatField(db_column = 'lon')
     status = models.ForeignKey('NodeStatus', db_column="status", default = lambda: NodeStatus.objects.get(desc='unknown'))
     address = models.CharField(db_column = "address", max_length = 16, default = "000000000000ffff")
+    updateTime = models.DateTimeField(db_column='update_time')
 
     class Meta:
         managed = True
