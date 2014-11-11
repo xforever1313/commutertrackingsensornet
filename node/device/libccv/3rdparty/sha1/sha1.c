@@ -8,30 +8,14 @@
 
 /* this is only to get definitions for memcpy(), ntohl() and htonl() */
 #include <string.h>
-#include <arpa/inet.h>
+//#include <arpa/inet.h>
 
 #include "sha1.h"
-
-#if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
-
-/*
- * Force usage of rol or ror by selecting the one with the smaller constant.
- * It _can_ generate slightly smaller code (a constant of 1 is special), but
- * perhaps more importantly it's possibly faster on any uarch that does a
- * rotate with a loop.
- */
-
-#define SHA_ASM(op, x, n) ({ unsigned int __res; __asm__(op " %1,%0":"=r" (__res):"i" (n), "0" (x)); __res; })
-#define SHA_ROL(x,n)	SHA_ASM("rol", x, n)
-#define SHA_ROR(x,n)	SHA_ASM("ror", x, n)
-
-#else
 
 #define SHA_ROT(X,l,r)	(((X) << (l)) | ((X) >> (r)))
 #define SHA_ROL(X,n)	SHA_ROT(X,n,32-(n))
 #define SHA_ROR(X,n)	SHA_ROT(X,32-(n),n)
 
-#endif
 
 /*
  * If you have 32 registers or more, the compiler can (and should)
@@ -54,14 +38,8 @@
  * between each SHA_ROUND, otherwise gcc happily get wild with spilling and
  * the stack frame size simply explode and performance goes down the drain.
  */
+#define setW(x, val) (W(x) = (val))
 
-#if defined(__i386__) || defined(__x86_64__)
-  #define setW(x, val) (*(volatile unsigned int *)&W(x) = (val))
-#elif defined(__GNUC__) && defined(__arm__)
-  #define setW(x, val) do { W(x) = (val); __asm__("":::"memory"); } while (0)
-#else
-  #define setW(x, val) (W(x) = (val))
-#endif
 
 /*
  * Performance might be improved if the CPU architecture is OK with
@@ -70,16 +48,11 @@
  * and is faster on architectures with memory alignment issues.
  */
 
-#if defined(__i386__) || defined(__x86_64__) || \
-    defined(_M_IX86) || defined(_M_X64) || \
-    defined(__ppc__) || defined(__ppc64__) || \
-    defined(__powerpc__) || defined(__powerpc64__) || \
-    defined(__s390__) || defined(__s390x__)
 
-#define get_be32(p)	ntohl(*(unsigned int *)(p))
-#define put_be32(p, v)	do { *(unsigned int *)(p) = htonl(v); } while (0)
-
-#else
+#define htonl(A) ((((uint32)(A) & 0xff000000) >> 24) | \
+	(((uint32)(A) & 0x00ff0000) >> 8) | \
+	(((uint32)(A) & 0x0000ff00) << 8) | \
+	(((uint32)(A) & 0x000000ff) << 24))
 
 #define get_be32(p)	( \
 	(*((unsigned char *)(p) + 0) << 24) | \
@@ -92,8 +65,6 @@
 	*((unsigned char *)(p) + 1) = __v >> 16; \
 	*((unsigned char *)(p) + 2) = __v >>  8; \
 	*((unsigned char *)(p) + 3) = __v >>  0; } while (0)
-
-#endif
 
 /* This "rolls" over the 512-bit array */
 #define W(x) (array[(x)&15])
