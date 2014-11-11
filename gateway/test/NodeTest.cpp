@@ -11,7 +11,8 @@ TEST_GROUP(NodeTest) {
     TEST_SETUP() {
         m_id = 1;
         m_address = 0x0013A20040B27E61;
-        m_uut = new Gateway::Node(m_id, m_address);
+        m_uut = new Gateway::Node(m_id, m_address, 
+                                  Gateway::Node::NodeStatus::OKAY);
     }
 
     TEST_TEARDOWN() {
@@ -29,5 +30,9 @@ TEST(NodeTest, getterTest) {
 
     CHECK_EQUAL(m_uut->getAddress(), m_address);
     CHECK_EQUAL(m_uut->m_address, m_address);
+
+
+    CHECK_EQUAL(m_uut->m_status, Gateway::Node::NodeStatus::OKAY);
+    CHECK_EQUAL(m_uut->getStatus(), Gateway::Node::NodeStatus::OKAY);
 }
 

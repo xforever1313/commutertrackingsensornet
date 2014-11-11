@@ -5,9 +5,11 @@
 
 namespace Gateway {
 
-Node::Node(unsigned int id, uint64_t address) :
+Node::Node(unsigned int id, uint64_t address,
+           NodeStatus status) :
     m_id(id),
-    m_address(address)
+    m_address(address),
+    m_status(status)
 {
 }
 
@@ -21,6 +23,10 @@ unsigned int Node::getID() const {
 
 uint64_t Node::getAddress() const {
     return m_address;
+}
+
+Node::NodeStatus Node::getStatus() const {
+    return m_status;
 }
 
 }
