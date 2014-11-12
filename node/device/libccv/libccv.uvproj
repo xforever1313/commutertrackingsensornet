@@ -169,7 +169,7 @@
           </Flash1>
           <bUseTDR>0</bUseTDR>
           <Flash2></Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -350,14 +350,14 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>0</wLevel>
+            <wLevel>1</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <VariousControls>
               <MiscControls>--gnu</MiscControls>
-              <Define></Define>
+              <Define>CORE_M4 IPC_MASTER PIXY</Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>.</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -371,7 +371,7 @@
             <uSurpInc>0</uSurpInc>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>NO_CRP</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -512,6 +512,26 @@
               <FileName>ccv_internal.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\ccv_internal.h</FilePath>
+            </File>
+            <File>
+              <FileName>sha1out.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\3rdparty\sha1\sha1out.c</FilePath>
+            </File>
+            <File>
+              <FileName>sha1.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\3rdparty\sha1\sha1.h</FilePath>
+            </File>
+            <File>
+              <FileName>ccv_numeric2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ccv_numeric2.c</FilePath>
+            </File>
+            <File>
+              <FileName>ccv_numeric3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ccv_numeric3.c</FilePath>
             </File>
           </Files>
         </Group>

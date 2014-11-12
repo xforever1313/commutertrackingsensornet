@@ -9,6 +9,7 @@
 
   <project>
     <PathAndName>.\video.uvproj</PathAndName>
+    <NodeIsActive>1</NodeIsActive>
     <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
@@ -24,7 +25,11 @@
 
   <project>
     <PathAndName>..\libpixy\libpixy_m4.uvproj</PathAndName>
-    <NodeIsActive>1</NodeIsActive>
+    <NodeIsExpanded>1</NodeIsExpanded>
+  </project>
+
+  <project>
+    <PathAndName>..\libccv\libccv.uvproj</PathAndName>
     <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
