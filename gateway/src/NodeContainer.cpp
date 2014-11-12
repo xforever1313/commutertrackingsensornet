@@ -14,6 +14,7 @@ namespace Gateway {
 
 const uint64_t NodeContainer::BROADCAST_ADDRESS = 0x000000000000ffff;
 const std::string NodeContainer::DATABASE_QUERY = "SELECT * FROM node;";
+const std::string NodeContainer::SET_NODE_STATUS_QUERY = "UPDATE node SET update_time=CURRENT_TIMESTAMP,status=";
 const std::string NodeContainer::INVALID_NODE_MESSAGE = "Invalid Node - ";
 const std::string NodeContainer::INVALID_ADDRESS_MESSAGE = "Invalid Address - ";
 const std::string NodeContainer::MISMATCHED_COLUMNS_MESSAGE = "NodeContainer Mismatched columns";
@@ -124,6 +125,26 @@ void NodeContainer::clearNodes() {
 
 bool NodeContainer::setNodeStatus(unsigned int id, 
                                   Node::NodeStatus newStatus) {
+
+    // No need to trouble the database if the passed in status
+    // is the same as what is saved.
+    if (newStatus == m_nodes.at(id).getStatus()) {
+        return false;
+    }
+
+    std::string query = SET_NODE_STATUS_QUERY +
+                        std::to_string(newStatus) +
+                        " WHERE id=" + std::to_string(id);
+
+    // Let the exceptions fly.
+    m_mariadb->mysql_real_query(query);
+    m_mariadb->mysql_commit();
+
+    // Replace the old node with a new node status.
+    Node newNode (id, m_nodes.at(id).getAddress(), newStatus);
+    std::lock_guard<OS::SMutex> lock(m_nodeMutex);
+    m_nodes.erase(id);
+    m_nodes.insert(std::pair<unsigned int, Node>(id, newNode));
     return true;
 }
 

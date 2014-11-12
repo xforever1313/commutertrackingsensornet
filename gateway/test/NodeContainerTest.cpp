@@ -215,3 +215,38 @@ TEST(NodeContainerTest, convertStringToNodeNumberTooHighTest) {
     }
 }
 
+TEST(NodeContainerTest, setNodeStatusTestSuccess) {
+    const unsigned int nodeID = 1; // From test setup
+
+    std::string expectedQuery = Gateway::NodeContainer::SET_NODE_STATUS_QUERY +
+                                std::to_string(Gateway::Node::NodeStatus::OKAY) +
+                                " WHERE id=" + std::to_string(nodeID);
+
+    EXPECT_CALL(*m_mariadb, mysql_real_query(expectedQuery));
+    EXPECT_CALL(*m_mariadb, mysql_commit());
+
+    bool changed = m_uut->setNodeStatus(nodeID, 
+                                        Gateway::Node::NodeStatus::OKAY);
+
+    // okay is different than the default unknown, changed should be true.
+    CHECK(changed);
+
+    Gateway::Node changedNode = m_uut->m_nodes.at(nodeID);
+    CHECK_EQUAL(changedNode.getStatus(),
+                Gateway::Node::NodeStatus::OKAY);
+}
+
+TEST(NodeContainerTest, setNodeStatusTestNoChange) {
+    const unsigned int nodeID = 1; // From test setup
+
+    bool changed = m_uut->setNodeStatus(nodeID, 
+                                        Gateway::Node::NodeStatus::UNKNOWN);
+
+    // Unknown is the same as the default status.  No change should happen.
+    CHECK(!changed);
+
+    Gateway::Node changedNode = m_uut->m_nodes.at(nodeID);
+    CHECK_EQUAL(changedNode.getStatus(),
+                Gateway::Node::NodeStatus::UNKNOWN);
+}
+

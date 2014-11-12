@@ -68,6 +68,7 @@ class NodeContainer : public NodeContainerInterface {
     private:
         static const uint64_t BROADCAST_ADDRESS;
         static const std::string DATABASE_QUERY;
+        static const std::string SET_NODE_STATUS_QUERY;
         static const std::string INVALID_NODE_MESSAGE;
         static const std::string INVALID_ADDRESS_MESSAGE;
         static const std::string MISMATCHED_COLUMNS_MESSAGE;
