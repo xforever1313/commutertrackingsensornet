@@ -40,12 +40,15 @@ TEST_GROUP(NodeContainerTest) {
 TEST(NodeContainerTest, refreshNodesSuccess) {
     std::vector<std::string> ids = {"1", "2", "3"};
     std::vector<std::string> addresses = {"1", "2", "3"};
+    std::vector<std::string> statuses = {"1", "2", "3"};
     EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
     EXPECT_CALL(*m_result, storeResult());
     EXPECT_CALL(*m_result, getValuesFromColumn("id"))
         .WillOnce(testing::Return(ids));
     EXPECT_CALL(*m_result, getValuesFromColumn("address"))
         .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
     EXPECT_CALL(*m_result, freeResult());
 
     m_uut->refreshNodes();
@@ -53,21 +56,51 @@ TEST(NodeContainerTest, refreshNodesSuccess) {
     CHECK_EQUAL(m_uut->m_nodes.size(), ids.size() + 1); // 1 for broadcast node
     CHECK_EQUAL(m_uut->m_nodes.at(0).getID(), 0);
     CHECK_EQUAL(m_uut->m_nodes.at(0).getAddress(), Gateway::NodeContainer::BROADCAST_ADDRESS);
+    CHECK_EQUAL(m_uut->m_nodes.at(0).getStatus(), Gateway::Node::NodeStatus::OKAY);
     for (size_t i = 1; i < m_uut->m_nodes.size(); ++i) {
         CHECK_EQUAL(m_uut->m_nodes.at(i).getID(), i);
         CHECK_EQUAL(m_uut->m_nodes.at(i).getAddress(), i);
+        CHECK_EQUAL(m_uut->m_nodes.at(i).getStatus(), i);
     }
 }
 
 TEST(NodeContainerTest, refreshNodesMismatchedCols) {
     std::vector<std::string> ids = {"1", "2", "3"};
     std::vector<std::string> addresses = {"1", "2"};
+    std::vector<std::string> statuses = {"1", "2", "3"};
+
     EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
     EXPECT_CALL(*m_result, storeResult());
     EXPECT_CALL(*m_result, getValuesFromColumn("id"))
         .WillOnce(testing::Return(ids));
     EXPECT_CALL(*m_result, getValuesFromColumn("address"))
         .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
+    EXPECT_CALL(*m_result, freeResult());
+
+    try {
+        m_uut->refreshNodes();
+        FAIL("Exepcted exception");
+    }
+    catch (const std::runtime_error &e) {
+        CHECK_EQUAL(e.what(), Gateway::NodeContainer::MISMATCHED_COLUMNS_MESSAGE);
+    }
+}
+
+TEST(NodeContainerTest, refreshNodesMismatchedCols2) {
+    std::vector<std::string> ids = {"1", "2", "3"};
+    std::vector<std::string> addresses = {"1", "2", "3"};
+    std::vector<std::string> statuses = {"1", "2"};
+
+    EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
+    EXPECT_CALL(*m_result, storeResult());
+    EXPECT_CALL(*m_result, getValuesFromColumn("id"))
+        .WillOnce(testing::Return(ids));
+    EXPECT_CALL(*m_result, getValuesFromColumn("address"))
+        .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
     EXPECT_CALL(*m_result, freeResult());
 
     try {
@@ -82,12 +115,16 @@ TEST(NodeContainerTest, refreshNodesMismatchedCols) {
 TEST(NodeContainerTest, refreshNodesBadID1) {
     std::vector<std::string> ids = {"1", "2", "asdf3"};
     std::vector<std::string> addresses = {"1", "2", "3"};
+    std::vector<std::string> statuses = {"1", "2", "3"};
+
     EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
     EXPECT_CALL(*m_result, storeResult());
     EXPECT_CALL(*m_result, getValuesFromColumn("id"))
         .WillOnce(testing::Return(ids));
     EXPECT_CALL(*m_result, getValuesFromColumn("address"))
         .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
     EXPECT_CALL(*m_result, freeResult());
 
     try {
@@ -102,12 +139,16 @@ TEST(NodeContainerTest, refreshNodesBadID1) {
 TEST(NodeContainerTest, refreshNodesBadID2) {
     std::vector<std::string> ids = {"1", "2", "3sdadgf"};
     std::vector<std::string> addresses = {"1", "2", "3"};
+    std::vector<std::string> statuses = {"1", "2", "3"};
+
     EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
     EXPECT_CALL(*m_result, storeResult());
     EXPECT_CALL(*m_result, getValuesFromColumn("id"))
         .WillOnce(testing::Return(ids));
     EXPECT_CALL(*m_result, getValuesFromColumn("address"))
         .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
     EXPECT_CALL(*m_result, freeResult());
 
     try {
@@ -122,12 +163,16 @@ TEST(NodeContainerTest, refreshNodesBadID2) {
 TEST(NodeContainerTest, refreshNodesBadAddress1) {
     std::vector<std::string> ids = {"1", "2", "3"};
     std::vector<std::string> addresses = {"1", "2", "mndi3"};
+    std::vector<std::string> statuses = {"1", "2", "3"};
+
     EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
     EXPECT_CALL(*m_result, storeResult());
     EXPECT_CALL(*m_result, getValuesFromColumn("id"))
         .WillOnce(testing::Return(ids));
     EXPECT_CALL(*m_result, getValuesFromColumn("address"))
         .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
     EXPECT_CALL(*m_result, freeResult());
 
     try {
@@ -143,12 +188,16 @@ TEST(NodeContainerTest, refreshNodesBadAddress1) {
 TEST(NodeContainerTest, refreshNodesBadAddress2) {
     std::vector<std::string> ids = {"1", "2", "3"};
     std::vector<std::string> addresses = {"1", "2", "3asdfasdfsadf"};
+    std::vector<std::string> statuses = {"1", "2", "3"};
+
     EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
     EXPECT_CALL(*m_result, storeResult());
     EXPECT_CALL(*m_result, getValuesFromColumn("id"))
         .WillOnce(testing::Return(ids));
     EXPECT_CALL(*m_result, getValuesFromColumn("address"))
         .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
     EXPECT_CALL(*m_result, freeResult());
 
     try {
@@ -157,6 +206,54 @@ TEST(NodeContainerTest, refreshNodesBadAddress2) {
     }
     catch (const std::invalid_argument &e) {
         CHECK_EQUAL(e.what(), Gateway::NodeContainer::INVALID_DATABASE_DATA + " id: " + ids[2] + " address: " + addresses[2]);
+    }
+}
+
+TEST(NodeContainerTest, refreshNodesBadStatus1) {
+    std::vector<std::string> ids = {"1", "2", "3"};
+    std::vector<std::string> addresses = {"1", "2", "3"};
+    std::vector<std::string> statuses = {"1", "2", "asd3"};
+
+    EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
+    EXPECT_CALL(*m_result, storeResult());
+    EXPECT_CALL(*m_result, getValuesFromColumn("id"))
+        .WillOnce(testing::Return(ids));
+    EXPECT_CALL(*m_result, getValuesFromColumn("address"))
+        .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
+    EXPECT_CALL(*m_result, freeResult());
+
+    try {
+        m_uut->refreshNodes();
+        FAIL("Exepcted exception");
+    }
+    catch (const std::invalid_argument &e) {
+        CHECK_EQUAL(e.what(), Gateway::NodeContainer::INVALID_DATABASE_DATA + " Bad Status: " + statuses[2]);
+    }
+}
+
+TEST(NodeContainerTest, refreshNodesBadStatus2) {
+    std::vector<std::string> ids = {"1", "2", "3"};
+    std::vector<std::string> addresses = {"1", "2", "3"};
+    std::vector<std::string> statuses = {"1", "2", "3asdfasdf"};
+
+    EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
+    EXPECT_CALL(*m_result, storeResult());
+    EXPECT_CALL(*m_result, getValuesFromColumn("id"))
+        .WillOnce(testing::Return(ids));
+    EXPECT_CALL(*m_result, getValuesFromColumn("address"))
+        .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
+    EXPECT_CALL(*m_result, freeResult());
+
+    try {
+        m_uut->refreshNodes();
+        FAIL("Exepcted exception");
+    }
+    catch (const std::invalid_argument &e) {
+        CHECK_EQUAL(e.what(), Gateway::NodeContainer::INVALID_DATABASE_DATA + " Bad Status: " + statuses[2]);
     }
 }
 
@@ -218,12 +315,29 @@ TEST(NodeContainerTest, convertStringToNodeNumberTooHighTest) {
 TEST(NodeContainerTest, setNodeStatusTestSuccess) {
     const unsigned int nodeID = 1; // From test setup
 
+    // Needed for when refresh is called
+    std::vector<std::string> ids = {"1", "2", "3"};
+    std::vector<std::string> addresses = {"1", "2", "3"};
+    std::vector<std::string> statuses = {std::to_string(Gateway::Node::NodeStatus::OKAY), "2", "3"};
+
     std::string expectedQuery = Gateway::NodeContainer::SET_NODE_STATUS_QUERY +
                                 std::to_string(Gateway::Node::NodeStatus::OKAY) +
                                 " WHERE id=" + std::to_string(nodeID);
 
     EXPECT_CALL(*m_mariadb, mysql_real_query(expectedQuery));
     EXPECT_CALL(*m_mariadb, mysql_commit());
+
+    //Neded for when refresh is called.
+    EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeContainer::DATABASE_QUERY));
+    EXPECT_CALL(*m_result, storeResult());
+    EXPECT_CALL(*m_result, getValuesFromColumn("id"))
+        .WillOnce(testing::Return(ids));
+    EXPECT_CALL(*m_result, getValuesFromColumn("address"))
+        .WillOnce(testing::Return(addresses));
+    EXPECT_CALL(*m_result, getValuesFromColumn("status"))
+        .WillOnce(testing::Return(statuses));
+    EXPECT_CALL(*m_result, freeResult());
+
 
     bool changed = m_uut->setNodeStatus(nodeID, 
                                         Gateway::Node::NodeStatus::OKAY);

@@ -39,9 +39,11 @@ void NodeContainer::refreshNodes() {
     m_result->storeResult();
     std::vector<std::string> ids;
     std::vector<std::string> addresses;
+    std::vector<std::string> statuses;
     try {
         ids = m_result->getValuesFromColumn("id");
         addresses = m_result->getValuesFromColumn("address");
+        statuses = m_result->getValuesFromColumn("status");
         m_result->freeResult();
     }
     catch(const std::invalid_argument &e) {
@@ -50,6 +52,9 @@ void NodeContainer::refreshNodes() {
     }
 
     if (ids.size() != addresses.size()) {
+        throw std::runtime_error(MISMATCHED_COLUMNS_MESSAGE);
+    }
+    else if (ids.size() != statuses.size()) {
         throw std::runtime_error(MISMATCHED_COLUMNS_MESSAGE);
     }
 
@@ -79,7 +84,15 @@ void NodeContainer::refreshNodes() {
             throw std::invalid_argument(INVALID_DATABASE_DATA + " id: " + ids[i] + " address: " + addresses[i]);
         }
 
-        Node newNode(id, address);
+        Node::NodeStatus status;
+        try {
+            status = Node::convertStringToNodeStatus(statuses[i]);
+        }
+        catch (const std::exception &e) {
+            throw std::invalid_argument(INVALID_DATABASE_DATA + " Bad Status: " + statuses[i]);
+        }
+
+        Node newNode(id, address, status);
         newNodes.insert(std::pair<unsigned int, Node> (newNode.getID(), newNode));
     }
 
@@ -120,7 +133,9 @@ const Node NodeContainer::convertStringToNode(const std::string &nodeString) {
 
 void NodeContainer::clearNodes() {
     m_nodes.clear();
-    m_nodes.insert(std::pair<unsigned int, Node>(0, Node(0, BROADCAST_ADDRESS)));
+    m_nodes.insert(std::pair<unsigned int, Node>(0, Node(0,
+                                                         BROADCAST_ADDRESS,
+                                                         Node::NodeStatus::OKAY)));
 }
 
 bool NodeContainer::setNodeStatus(unsigned int id, 
@@ -140,11 +155,9 @@ bool NodeContainer::setNodeStatus(unsigned int id,
     m_mariadb->mysql_real_query(query);
     m_mariadb->mysql_commit();
 
-    // Replace the old node with a new node status.
-    Node newNode (id, m_nodes.at(id).getAddress(), newStatus);
-    std::lock_guard<OS::SMutex> lock(m_nodeMutex);
-    m_nodes.erase(id);
-    m_nodes.insert(std::pair<unsigned int, Node>(id, newNode));
+    // Call refresh.  This will reload in the new status into
+    // this cache.
+    refreshNodes();
     return true;
 }
 
