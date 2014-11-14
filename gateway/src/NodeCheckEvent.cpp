@@ -38,32 +38,43 @@ NodeCheckEvent::~NodeCheckEvent() {
 }
 
 void NodeCheckEvent::execute() {
-    m_nodes->refreshNodes();
+    try {
+        m_nodes->refreshNodes();
 
-    m_mariadb->mysql_real_query(OUT_OF_DATE_NODE_QUERY);
-    m_result->storeResult();
+        m_mariadb->mysql_real_query(OUT_OF_DATE_NODE_QUERY);
+        m_result->storeResult();
     
-    std::vector<std::string> nodeIDs;
-    nodeIDs = m_result->getValuesFromColumn("id");
+        std::vector<std::string> nodeIDs;
+        nodeIDs = m_result->getValuesFromColumn("id");
 
-    m_result->freeResult();
+        m_result->freeResult();
 
-    for (size_t i = 0; i < nodeIDs.size(); ++i) {
-        Node node = m_nodes->convertStringToNode(nodeIDs[i]);
-        // Dont do anything if the id is 1.  1 is the gateway,
-        // and an external process handles it.
-        if (node.getID() != 1) {
-            bool changed = m_nodes->setNodeStatus(node.getID(),
-                                                  Node::NodeStatus::UNKNOWN);
+        for (size_t i = 0; i < nodeIDs.size(); ++i) {
+            try {
+                Node node = m_nodes->convertStringToNode(nodeIDs[i]);
+                // Dont do anything if the id is 1.  1 is the gateway,
+                // and an external process handles it.
+                if (node.getID() != 1) {
+                    bool changed = m_nodes->setNodeStatus(node.getID(),
+                                                          Node::NodeStatus::UNKNOWN);
 
-            // If the status changed, alert the admins
-            if (changed) {
-                std::shared_ptr<ErrorEvent> event(new ErrorEvent(ErrorNumber::NODE_HAS_UNKNOWN_STATUS,
-                                                                 node,
-                                                                 m_mariadb));
-                m_eventExecutor->addEvent(event);
+                    // If the status changed, alert the admins
+                    if (changed) {
+                        std::shared_ptr<ErrorEvent> event(new ErrorEvent(ErrorNumber::NODE_HAS_UNKNOWN_STATUS,
+                                                                         node,
+                                                                         m_mariadb));
+                      m_eventExecutor->addEvent(event);
+                    }
+                }
+            }
+            catch (const std::exception &e) {
+                m_errLogger.writeLineWithTimeStamp(e.what());
             }
         }
+    }
+    catch (const std::exception &e) {
+        m_errLogger.writeLineWithTimeStamp(e.what());
+        m_result->freeResult();
     }
 }
 

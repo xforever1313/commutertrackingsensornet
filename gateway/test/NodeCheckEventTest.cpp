@@ -112,3 +112,43 @@ TEST(NodeCheckEventTest, successTest) {
     POINTERS_EQUAL(errEvent->m_mariadb, m_mariadb);
 }
 
+TEST(NodeCheckEventTest, databaseExceptionTest) {
+    std::string error = "error";
+
+    EXPECT_CALL(*m_nodes, refreshNodes())
+        .WillOnce(testing::Throw(std::runtime_error(error)));
+
+    EXPECT_CALL(*m_result, freeResult());
+
+    //Execute
+    m_uut->execute();
+
+    CHECK(m_errLogger->getString().find(error) != std::string::npos);
+}
+
+TEST(NodeCheckEventTest, nodeConversionFailureTest) {
+    std::string error = "error";
+
+    // What is returned from the query 
+    std::vector<std::string> nodes = {"derp"};
+
+    EXPECT_CALL(*m_nodes, refreshNodes());
+
+    // Perform database queries
+    EXPECT_CALL(*m_mariadb, mysql_real_query(Gateway::NodeCheckEvent::OUT_OF_DATE_NODE_QUERY));
+    EXPECT_CALL(*m_result, storeResult());
+    EXPECT_CALL(*m_result, getValuesFromColumn("id"))
+        .WillOnce(testing::Return(nodes));
+    EXPECT_CALL(*m_result, freeResult());
+
+    // Throw exception
+    EXPECT_CALL(*m_nodes, convertStringToNode(nodes[0]))
+        .WillOnce(testing::Throw(std::invalid_argument(error)));
+
+    //Execute
+    m_uut->execute();
+
+    CHECK(m_errLogger->getString().find(error) != std::string::npos);
+}
+
+
