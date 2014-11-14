@@ -10,8 +10,9 @@
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/NodeContainerInterface.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
+#include "gateway/NodeContainerInterface.h"
+#include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
@@ -64,6 +65,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (request.getURI() == XBEE_TX_URI) {
         return new XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);
+    }
+    else if (request.getURI() == NODE_STATUS_UPDATE_URI) {
+        return new NodeStatusUpdateHTTPRequestHandler(m_eventExecutor, m_nodes);
     }
     else if (request.getURI() == UART_TX_URI) {
         return new UartTxHTTPRequestHandler(m_eventExecutor, m_uart);

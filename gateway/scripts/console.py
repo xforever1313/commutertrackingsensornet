@@ -142,6 +142,12 @@ def pokeDatabase():
 
     performPostRequest(data, DATABASE_POKE_URI)
 
+def updateNodeStatus(node, status):
+    data = {}
+    data['node'] = node
+    data['status'] = status
+    performPostRequest(data, NODE_STATUS_UPDATE_URI)
+
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description="Debug Console for the CTSN gateway")
     argParser.add_argument("--url", dest='url', action = "store", default="localhost", help="The url to post to.")
@@ -155,7 +161,8 @@ if __name__ == '__main__':
         command = input("\nEnter a number:\n\t1.  Uart Tx\n\t2.  Send Email\n\t3." + \
                         "  Send Text Message\n\t4.  Shutdown Gateway\n\t5.  Log Test Message\n\t6.  Send Error Message\n\t" + \
                         "7.  Poke Database\n\t8.  Send XBee Tx\n\t9.  Send Result\n\t" +\
-                        "10  Send HTTP over XBee\n\t0.  Exit\n>")
+                        "10  Send HTTP over XBee\n\t" + \
+                        "11. Change Node Status\n\t0.  Exit\n>")
 
         if (command == "1"):
             messageToSend = input("\nEnter a message to send:\n>")
@@ -184,6 +191,10 @@ if __name__ == '__main__':
             uri = input("\nEnter uri: (remember the '/' before it)\n>")
             data = input ("\nEnter the data (formatted like the http post header, but with | instead of &)\n>")
             sendXBeeMessage(uri + "\t" + data, "1") #Can only send this to gateway.
+        elif (command == "11"):
+            nodeNumber = input("\nEnter a node number> ")
+            status = input("\nEnter a status as an int> ")
+            updateNodeStatus(nodeNumber, status)
         elif (command == "0"):
             keepGoing = False
 

@@ -121,5 +121,15 @@ const std::string
 #endif
 DATA_RESULT_URI = "/data_result";
 
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+NODE_STATUS_UPDATE_URI = "/node_status";
+
 #endif
 

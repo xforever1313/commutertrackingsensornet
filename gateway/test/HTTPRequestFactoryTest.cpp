@@ -13,6 +13,7 @@
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
+#include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
@@ -109,6 +110,21 @@ TEST(HTTPRequestFactoryTest, createXBeeTxTest) {
 
     delete handler;
 }
+
+TEST(HTTPRequestFactoryTest, createNodeStatusUpdateTest) {
+    m_request->setURI(NODE_STATUS_UPDATE_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Gateway::NodeStatusUpdateHTTPRequestHandler* handler = 
+        dynamic_cast<Gateway::NodeStatusUpdateHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+
+    CHECK(handler != nullptr);
+    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
+    POINTERS_EQUAL(handler->m_nodes, m_nodes);
+
+    delete handler;
+}
+
 
 TEST(HTTPRequestFactoryTest, createDataTest) {
     m_request->setURI(DATA_RESULT_URI);
