@@ -10,10 +10,16 @@ namespace Gateway {
  * \brief These are the same error numbers that live in the database.
  */
 enum ErrorNumber {
-    FIRST = 0,          ///< Not an error number, only used for error checking
-    OKAY = 1,           ///< No error
-    TEST_ERROR = 2,     ///< Used by the debug console, so we can see if this thing works or not.
-    END                 ///< Not an actual error number, only used for error checking
+    FIRST = 0,                          ///< Not an error number, only used for error checking
+    OKAY = 1,                           ///< No error
+    TEST_ERROR = 2,                     ///< Used by the debug console, so we can see if this thing works or not.
+    WEBSITE_ENTER_MAINTENANCE = 3,      ///< Website is entering maintenance mode.
+    WEBSITE_EXIT_MAINTENANCE = 4,       ///< Website exiting maintenance mode.
+    NODE_IS_NOW_GOOD = 5,               ///< Node had a bad state, but is now good.
+    NODE_HAS_LOW_BATTERY = 6,           ///< Node has a low battery
+    NODE_HAS_CRITICAL_BATTERY = 7,      ///< Node has a critical battery
+    NODE_HAS_UNKNOWN_STATUS = 8,        ///< Node now has an unknown status.
+    END                                 ///< Not an actual error number, only used for error checking
 };
 
 /**
