@@ -21,11 +21,11 @@ cursor = db.cursor()
 
 #If running...
 if (status == 200):
-    cursor.execute("UPDATE node SET status=1 WHERE id=1;")
+    cursor.execute("UPDATE node SET status=1,update_time=NOW() WHERE id=1;")
 
 #If down...
 else:
-    cursor.execute("UPDATE node SET status=8 WHERE id=1;")
+    cursor.execute("UPDATE node SET status=8,update_time=NOW() WHERE id=1;")
 
 db.commit()
 cursor.close()
