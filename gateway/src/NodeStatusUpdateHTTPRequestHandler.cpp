@@ -47,7 +47,7 @@ void NodeStatusUpdateHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServer
         const Node node = m_nodes->convertStringToNode(nodeStr);
 
         std::shared_ptr<NodeStatusUpdateEvent> event (
-            new NodeStatusUpdateEvent(status, node.getID(), m_nodes));
+            new NodeStatusUpdateEvent(status, node.getID(), m_nodes, m_eventExecutor));
 
         m_eventExecutor->addEvent(event);
 

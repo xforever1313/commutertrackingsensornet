@@ -140,6 +140,7 @@ TEST(NodeStatusUpdateHTTPRequestHandlerTest, postSuccess) {
     CHECK_EQUAL(NodeStatusevent->m_status, status);
     CHECK_EQUAL(NodeStatusevent->m_nodeID, m_node->getID());
     POINTERS_EQUAL(NodeStatusevent->m_nodes, m_nodes);
+    POINTERS_EQUAL(NodeStatusevent->m_eventExecutor, m_eventExecutor);
 
     CHECK_EQUAL(m_response->m_response.str(),
                 Gateway::NodeStatusUpdateHTTPRequestHandler::POST_SUCCESS_MESSAGE);

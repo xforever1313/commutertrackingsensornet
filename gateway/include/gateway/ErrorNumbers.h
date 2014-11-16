@@ -20,6 +20,7 @@ enum ErrorNumber {
     NODE_HAS_CRITICAL_BATTERY = 7,      ///< Node has a critical battery
     NODE_HAS_UNKNOWN_STATUS = 8,        ///< Node now has an unknown status.
     NODE_HAS_GONE_OFFLINE = 9,          ///< Node has purposefully been taken offline.
+    NODE_HAS_UNCOMMON_STATUS = 10,      ///< Node somehow has a status that is not implemented yet.
     END                                 ///< Not an actual error number, only used for error checking
 };
 

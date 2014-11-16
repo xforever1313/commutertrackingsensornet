@@ -1,6 +1,7 @@
 #ifndef NODE_STATUS_UPDATE_EVENT_H_
 #define NODE_STATUS_UPDATE_EVENT_H_
 
+#include "EventExecutorInterface.h"
 #include "EventInterface.h"
 #include "gateway/Node.h"
 #include "gateway/NodeContainerInterface.h"
@@ -14,6 +15,7 @@ class NodeStatusUpdateEvent : public Common::EventInterface {
         NodeStatusUpdateEvent(Node::NodeStatus status, 
                               unsigned int nodeNumber,
                               NodeContainerInterface *nodes,
+                              Common::EventExecutorInterface *eventExecutor,
                               Common::IO::LoggerBase &errLogger = Common::IO::ConsoleLogger::err);
 
         ~NodeStatusUpdateEvent();
@@ -27,6 +29,7 @@ class NodeStatusUpdateEvent : public Common::EventInterface {
         Node::NodeStatus m_status;
         unsigned int m_nodeID;
         NodeContainerInterface *m_nodes;
+        Common::EventExecutorInterface *m_eventExecutor;
         Common::IO::LoggerBase &m_errLogger;
 };
 
