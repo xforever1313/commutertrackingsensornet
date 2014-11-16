@@ -39,7 +39,7 @@ if(piBuild):
     if (piNode):
         additionalFlags += ['-DGATEWAY_IP=\\"192.168.15.115\\"']
     else:
-        additionalFlags += ['-DGATEWAY_IP=\\"localhost"']
+        additionalFlags += ['-DGATEWAY_IP=\\"localhost\\"']
 else:
     additionalFlags += ['-DGATEWAY_IP=\\"192.168.15.115\\"',
                         '-DSERIAL_PORT=\\"/dev/ttyUSB0\\"']
