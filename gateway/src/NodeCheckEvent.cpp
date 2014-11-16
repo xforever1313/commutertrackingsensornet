@@ -16,7 +16,7 @@ namespace Gateway {
 
 // it takes 1 hour before the nodes become unknown.
 const std::string NodeCheckEvent::OUT_OF_DATE_NODE_QUERY = 
-    "SELECT * FROM node WHERE TIMESTAMPDIFF(HOUR, node.update_time, NOW()) <= 1";
+    "SELECT * FROM node WHERE TIMESTAMPDIFF(HOUR, node.update_time, NOW()) >= 1";
 
 NodeCheckEvent::NodeCheckEvent(Common::EventExecutorInterface *eventExecutor,
                                MariaDBInterface *mariadb,

@@ -131,5 +131,15 @@ const std::string
 #endif
 NODE_STATUS_UPDATE_URI = "/node_status";
 
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+NODE_CHECK_URI = "/node_check";
+
 #endif
 

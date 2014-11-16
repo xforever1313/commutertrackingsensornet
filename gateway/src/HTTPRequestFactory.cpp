@@ -12,6 +12,7 @@
 #include "gateway/MariaDBInterface.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
 #include "gateway/NodeContainerInterface.h"
+#include "gateway/NodeCheckHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
@@ -62,6 +63,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (request.getURI() == DATA_RESULT_URI) {
         return new DataHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
+    }
+    else if (request.getURI() == NODE_CHECK_URI) {
+        return new NodeCheckHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
     }
     else if (request.getURI() == XBEE_TX_URI) {
         return new XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);

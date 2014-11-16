@@ -13,6 +13,7 @@
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
+#include "gateway/NodeCheckHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "gateway/NotFoundHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
@@ -125,6 +126,20 @@ TEST(HTTPRequestFactoryTest, createNodeStatusUpdateTest) {
     delete handler;
 }
 
+TEST(HTTPRequestFactoryTest, createNodeCheckUpdateTest) {
+    m_request->setURI(NODE_CHECK_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Gateway::NodeCheckHTTPRequestHandler* handler = 
+        dynamic_cast<Gateway::NodeCheckHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+
+    CHECK(handler != nullptr);
+    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
+    POINTERS_EQUAL(handler->m_nodes, m_nodes);
+    POINTERS_EQUAL(handler->m_mariadb, m_mariadb);
+
+    delete handler;
+}
 
 TEST(HTTPRequestFactoryTest, createDataTest) {
     m_request->setURI(DATA_RESULT_URI);

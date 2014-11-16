@@ -148,6 +148,11 @@ def updateNodeStatus(node, status):
     data['status'] = status
     performPostRequest(data, NODE_STATUS_UPDATE_URI)
 
+def nodeCheck():
+    data = {}
+    data['check'] = 'true'
+    performPostRequest(data, NODE_CHECK_URI)
+
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description="Debug Console for the CTSN gateway")
     argParser.add_argument("--url", dest='url', action = "store", default="localhost", help="The url to post to.")
@@ -162,7 +167,7 @@ if __name__ == '__main__':
                         "  Send Text Message\n\t4.  Shutdown Gateway\n\t5.  Log Test Message\n\t6.  Send Error Message\n\t" + \
                         "7.  Poke Database\n\t8.  Send XBee Tx\n\t9.  Send Result\n\t" +\
                         "10  Send HTTP over XBee\n\t" + \
-                        "11. Change Node Status\n\t0.  Exit\n>")
+                        "11. Change Node Status\n\t12. Node Check\n\t0.  Exit\n>")
 
         if (command == "1"):
             messageToSend = input("\nEnter a message to send:\n>")
@@ -195,6 +200,8 @@ if __name__ == '__main__':
             nodeNumber = input("\nEnter a node number> ")
             status = input("\nEnter a status as an int> ")
             updateNodeStatus(nodeNumber, status)
+        elif (command == "12"):
+            nodeCheck()
         elif (command == "0"):
             keepGoing = False
 
