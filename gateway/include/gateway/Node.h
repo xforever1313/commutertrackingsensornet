@@ -20,7 +20,7 @@ class Node {
             OFFLINE = 3,            ///< Node is offline purposefully
             MAINTENANCE = 4,        ///< Node is offline for maintenance
             LOW_BATTERY = 5,        ///< Node's battery is gettting low
-            BATTERY_CRiTICAL = 6,   ///< Node's battery is about to run out
+            BATTERY_CRITICAL = 6,   ///< Node's battery is about to run out
             UNKNOWN = 7,            ///< Node is at an unknown state, we can not reach it.
             DOWN = 8,               ///< The node is just down.
             END                     ///< Not an error number, only used for error checking

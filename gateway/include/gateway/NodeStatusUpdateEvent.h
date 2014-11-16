@@ -3,6 +3,7 @@
 
 #include "EventExecutorInterface.h"
 #include "EventInterface.h"
+#include "gateway/MariaDBInterface.h"
 #include "gateway/Node.h"
 #include "gateway/NodeContainerInterface.h"
 #include "io/ConsoleLogger.h"
@@ -16,6 +17,7 @@ class NodeStatusUpdateEvent : public Common::EventInterface {
                               unsigned int nodeNumber,
                               NodeContainerInterface *nodes,
                               Common::EventExecutorInterface *eventExecutor,
+                              MariaDBInterface *mariadb,
                               Common::IO::LoggerBase &errLogger = Common::IO::ConsoleLogger::err);
 
         ~NodeStatusUpdateEvent();
@@ -30,6 +32,7 @@ class NodeStatusUpdateEvent : public Common::EventInterface {
         unsigned int m_nodeID;
         NodeContainerInterface *m_nodes;
         Common::EventExecutorInterface *m_eventExecutor;
+        MariaDBInterface *m_mariadb;
         Common::IO::LoggerBase &m_errLogger;
 };
 

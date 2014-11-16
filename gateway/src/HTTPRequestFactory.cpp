@@ -71,7 +71,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
         return new XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);
     }
     else if (request.getURI() == NODE_STATUS_UPDATE_URI) {
-        return new NodeStatusUpdateHTTPRequestHandler(m_eventExecutor, m_nodes);
+        return new NodeStatusUpdateHTTPRequestHandler(m_eventExecutor, m_nodes, m_mariadb);
     }
     else if (request.getURI() == UART_TX_URI) {
         return new UartTxHTTPRequestHandler(m_eventExecutor, m_uart);

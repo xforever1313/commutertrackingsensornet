@@ -58,7 +58,7 @@ TEST(NodeCheckEventTest, successTest) {
 
     Gateway::Node node1 (1, 0x01, Gateway::Node::NodeStatus::OKAY);
     Gateway::Node node3 (3, 0x03, Gateway::Node::NodeStatus::UNKNOWN);
-    Gateway::Node node4 (4, 0x04, Gateway::Node::NodeStatus::BATTERY_CRiTICAL);
+    Gateway::Node node4 (4, 0x04, Gateway::Node::NodeStatus::BATTERY_CRITICAL);
 
     // What is returned from the query 
     std::vector<std::string> nodes = {std::to_string(node1.getID()),

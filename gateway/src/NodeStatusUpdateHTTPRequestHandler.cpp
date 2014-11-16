@@ -7,6 +7,7 @@
 
 #include "EventExecutor.h"
 #include "gateway/BaseHTTPRequestHandler.h"
+#include "gateway/MariaDBInterface.h"
 #include "gateway/NodeStatusUpdateEvent.h"
 #include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
@@ -23,9 +24,11 @@ const std::string NodeStatusUpdateHTTPRequestHandler::NODE_FORM_DATA = "node";
 const std::string NodeStatusUpdateHTTPRequestHandler::STATUS_FORM_DATA = "status";
 
 NodeStatusUpdateHTTPRequestHandler::NodeStatusUpdateHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
-                                           NodeContainerInterface *nodes) :
+                                           NodeContainerInterface *nodes,
+                                           MariaDBInterface *mariadb) :
     m_eventExecutor(eventExecutor),
-    m_nodes(nodes)
+    m_nodes(nodes),
+    m_mariadb(mariadb)
 {
 
 }
@@ -47,7 +50,7 @@ void NodeStatusUpdateHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServer
         const Node node = m_nodes->convertStringToNode(nodeStr);
 
         std::shared_ptr<NodeStatusUpdateEvent> event (
-            new NodeStatusUpdateEvent(status, node.getID(), m_nodes, m_eventExecutor));
+            new NodeStatusUpdateEvent(status, node.getID(), m_nodes, m_eventExecutor, m_mariadb));
 
         m_eventExecutor->addEvent(event);
 

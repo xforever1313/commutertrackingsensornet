@@ -7,6 +7,7 @@
 
 #include "EventExecutorInterface.h"
 #include "gateway/BaseHTTPRequestHandler.h"
+#include "gateway/MariaDBInterface.h"
 #include "gateway/Node.h"
 #include "gateway/NodeContainerInterface.h"
 #include "gateway/NodeStatusUpdateEvent.h"
@@ -16,7 +17,8 @@ namespace Gateway {
 class NodeStatusUpdateHTTPRequestHandler : public BaseHTTPRequestHandler {
     public:
         NodeStatusUpdateHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
-                                           NodeContainerInterface *nodes);
+                                           NodeContainerInterface *nodes,
+                                           MariaDBInterface *mariadb);
 
         ~NodeStatusUpdateHTTPRequestHandler();
 
@@ -36,6 +38,7 @@ class NodeStatusUpdateHTTPRequestHandler : public BaseHTTPRequestHandler {
 
         Common::EventExecutorInterface *m_eventExecutor;
         NodeContainerInterface *m_nodes;
+        MariaDBInterface *m_mariadb;
 };
 
 }

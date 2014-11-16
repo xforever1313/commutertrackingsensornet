@@ -122,6 +122,7 @@ TEST(HTTPRequestFactoryTest, createNodeStatusUpdateTest) {
     CHECK(handler != nullptr);
     POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
     POINTERS_EQUAL(handler->m_nodes, m_nodes);
+    POINTERS_EQUAL(handler->m_mariadb, m_mariadb);
 
     delete handler;
 }

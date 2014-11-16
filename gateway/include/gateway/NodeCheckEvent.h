@@ -15,7 +15,7 @@ class NodeCheckEvent : public Common::EventInterface {
         NodeCheckEvent(Common::EventExecutorInterface *eventExecutor,
                        MariaDBInterface *mariadb,
                        NodeContainerInterface *nodes,
-                       Common::IO::LoggerBase &errLogger = 
+                       Common::IO::LoggerBase &errLogger =
                            Common::IO::ConsoleLogger::err);
 
         ~NodeCheckEvent();

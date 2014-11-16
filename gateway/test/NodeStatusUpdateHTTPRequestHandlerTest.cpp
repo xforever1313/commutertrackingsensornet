@@ -7,6 +7,7 @@
 #include "MockEventExecutor.h"
 #include "MockHTTPServerRequest.h"
 #include "MockHTTPServerResponse.h"
+#include "MockMariaDB.h"
 #include "MockNodeContainer.h"
 
 TEST_GROUP(NodeStatusUpdateHTTPRequestHandlerTest) {
@@ -16,17 +17,21 @@ TEST_GROUP(NodeStatusUpdateHTTPRequestHandlerTest) {
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
 
         m_uut = new Gateway::NodeStatusUpdateHTTPRequestHandler(m_eventExecutor,
-                                                                m_nodes);
+                                                                m_nodes,
+                                                                m_mariadb);
 
         m_node = new Gateway::Node(1, 0x01);
         POINTERS_EQUAL(m_uut->m_nodes, m_nodes);
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
+        POINTERS_EQUAL(m_uut->m_mariadb, m_mariadb);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
+        delete m_mariadb;
         delete m_node;
         delete m_nodes;
         delete m_eventExecutor;
@@ -40,6 +45,7 @@ TEST_GROUP(NodeStatusUpdateHTTPRequestHandlerTest) {
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
 
     Gateway::Node *m_node;
     Gateway::NodeStatusUpdateHTTPRequestHandler *m_uut;
@@ -141,7 +147,8 @@ TEST(NodeStatusUpdateHTTPRequestHandlerTest, postSuccess) {
     CHECK_EQUAL(NodeStatusevent->m_nodeID, m_node->getID());
     POINTERS_EQUAL(NodeStatusevent->m_nodes, m_nodes);
     POINTERS_EQUAL(NodeStatusevent->m_eventExecutor, m_eventExecutor);
-
+    POINTERS_EQUAL(NodeStatusevent->m_mariadb, m_mariadb);
+    
     CHECK_EQUAL(m_response->m_response.str(),
                 Gateway::NodeStatusUpdateHTTPRequestHandler::POST_SUCCESS_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);
