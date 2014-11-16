@@ -26,6 +26,8 @@ TEST_GROUP(GetNodeStatusEventTest) {
         POINTERS_EQUAL(m_uut->m_nodes, m_nodes);
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
         POINTERS_EQUAL(m_uut->m_mariadb, m_mariadb);
+
+        m_node = new Gateway::Node(1, 0x01);
     }
 
     TEST_TEARDOWN() {
@@ -34,11 +36,14 @@ TEST_GROUP(GetNodeStatusEventTest) {
         delete m_mariadb;
         delete m_nodes;
         delete m_eventExecutor;
+        delete m_node;
     }
 
     static const Gateway::Node::NodeStatus nodeStatus = 
                     Gateway::Node::NodeStatus::OKAY;
     static const unsigned int nodeID = 1;
+
+    Gateway::Node *m_node;
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
@@ -57,12 +62,15 @@ TEST(GetNodeStatusEventTest, SuccessTestNoChange) {
     // No error occurred.
     CHECK(m_errLogger->getString().empty());
 }
-/*
+
 TEST(GetNodeStatusEventTest, SuccessTestOkayChange) {
 
     EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
                                         Gateway::Node::NodeStatus::OKAY))
-        .WillOnce(testing::Return(false));
+        .WillOnce(testing::Return(true));
+
+    EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
+        .WillOnce(testing::Return(*m_node));
 
     std::shared_ptr<Common::EventInterface> event = nullptr;
     EXPECT_CALL(*m_eventExecutor, addEvent(testing::_))
@@ -75,10 +83,171 @@ TEST(GetNodeStatusEventTest, SuccessTestOkayChange) {
 
     CHECK(errEvent != nullptr);
 
+    CHECK_EQUAL(errEvent->m_node.getID(), m_node->getID());
+    CHECK_EQUAL(errEvent->m_errorNumber,
+                Gateway::ErrorNumber::NODE_IS_NOW_GOOD);
+
+    POINTERS_EQUAL(errEvent->m_mariadb, m_mariadb);
+
     // No error occurred.
     CHECK(m_errLogger->getString().empty());
 }
-*/
+
+TEST(GetNodeStatusEventTest, SuccessTestOfflineChange) {
+    m_uut->m_status = Gateway::Node::NodeStatus::OFFLINE;
+
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+                                        Gateway::Node::NodeStatus::OFFLINE))
+        .WillOnce(testing::Return(true));
+
+    EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
+        .WillOnce(testing::Return(*m_node));
+
+    std::shared_ptr<Common::EventInterface> event = nullptr;
+    EXPECT_CALL(*m_eventExecutor, addEvent(testing::_))
+        .WillOnce(testing::SaveArg<0>(&event));
+
+    m_uut->execute();
+
+    Gateway::ErrorEvent *errEvent = 
+        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+
+    CHECK(errEvent != nullptr);
+
+    CHECK_EQUAL(errEvent->m_node.getID(), m_node->getID());
+    CHECK_EQUAL(errEvent->m_errorNumber,
+                Gateway::ErrorNumber::NODE_HAS_GONE_OFFLINE);
+
+    POINTERS_EQUAL(errEvent->m_mariadb, m_mariadb);
+
+    // No error occurred.
+    CHECK(m_errLogger->getString().empty());
+}
+
+TEST(GetNodeStatusEventTest, SuccessTestLowBatteryChange) {
+    m_uut->m_status = Gateway::Node::NodeStatus::LOW_BATTERY;
+
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+                                        Gateway::Node::NodeStatus::LOW_BATTERY))
+        .WillOnce(testing::Return(true));
+
+    EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
+        .WillOnce(testing::Return(*m_node));
+
+    std::shared_ptr<Common::EventInterface> event = nullptr;
+    EXPECT_CALL(*m_eventExecutor, addEvent(testing::_))
+        .WillOnce(testing::SaveArg<0>(&event));
+
+    m_uut->execute();
+
+    Gateway::ErrorEvent *errEvent = 
+        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+
+    CHECK(errEvent != nullptr);
+
+    CHECK_EQUAL(errEvent->m_node.getID(), m_node->getID());
+    CHECK_EQUAL(errEvent->m_errorNumber,
+                Gateway::ErrorNumber::NODE_HAS_LOW_BATTERY);
+
+    POINTERS_EQUAL(errEvent->m_mariadb, m_mariadb);
+
+    // No error occurred.
+    CHECK(m_errLogger->getString().empty());
+}
+
+TEST(GetNodeStatusEventTest, SuccessTestCriticalBatteryChange) {
+    m_uut->m_status = Gateway::Node::NodeStatus::BATTERY_CRITICAL;
+
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+                                        Gateway::Node::NodeStatus::BATTERY_CRITICAL))
+        .WillOnce(testing::Return(true));
+
+    EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
+        .WillOnce(testing::Return(*m_node));
+
+    std::shared_ptr<Common::EventInterface> event = nullptr;
+    EXPECT_CALL(*m_eventExecutor, addEvent(testing::_))
+        .WillOnce(testing::SaveArg<0>(&event));
+
+    m_uut->execute();
+
+    Gateway::ErrorEvent *errEvent = 
+        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+
+    CHECK(errEvent != nullptr);
+
+    CHECK_EQUAL(errEvent->m_node.getID(), m_node->getID());
+    CHECK_EQUAL(errEvent->m_errorNumber,
+                Gateway::ErrorNumber::NODE_HAS_CRITICAL_BATTERY);
+
+    POINTERS_EQUAL(errEvent->m_mariadb, m_mariadb);
+
+    // No error occurred.
+    CHECK(m_errLogger->getString().empty());
+}
+
+TEST(GetNodeStatusEventTest, SuccessTestUnknownChange) {
+    m_uut->m_status = Gateway::Node::NodeStatus::UNKNOWN;
+
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+                                        Gateway::Node::NodeStatus::UNKNOWN))
+        .WillOnce(testing::Return(true));
+
+    EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
+        .WillOnce(testing::Return(*m_node));
+
+    std::shared_ptr<Common::EventInterface> event = nullptr;
+    EXPECT_CALL(*m_eventExecutor, addEvent(testing::_))
+        .WillOnce(testing::SaveArg<0>(&event));
+
+    m_uut->execute();
+
+    Gateway::ErrorEvent *errEvent = 
+        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+
+    CHECK(errEvent != nullptr);
+
+    CHECK_EQUAL(errEvent->m_node.getID(), m_node->getID());
+    CHECK_EQUAL(errEvent->m_errorNumber,
+                Gateway::ErrorNumber::NODE_HAS_UNKNOWN_STATUS);
+
+    POINTERS_EQUAL(errEvent->m_mariadb, m_mariadb);
+
+    // No error occurred.
+    CHECK(m_errLogger->getString().empty());
+}
+
+TEST(GetNodeStatusEventTest, SuccessTestUncommonChange) {
+    m_uut->m_status = Gateway::Node::NodeStatus::DOWN;
+
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+                                        Gateway::Node::NodeStatus::DOWN))
+        .WillOnce(testing::Return(true));
+
+    EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
+        .WillOnce(testing::Return(*m_node));
+
+    std::shared_ptr<Common::EventInterface> event = nullptr;
+    EXPECT_CALL(*m_eventExecutor, addEvent(testing::_))
+        .WillOnce(testing::SaveArg<0>(&event));
+
+    m_uut->execute();
+
+    Gateway::ErrorEvent *errEvent = 
+        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+
+    CHECK(errEvent != nullptr);
+
+    CHECK_EQUAL(errEvent->m_node.getID(), m_node->getID());
+    CHECK_EQUAL(errEvent->m_errorNumber,
+                Gateway::ErrorNumber::NODE_HAS_UNCOMMON_STATUS);
+
+    POINTERS_EQUAL(errEvent->m_mariadb, m_mariadb);
+
+    // No error occurred.
+    CHECK(m_errLogger->getString().empty());
+}
+
 TEST(GetNodeStatusEventTest, outOfRangeFailure) {
     std::string error = "error";
 

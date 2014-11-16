@@ -1,3 +1,4 @@
+#include <memory>
 #include <stdexcept>
 
 #include "EventExecutorInterface.h"
@@ -37,24 +38,33 @@ void NodeStatusUpdateEvent::execute() {
         // If the status has changed from what it was,
         // log it.
         if (m_nodes->setNodeStatus(m_nodeID, m_status)) {
-           /* ErrorNumber errNumber;
+            ErrorNumber errNumber;
+
+            Node node = m_nodes->getNodeFromID(m_nodeID);
+
             switch(m_status) {
-                case OKAY:
+                case Node::NodeStatus::OKAY:
                     errNumber = NODE_IS_NOW_GOOD;
                     break;
-                case OFFLINE:
+                case Node::NodeStatus::OFFLINE:
+                    errNumber = NODE_HAS_GONE_OFFLINE;
                     break;
-                case LOW_BATTERY:
+                case Node::NodeStatus::LOW_BATTERY:
+                    errNumber = NODE_HAS_LOW_BATTERY;
                     break;
-                case BATTERY_CRITICAL:
+                case Node::NodeStatus::BATTERY_CRITICAL:
+                    errNumber = NODE_HAS_CRITICAL_BATTERY;
                     break;
-                case UNKNOWN:
+                case Node::NodeStatus::UNKNOWN:
+                    errNumber = NODE_HAS_UNKNOWN_STATUS;
                     break;
                 default:
+                    errNumber = NODE_HAS_UNCOMMON_STATUS;
                     break;
-            };*/
-            //std::shared_ptr<ErrorEvent> event(
-            //    new ErrorEvent(errNumber, m_node, 
+            }
+            std::shared_ptr<ErrorEvent> event(
+                new ErrorEvent(errNumber, node, m_mariadb));
+            m_eventExecutor->addEvent(event);
         }
     }
     catch (const std::exception &e) {
