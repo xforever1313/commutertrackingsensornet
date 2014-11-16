@@ -59,11 +59,13 @@ TEST(NodeCheckEventTest, successTest) {
     Gateway::Node node1 (1, 0x01, Gateway::Node::NodeStatus::OKAY);
     Gateway::Node node3 (3, 0x03, Gateway::Node::NodeStatus::UNKNOWN);
     Gateway::Node node4 (4, 0x04, Gateway::Node::NodeStatus::BATTERY_CRITICAL);
+    Gateway::Node node5 (5, 0x05, Gateway::Node::NodeStatus::OFFLINE);
 
     // What is returned from the query 
     std::vector<std::string> nodes = {std::to_string(node1.getID()),
                                       std::to_string(node3.getID()),
-                                      std::to_string(node4.getID())};
+                                      std::to_string(node4.getID()),
+                                      std::to_string(node5.getID())};
 
     EXPECT_CALL(*m_nodes, refreshNodes());
 
@@ -99,6 +101,10 @@ TEST(NodeCheckEventTest, successTest) {
     std::shared_ptr<Common::EventInterface> event = nullptr;
     EXPECT_CALL(*m_eventExecutor, addEvent(testing::_))
         .WillOnce(testing::SaveArg<0>(&event));
+
+    //Node 5 will be offline.  No setting should be done.
+    EXPECT_CALL(*m_nodes, convertStringToNode(nodes[3]))
+        .WillOnce(testing::Return(node5));
 
     //Execute
     m_uut->execute();

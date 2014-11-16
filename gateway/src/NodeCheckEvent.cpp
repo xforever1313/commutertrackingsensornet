@@ -54,7 +54,7 @@ void NodeCheckEvent::execute() {
                 Node node = m_nodes->convertStringToNode(nodeIDs[i]);
                 // Dont do anything if the id is 1.  1 is the gateway,
                 // and an external process handles it.
-                if (node.getID() != 1) {
+                if ((node.getID() != 1) && (node.getStatus() != Node::NodeStatus::OFFLINE)) {
                     bool changed = m_nodes->setNodeStatus(node.getID(),
                                                           Node::NodeStatus::UNKNOWN);
 
@@ -63,7 +63,7 @@ void NodeCheckEvent::execute() {
                         std::shared_ptr<ErrorEvent> event(new ErrorEvent(ErrorNumber::NODE_HAS_UNKNOWN_STATUS,
                                                                          node,
                                                                          m_mariadb));
-                      m_eventExecutor->addEvent(event);
+                        m_eventExecutor->addEvent(event);
                     }
                 }
             }
