@@ -6,8 +6,7 @@
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <string>
 
-namespace Gateway {
-
+namespace CTSNCommon {
 class BaseHTTPRequestHandler : public Poco::Net::HTTPRequestHandler {
     public:
         /**

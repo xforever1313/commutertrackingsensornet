@@ -5,7 +5,6 @@
 #include <Poco/Net/HTTPServerResponse.h>
 
 #include "EventExecutorInterface.h"
-#include "gateway/BaseHTTPRequestHandler.h"
 #include "gateway/DatabasePokeEvent.h"
 #include "gateway/DatabasePokeHTTPRequestHandler.h"
 #include "gateway/MariaDBInterface.h"

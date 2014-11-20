@@ -7,7 +7,6 @@
 #include <string>
 
 #include "EventExecutorInterface.h"
-#include "gateway/BaseHTTPRequestHandler.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/Gateway.h"
 #include "gateway/LogEvent.h"

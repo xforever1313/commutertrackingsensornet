@@ -6,13 +6,13 @@
 #include <string>
 
 #include "EventExecutorInterface.h"
-#include "gateway/BaseHTTPRequestHandler.h"
+#include "ctsn_common/BaseHTTPRequestHandler.h"
 #include "gateway/NodeContainerInterface.h"
 #include "gateway/UartInterface.h"
 
 namespace Gateway {
 
-class XBeeTxHTTPRequestHandler : public BaseHTTPRequestHandler { 
+class XBeeTxHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler { 
     public:
         XBeeTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor, 
                                  UartInterface *uart,

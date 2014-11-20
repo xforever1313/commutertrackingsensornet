@@ -4,10 +4,10 @@
 #include <Poco/Net/HTTPResponse.h>
 #include <Poco/Net/HTTPServerResponse.h>
 
-#include "gateway/BaseHTTPRequestHandler.h"
+#include "ctsn_common/BaseHTTPRequestHandler.h"
 
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class MockHTTPRequestHandler : public BaseHTTPRequestHandler {
     public:

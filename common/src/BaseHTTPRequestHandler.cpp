@@ -4,9 +4,9 @@
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <string>
 
-#include "gateway/BaseHTTPRequestHandler.h"
+#include "ctsn_common/BaseHTTPRequestHandler.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 BaseHTTPRequestHandler::BaseHTTPRequestHandler() {
 }

@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "gateway/BaseHTTPRequestHandler.h"
 #include "gateway/TextMessageEvent.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
 #include "StringOps.h"

@@ -92,8 +92,8 @@ piLibs = ['mariadbclient', 'z', 'm', 'ssl', 'crypto' ,'dl', 'rt']
 #Libs needed on arch
 archLibs = ['mysqlclient', 'z', 'm', 'ssl', 'crypto', 'dl', 'rt']
 
-debugLibs = ['CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
-releaseLibs = ['CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
+debugLibs = ['ctsn_common-d', 'CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
+releaseLibs = ['ctsn_common', 'CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 
 if (ARGUMENTS.get('pi_build', '0') ==  '1'):
     debugLibs += piLibs
@@ -106,9 +106,11 @@ testLibs = debugLibs
 
 ###LibPath
 debugLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
-                os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE'])]
+                os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
+                os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE'])]
 releaseLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
-                  os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
+                  os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
+                  os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
 
 testLibPath = debugLibPath
 

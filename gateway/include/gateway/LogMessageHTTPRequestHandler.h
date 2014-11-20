@@ -6,7 +6,7 @@
 #include <string>
 
 #include "EventExecutorInterface.h"
-#include "BaseHTTPRequestHandler.h"
+#include "ctsn_common/BaseHTTPRequestHandler.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeContainerInterface.h"
@@ -14,7 +14,7 @@
 
 namespace Gateway {
 
-class LogMessageHTTPRequestHandler : public BaseHTTPRequestHandler {
+class LogMessageHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
 
     public:
         LogMessageHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,

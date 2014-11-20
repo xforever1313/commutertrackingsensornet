@@ -6,13 +6,13 @@
 #include <string>
 
 #include "EventExecutorInterface.h"
-#include "gateway/BaseHTTPRequestHandler.h"
+#include "ctsn_common/BaseHTTPRequestHandler.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeContainerInterface.h"
 
 namespace Gateway {
 
-class NodeCheckHTTPRequestHandler : public BaseHTTPRequestHandler {
+class NodeCheckHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         NodeCheckHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
                                     MariaDBInterface *mariadb,

@@ -5,11 +5,11 @@
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <string>
 
-#include "gateway/BaseHTTPRequestHandler.h"
+#include "ctsn_common/BaseHTTPRequestHandler.h"
 
 namespace Gateway {
 
-class NotFoundHTTPRequestHandler : public BaseHTTPRequestHandler {
+class NotFoundHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         NotFoundHTTPRequestHandler();
         ~NotFoundHTTPRequestHandler();

@@ -12,7 +12,7 @@ TEST_GROUP(BaseHTTPRequestHandlerTest) {
     TEST_SETUP() {
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>;
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>;
-        m_uut = new Gateway::MockHTTPRequestHandler;
+        m_uut = new CTSNCommon::MockHTTPRequestHandler;
         m_expectedMessage = "This is a server response!";
 
     }
@@ -25,7 +25,7 @@ TEST_GROUP(BaseHTTPRequestHandlerTest) {
 
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<MockPoco::Net::MockHTTPServerResponse> *m_response;
-    Gateway::MockHTTPRequestHandler *m_uut; ///< Mock is used to override the abstract functions
+    CTSNCommon::MockHTTPRequestHandler *m_uut; ///< Mock is used to override the abstract functions
     std::string m_expectedMessage;
 };
 

@@ -6,7 +6,6 @@
 #include <string>
 
 #include "EventExecutorInterface.h"
-#include "gateway/BaseHTTPRequestHandler.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeCheckEvent.h"
 #include "gateway/NodeCheckHTTPRequestHandler.h"

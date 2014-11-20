@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "gateway/BaseHTTPRequestHandler.h"
 #include "gateway/EmailEvent.h"
 #include "gateway/EmailHTTPRequestHandler.h"
 #include "StringOps.h"

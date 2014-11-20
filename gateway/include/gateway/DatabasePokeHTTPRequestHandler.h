@@ -6,13 +6,13 @@
 #include <string>
 
 #include "EventExecutorInterface.h"
-#include "gateway/BaseHTTPRequestHandler.h"
+#include "ctsn_common/BaseHTTPRequestHandler.h"
 #include "gateway/DatabasePokeEvent.h"
 #include "gateway/MariaDBInterface.h"
 
 namespace Gateway {
 
-class DatabasePokeHTTPRequestHandler : public BaseHTTPRequestHandler {
+class DatabasePokeHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
 
     public:
         DatabasePokeHTTPRequestHandler(MariaDBInterface *mariadb,

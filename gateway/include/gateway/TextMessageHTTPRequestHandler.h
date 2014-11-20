@@ -6,12 +6,12 @@
 #include <string>
 
 #include "EventExecutorInterface.h"
-#include "gateway/BaseHTTPRequestHandler.h"
+#include "ctsn_common/BaseHTTPRequestHandler.h"
 #include "gateway/TextMessageEvent.h"
 
 namespace Gateway {
 
-class TextMessageHTTPRequestHandler : public BaseHTTPRequestHandler {
+class TextMessageHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         TextMessageHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor);
         ~TextMessageHTTPRequestHandler();

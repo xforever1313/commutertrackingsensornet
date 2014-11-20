@@ -6,11 +6,11 @@
 #include <string>
 
 #include "ctsn_common/ShutdownInterface.h"
-#include "gateway/BaseHTTPRequestHandler.h"
+#include "ctsn_common/BaseHTTPRequestHandler.h"
 
 namespace Gateway {
 
-class ShutdownHTTPRequestHandler : public BaseHTTPRequestHandler {
+class ShutdownHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         ShutdownHTTPRequestHandler(CTSNCommon::ShutdownInterface *shutdown);
         ~ShutdownHTTPRequestHandler();
