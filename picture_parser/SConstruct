@@ -48,11 +48,13 @@ systemPaths = []
 includePaths = [includeDir, getDateVersionPath(commonPath),
                 os.path.join(getOSPath(commonPath), includeDir),
                 os.path.join(getCommonClassesPath(commonPath), includeDir),
-		baseDir]
+                os.path.join(getCTSNCommonPath(baseDir), includeDir),
+		        baseDir]
 
 testIncludePaths = [os.path.join(testDir, includeDir),
                     os.path.join(getCommonClassesPath(commonPath), testDir, includeDir),
-                    os.path.join(getOSPath(commonPath), testDir, includeDir)]
+                    os.path.join(getOSPath(commonPath), testDir, includeDir),
+                    os.path.join(getCTSNCommonPath(baseDir), testDir, includeDir)]
 
 ###Source Files
 dateVersionFile = (os.path.join(srcDir, 'PictureParserDateVersion.cpp'))
@@ -76,8 +78,8 @@ piLibs = []
 #Libs needed on arch
 x86Libs = []
 
-debugLibs = ['CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
-releaseLibs = ['CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
+debugLibs = ['ctsn_common-d', 'CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
+releaseLibs = ['ctsn_common', 'CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 
 if (ARGUMENTS.get('pi_build', '0') ==  '1'):
     debugLibs += piLibs
@@ -90,9 +92,11 @@ testLibs = debugLibs
 
 ###LibPath
 debugLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
-                os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE'])]
+                os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
+                os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE'])]
 releaseLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
-                  os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
+                  os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
+                  os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
 
 testLibPath = debugLibPath
 
