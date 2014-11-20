@@ -3,9 +3,9 @@
 
 #include <gmock/gmock.h>
 
-#include "gateway/ShutdownInterface.h"
+#include "ctsn_common/ShutdownInterface.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class MockShutdown : public ShutdownInterface {
     public:

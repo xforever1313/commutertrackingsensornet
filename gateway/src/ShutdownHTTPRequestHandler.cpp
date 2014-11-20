@@ -3,8 +3,8 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 
+#include "ctsn_common/ShutdownInterface.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
-#include "gateway/ShutdownInterface.h"
 
 namespace Gateway {
 
@@ -13,7 +13,7 @@ const std::string ShutdownHTTPRequestHandler::POST_FALSE_MESSAGE = "Gateway will
 const std::string ShutdownHTTPRequestHandler::GET_MESSAGE = "Form data:\n\tshutdown=true\tShut down the gateway";
 const std::string ShutdownHTTPRequestHandler::SHUTDOWN_FORM_DATA = "shutdown";
 
-ShutdownHTTPRequestHandler::ShutdownHTTPRequestHandler(ShutdownInterface *shutdown) :
+ShutdownHTTPRequestHandler::ShutdownHTTPRequestHandler(CTSNCommon::ShutdownInterface *shutdown) :
     m_shutdown(shutdown)
 {
 }

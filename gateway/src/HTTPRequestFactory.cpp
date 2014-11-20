@@ -28,7 +28,7 @@ namespace Gateway {
 
 const std::string HTTPRequestFactory::INVALID_USER_AGENT = "Invalid user";
 
-HTTPRequestFactory::HTTPRequestFactory(ShutdownInterface *shutdown, 
+HTTPRequestFactory::HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown, 
                                        Common::EventExecutorInterface *eventExecutor, 
                                        UartInterface *uart, 
                                        MariaDBInterface *mariadb,

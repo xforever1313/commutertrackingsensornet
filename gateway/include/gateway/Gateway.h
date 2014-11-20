@@ -7,7 +7,7 @@
 #include "EventExecutorInterface.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeContainerInterface.h"
-#include "gateway/ShutdownInterface.h"
+#include "ctsn_common/ShutdownInterface.h"
 #include "gateway/UartInterface.h"
 #include "gateway/UartRecvThread.h"
 #include "gateway/XBeeCallbackInterface.h"
@@ -18,7 +18,7 @@
 
 namespace Gateway {
 
-class Gateway : public ShutdownInterface {
+class Gateway : public CTSNCommon::ShutdownInterface {
     public:
         static Gateway &getInstance();
         virtual ~Gateway();
@@ -58,3 +58,4 @@ class Gateway : public ShutdownInterface {
 }
 
 #endif // GATEWAY_H
+

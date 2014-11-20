@@ -14,7 +14,7 @@ TEST_GROUP(ShutdownHTTPRequestHandlerTest) {
     TEST_SETUP() {
         m_request =  new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>();
-        m_shutdown = new testing::StrictMock<Gateway::MockShutdown>();
+        m_shutdown = new testing::StrictMock<CTSNCommon::MockShutdown>();
         m_uut = new Gateway::ShutdownHTTPRequestHandler(m_shutdown);
     }
 
@@ -27,7 +27,7 @@ TEST_GROUP(ShutdownHTTPRequestHandlerTest) {
 
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<MockPoco::Net::MockHTTPServerResponse> *m_response;
-    testing::StrictMock<Gateway::MockShutdown> *m_shutdown;
+    testing::StrictMock<CTSNCommon::MockShutdown> *m_shutdown;
     Gateway::ShutdownHTTPRequestHandler *m_uut;
 };
 

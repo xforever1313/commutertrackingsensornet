@@ -5,14 +5,14 @@
 #include <Poco/Net/HTTPServerResponse.h>
 #include <string>
 
+#include "ctsn_common/ShutdownInterface.h"
 #include "gateway/BaseHTTPRequestHandler.h"
-#include "gateway/ShutdownInterface.h"
 
 namespace Gateway {
 
 class ShutdownHTTPRequestHandler : public BaseHTTPRequestHandler {
     public:
-        ShutdownHTTPRequestHandler(ShutdownInterface *shutdown);
+        ShutdownHTTPRequestHandler(CTSNCommon::ShutdownInterface *shutdown);
         ~ShutdownHTTPRequestHandler();
 
         void handlePostRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
@@ -26,7 +26,7 @@ class ShutdownHTTPRequestHandler : public BaseHTTPRequestHandler {
 
         ShutdownHTTPRequestHandler() = delete;
 
-        ShutdownInterface *m_shutdown;
+        CTSNCommon::ShutdownInterface *m_shutdown;
 };
 
 }

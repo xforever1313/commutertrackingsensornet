@@ -5,17 +5,17 @@
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
 #include <string>
 
+#include "ctsn_common/ShutdownInterface.h"
 #include "EventExecutorInterface.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeContainerInterface.h"
-#include "gateway/ShutdownInterface.h"
 #include "gateway/UartInterface.h"
 
 namespace Gateway {
 
 class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
     public:
-        HTTPRequestFactory(ShutdownInterface *shutdown, Common::EventExecutorInterface *eventExecutor, UartInterface *uart,
+        HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown, Common::EventExecutorInterface *eventExecutor, UartInterface *uart,
                            MariaDBInterface *mariadb, NodeContainerInterface *nodes);
         ~HTTPRequestFactory();
 
@@ -26,7 +26,7 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
 
         HTTPRequestFactory() = delete;
 
-        ShutdownInterface *m_shutdown;
+        CTSNCommon::ShutdownInterface *m_shutdown;
         Common::EventExecutorInterface *m_eventExecutor;
         UartInterface *m_uart;
         MariaDBInterface *m_mariadb;

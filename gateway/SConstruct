@@ -55,11 +55,13 @@ systemPaths = []
 includePaths = [includeDir, getDateVersionPath(commonPath),
                 os.path.join(getOSPath(commonPath), includeDir),
                 os.path.join(getCommonClassesPath(commonPath), includeDir),
-		baseDir]
+		        baseDir,
+                os.path.join(getCTSNCommonPath(baseDir), includeDir)]
 
 testIncludePaths = [os.path.join(testDir, includeDir),
                     os.path.join(getCommonClassesPath(commonPath), testDir, includeDir),
-                    os.path.join(getOSPath(commonPath), testDir, includeDir)]
+                    os.path.join(getOSPath(commonPath), testDir, includeDir),
+                    os.path.join(getCTSNCommonPath(baseDir), testDir, includeDir)]
 
 ###Source Files
 dateVersionFile = (os.path.join(srcDir, 'GatewayDateVersion.cpp'))
