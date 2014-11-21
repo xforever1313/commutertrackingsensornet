@@ -15,7 +15,7 @@
 #include "gateway/LogMessageHTTPRequestHandler.h"
 #include "gateway/NodeCheckHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
-#include "gateway/NotFoundHTTPRequestHandler.h"
+#include "ctsn_common/NotFoundHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
@@ -225,7 +225,7 @@ TEST(HTTPRequestFactoryTest, notFoundTest) {
     m_request->set("user-agent", USER_AGENT);
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
-    CHECK(dynamic_cast<Gateway::NotFoundHTTPRequestHandler*>(handler) != nullptr);
+    CHECK(dynamic_cast<CTSNCommon::NotFoundHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }
 

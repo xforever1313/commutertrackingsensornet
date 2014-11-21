@@ -7,7 +7,7 @@
 
 #include "ctsn_common/BaseHTTPRequestHandler.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class NotFoundHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:

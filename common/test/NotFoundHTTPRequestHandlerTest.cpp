@@ -4,7 +4,7 @@
 #define private public
 #define protected public
 
-#include "gateway/NotFoundHTTPRequestHandler.h"
+#include "ctsn_common/NotFoundHTTPRequestHandler.h"
 #include "MockHTTPServerRequest.h"
 #include "MockHTTPServerResponse.h"
 
@@ -12,7 +12,7 @@ TEST_GROUP(NotFoundHTTPRequestHandlerTest) {
     TEST_SETUP() {
         m_request =  new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>();
-        m_uut = new Gateway::NotFoundHTTPRequestHandler();
+        m_uut = new CTSNCommon::NotFoundHTTPRequestHandler();
     }
 
     TEST_TEARDOWN() {
@@ -23,7 +23,7 @@ TEST_GROUP(NotFoundHTTPRequestHandlerTest) {
 
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<MockPoco::Net::MockHTTPServerResponse> *m_response;
-    Gateway::NotFoundHTTPRequestHandler *m_uut;
+    CTSNCommon::NotFoundHTTPRequestHandler *m_uut;
 };
 
 TEST(NotFoundHTTPRequestHandlerTest, handlePostRequestTest) {
@@ -31,7 +31,7 @@ TEST(NotFoundHTTPRequestHandlerTest, handlePostRequestTest) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::NotFoundHTTPRequestHandler::MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), CTSNCommon::NotFoundHTTPRequestHandler::MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
 }
 
@@ -40,6 +40,7 @@ TEST(NotFoundHTTPRequestHandlerTest, handleGetRequestTest) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::NotFoundHTTPRequestHandler::MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), CTSNCommon::NotFoundHTTPRequestHandler::MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
 }
+

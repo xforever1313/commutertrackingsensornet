@@ -3,9 +3,9 @@
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <string>
 
-#include "gateway/NotFoundHTTPRequestHandler.h"
+#include "ctsn_common/NotFoundHTTPRequestHandler.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 const std::string NotFoundHTTPRequestHandler::MESSAGE = "404 - Not Found";
 
@@ -29,3 +29,4 @@ void NotFoundHTTPRequestHandler::handleHTTPRequest(Poco::Net::HTTPServerRequest 
 }
 
 }
+

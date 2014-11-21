@@ -14,7 +14,7 @@
 #include "gateway/NodeContainerInterface.h"
 #include "gateway/NodeCheckHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
-#include "gateway/NotFoundHTTPRequestHandler.h"
+#include "ctsn_common/NotFoundHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
 #include "gateway/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
@@ -92,7 +92,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
         return new LogMessageHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
     }
     else {
-        return new NotFoundHTTPRequestHandler();
+        return new CTSNCommon::NotFoundHTTPRequestHandler();
     }
 }
 
