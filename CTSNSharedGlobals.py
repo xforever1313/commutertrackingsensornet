@@ -16,6 +16,16 @@ GATEWAY_COMMAND_PORT = 9009;
 #ifdef PYTHON
 ''''
 #endif
+const short
+#ifdef PYTHON
+\''''
+#endif
+PICTURE_PARSER_COMMAND_PORT = 9010;
+
+
+#ifdef PYTHON
+''''
+#endif
 const std::string 
 #ifdef PYTHON
 \''''
