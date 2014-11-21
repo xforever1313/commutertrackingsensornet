@@ -17,7 +17,7 @@
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "ctsn_common/NotFoundHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
-#include "gateway/ShutdownHTTPRequestHandler.h"
+#include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
 #include "gateway/XBeeTxHTTPRequestHandler.h"
@@ -71,7 +71,7 @@ TEST(HTTPRequestFactoryTest, createShutdownTest) {
     m_request->set("user-agent", USER_AGENT);
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
-    CHECK(dynamic_cast<Gateway::ShutdownHTTPRequestHandler*>(handler) != nullptr);
+    CHECK(dynamic_cast<CTSNCommon::ShutdownHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }
 

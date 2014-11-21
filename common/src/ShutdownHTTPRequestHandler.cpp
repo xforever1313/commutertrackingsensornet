@@ -4,13 +4,13 @@
 #include <Poco/Net/HTTPServerResponse.h>
 
 #include "ctsn_common/ShutdownInterface.h"
-#include "gateway/ShutdownHTTPRequestHandler.h"
+#include "ctsn_common/ShutdownHTTPRequestHandler.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
-const std::string ShutdownHTTPRequestHandler::POST_TRUE_MESSAGE = "Shutting down gateway...";
-const std::string ShutdownHTTPRequestHandler::POST_FALSE_MESSAGE = "Gateway will not shutdown.";
-const std::string ShutdownHTTPRequestHandler::GET_MESSAGE = "Form data:\n\tshutdown=true\tShut down the gateway";
+const std::string ShutdownHTTPRequestHandler::POST_TRUE_MESSAGE = "Shutting down...";
+const std::string ShutdownHTTPRequestHandler::POST_FALSE_MESSAGE = "Will not shutdown.";
+const std::string ShutdownHTTPRequestHandler::GET_MESSAGE = "Form data:\n\tshutdown=true\tShut down the program";
 const std::string ShutdownHTTPRequestHandler::SHUTDOWN_FORM_DATA = "shutdown";
 
 ShutdownHTTPRequestHandler::ShutdownHTTPRequestHandler(CTSNCommon::ShutdownInterface *shutdown) :

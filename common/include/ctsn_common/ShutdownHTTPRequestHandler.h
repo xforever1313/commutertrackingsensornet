@@ -8,7 +8,7 @@
 #include "ctsn_common/ShutdownInterface.h"
 #include "ctsn_common/BaseHTTPRequestHandler.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class ShutdownHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:

@@ -16,7 +16,7 @@
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "ctsn_common/NotFoundHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
-#include "gateway/ShutdownHTTPRequestHandler.h"
+#include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
 #include "gateway/XBeeTxHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
@@ -80,7 +80,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
         return new ErrorHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
     }
     else if (request.getURI() == SHUTDOWN_URI) {
-        return new ShutdownHTTPRequestHandler(m_shutdown);
+        return new CTSNCommon::ShutdownHTTPRequestHandler(m_shutdown);
     }
     else if (request.getURI() == TEXT_MESSAGE_URI) {
         return new TextMessageHTTPRequestHandler(m_eventExecutor);
