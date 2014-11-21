@@ -5,6 +5,7 @@
 
 #include "ctsn_common/ShutdownInterface.h"
 #include "EventExecutorInterface.h"
+#include "SSemaphore.h"
 
 namespace PictureParser {
 
