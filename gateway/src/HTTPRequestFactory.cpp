@@ -52,7 +52,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     if (userAgent == INVALID_USER_AGENT) {
         return new CTSNCommon::BadClientHTTPRequestHandler();
     }
-    else if (userAgent != USER_AGENT) {
+    else if ((userAgent != USER_AGENT) && (userAgent != PICTURE_PARSER_USER_AGENT)) {
         return new CTSNCommon::BadClientHTTPRequestHandler();
     }
     else if (request.getURI() == ROOT_URI) {

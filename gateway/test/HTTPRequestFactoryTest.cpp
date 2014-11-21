@@ -144,7 +144,7 @@ TEST(HTTPRequestFactoryTest, createNodeCheckUpdateTest) {
 
 TEST(HTTPRequestFactoryTest, createDataTest) {
     m_request->setURI(DATA_RESULT_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", PICTURE_PARSER_USER_AGENT);
 
     Gateway::DataHTTPRequestHandler* handler = 
         dynamic_cast<Gateway::DataHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
