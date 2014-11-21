@@ -7,7 +7,7 @@
 
 #include "ctsn_common/BaseHTTPRequestHandler.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class BadClientHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:

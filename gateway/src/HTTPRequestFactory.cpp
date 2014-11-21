@@ -3,7 +3,7 @@
 #include <Poco/Net/HTTPServerRequest.h>
 
 #include "CTSNSharedGlobals.py"
-#include "gateway/BadClientHTTPRequestHandler.h"
+#include "ctsn_common/BadClientHTTPRequestHandler.h"
 #include "gateway/DatabasePokeHTTPRequestHandler.h"
 #include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
@@ -50,10 +50,10 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
 
     // Poco handles deleting the new
     if (userAgent == INVALID_USER_AGENT) {
-        return new BadClientHTTPRequestHandler();
+        return new CTSNCommon::BadClientHTTPRequestHandler();
     }
     else if (userAgent != USER_AGENT) {
-        return new BadClientHTTPRequestHandler();
+        return new CTSNCommon::BadClientHTTPRequestHandler();
     }
     else if (request.getURI() == ROOT_URI) {
         return new RootHTTPRequestHandler();

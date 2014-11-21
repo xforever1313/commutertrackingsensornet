@@ -6,7 +6,7 @@
 #define protected public
 
 #include "CTSNSharedGlobals.py"
-#include "gateway/BadClientHTTPRequestHandler.h"
+#include "ctsn_common/BadClientHTTPRequestHandler.h"
 #include "gateway/DatabasePokeHTTPRequestHandler.h"
 #include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
@@ -234,7 +234,7 @@ TEST(HTTPRequestFactoryTest, badClientTestBadUserAgent) {
     m_request->set("user-agent", "Firefox");
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
-    CHECK(dynamic_cast<Gateway::BadClientHTTPRequestHandler*>(handler) != nullptr);
+    CHECK(dynamic_cast<CTSNCommon::BadClientHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }
 
@@ -242,7 +242,7 @@ TEST(HTTPRequestFactoryTest, badClientTestNoUserAgent) {
     m_request->setURI(SHUTDOWN_URI);
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
-    CHECK(dynamic_cast<Gateway::BadClientHTTPRequestHandler*>(handler) != nullptr);
+    CHECK(dynamic_cast<CTSNCommon::BadClientHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }
 

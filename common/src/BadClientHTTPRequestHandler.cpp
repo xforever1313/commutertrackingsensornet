@@ -3,9 +3,9 @@
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <string>
 
-#include "gateway/BadClientHTTPRequestHandler.h"
+#include "ctsn_common/BadClientHTTPRequestHandler.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 const std::string BadClientHTTPRequestHandler::MESSAGE = "Forbidden:  Please use a verifed client.";
 
