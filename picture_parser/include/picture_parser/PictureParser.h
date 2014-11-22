@@ -23,7 +23,7 @@ class PictureParser : public CTSNCommon::ShutdownInterface {
 
         void initHTTPServer();
         void shutdown() override;
-        
+
         Common::EventExecutorInterface *m_eventExecutor;
 
         OS::SSemaphore m_shutdownSemaphore;
