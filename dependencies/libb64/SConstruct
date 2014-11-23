@@ -1,0 +1,96 @@
+import SCons.Defaults
+import SCons
+from SCons.Util import unique
+import stat
+import os
+import sys
+import subprocess
+import glob
+import shutil
+from copy import deepcopy
+
+baseDir = os.path.abspath("../../")
+sys.path.append(baseDir)
+
+from CTSNGlobals import *
+commonPath = getCommonPath(baseDir)
+sys.path.append(commonPath)
+
+from Globals import *
+from SethCommonGlobals import *
+from SConstructGlobals import *
+
+#Make common environment
+projectName = "CTSNCommon"
+targetFlags = DOXYGEN_TARGET | CPP_CHECK_TARGET | PROJECT_TARGET
+envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
+
+###
+# Additional Flags
+###
+piBuild = ARGUMENTS.get('pi_build', '0') == '1'
+
+additionalFlags = []
+
+###
+# Files to compile
+###
+
+###include paths:
+systemPaths = []
+
+#Put any additional include paths you need here.
+includePaths = [includeDir]
+
+
+sourceFiles = glob.glob(os.path.join(srcDir, '*.c'))
+sourceTestFiles = glob.glob(os.path.join(testDir, '*.cpp')) + [getTestMain(commonPath)]
+
+Help(getHelpMessage(envBase))
+
+###
+# Environment creation
+###
+
+#Debug Environment
+debugEnvironment = createDebugEnvironment(envBase, includePaths, [], [])
+
+#Release Environment
+releaseEnvironment = createReleaseEnvironment(envBase, includePaths, [], [])
+
+#Unit test environment
+testEnvironment = createUnitTestEnvironment(envBase, includePaths, [], [])
+
+#Doxygen
+doxygenFiles = sourceFiles + glob.glob(os.path.join(includeDir, "*h"))
+
+###
+# Targets
+###
+debugLib = createStaticLib(debugEnvironment, "libb64-d", sourceFiles)
+
+releaseLib = createStaticLib(releaseEnvironment, "libb64", sourceFiles)
+
+(unitTestTarget, runTestTarget) = createUnitTestExe(testEnvironment,
+                                                    sourceTestFiles + sourceFiles,
+                                                    sourceFiles)
+
+doxygenTarget = createDoxygenTarget(envBase, releaseEnvironment['CPPPATH'], 'libb64')
+
+cppCheckTarget = createCppCheckTarget(releaseEnvironment, sourceFiles)
+
+(netBeansTarget, vsTarget, CodeBlocksTarget) = createProjectTargets(envBase, releaseEnvironment['CPPPATH'], "libb64")
+
+Alias(DEBUG_LIB_ALIAS, debugLib)
+Alias(RELEASE_LIB_ALIAS, releaseLib)
+Alias(CREATE_LIB_ALIAS, [debugLib, releaseLib])
+Alias(DOXYGEN_ALIAS, doxygenTarget)
+Alias(CPP_CHECK_ALIAS, cppCheckTarget)
+Alias(UNIT_TEST_ALIAS, unitTestTarget)
+Alias(RUN_TEST_ALIAS, [unitTestTarget, runTestTarget, cppCheckTarget])
+
+Alias (NIGHTLY_ALIAS, [debugLib, releaseLib, doxygenTarget, cppCheckTarget, netBeansTarget, vsTarget, CodeBlocksTarget, runTestTarget])
+Alias (DELTA_ALIAS, [debugLib, releaseLib, cppCheckTarget, runTestTarget])
+
+Default([CREATE_LIB_ALIAS])
+
