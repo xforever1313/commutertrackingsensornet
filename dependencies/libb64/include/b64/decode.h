@@ -24,7 +24,8 @@ namespace base64
 		int _buffersize;
 
 		decoder(int buffersize_in = 255)
-		: _buffersize(buffersize_in)
+		:_state(base64_decodestate()), 
+         _buffersize(buffersize_in)
 		{}
 
 		int decode(char value_in)
@@ -45,13 +46,12 @@ namespace base64
 			std::string code(N, '\0');
 			std::string plaintext(N, '\0');
 			int codelength;
-			int plainlength;
 
 			do
 			{
 				istream_in.read(const_cast<char*>(code.data()), N);
 				codelength = istream_in.gcount();
-				plainlength = decode(code.data(), codelength, &plaintext[0]);
+		    	int plainlength = decode(code.data(), codelength, &plaintext[0]);
 				ostream_in.write(plaintext.data(), plainlength);
 			}
 			while (istream_in.good() && codelength > 0);
