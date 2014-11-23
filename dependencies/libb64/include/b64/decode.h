@@ -59,6 +59,20 @@ namespace base64
 			base64_init_decodestate(&_state);
 
 		}
+
+        const std::vector<uint8_t> decode(const std::string &decodedString) {
+            base64_init_decodestate(&_state);
+
+            std::vector<char> decodedData (decodedString.size(), '.');
+            int plainLength = decode(decodedString.data(),
+                                     decodedString.size(),
+                                     decodedData.data());
+            
+            base64_init_decodestate(&_state);
+
+            return std::vector<uint8_t>(decodedData.begin(),
+                                        decodedData.begin() + plainLength);
+        }
 	};
 
 } // namespace base64

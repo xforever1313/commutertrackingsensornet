@@ -8,12 +8,14 @@ For details, see http://sourceforge.net/projects/libb64
 #ifndef BASE64_ENCODE_H
 #define BASE64_ENCODE_H
 
+#include <cstdint>
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace base64
 {
-	extern "C" 
+	extern "C"
 	{
 		#include "b64/cencode.h"
 	}
@@ -67,6 +69,22 @@ namespace base64
 			//
 			base64_init_encodestate(&_state);
 		}
+
+        const std::string encode(const std::vector<uint8_t> &dataToEncode) {
+            base64_init_encodestate(&_state);
+
+            std::string encodedString (dataToEncode.size() * 2, '.');
+            int length = encode(reinterpret_cast<char*>(
+                                 const_cast<uint8_t*>(dataToEncode.data())),
+                                dataToEncode.size(),
+                                &encodedString[0]);
+
+            encode_end(&encodedString[length]);
+
+            base64_init_encodestate(&_state);
+
+            return encodedString.substr(0, encodedString.find('.'));
+        }
 	};
 
 } // namespace base64
