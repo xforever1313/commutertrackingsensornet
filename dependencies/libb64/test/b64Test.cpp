@@ -68,6 +68,10 @@ TEST(b64, vectorStressTest) {
 
     encoded = m_encoder->encode(input);
     CHECK(encoded.find('.') == std::string::npos);
+    CHECK(encoded.find('=') == std::string::npos);
+    CHECK(encoded.find('&') == std::string::npos);
+    CHECK(encoded.find('+') == std::string::npos);
+
     decoded = m_decoder->decode(encoded);
 
     CHECK_EQUAL(input.size(), decoded.size());
@@ -94,6 +98,10 @@ TEST(b64, pictureTest1) {
 
     encoded = m_encoder->encode(input);
     CHECK(encoded.find('.') == std::string::npos);
+    CHECK(encoded.find('=') == std::string::npos);
+    CHECK(encoded.find('&') == std::string::npos);
+    CHECK(encoded.find('+') == std::string::npos);
+
     decoded = m_decoder->decode(encoded);
 
     CHECK_EQUAL(input.size(), decoded.size());
@@ -120,6 +128,10 @@ TEST(b64, pictureTest2) {
 
     encoded = m_encoder->encode(input);
     CHECK(encoded.find('.') == std::string::npos);
+    CHECK(encoded.find('=') == std::string::npos);
+    CHECK(encoded.find('&') == std::string::npos);
+    CHECK(encoded.find('+') == std::string::npos);
+
     decoded = m_decoder->decode(encoded);
 
     CHECK_EQUAL(input.size(), decoded.size());
