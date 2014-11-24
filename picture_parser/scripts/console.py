@@ -30,6 +30,13 @@ def performShutdown():
     data['shutdown'] = "true"
     performPostRequest(data, SHUTDOWN_URI)
 
+def performData(nodeID, picturePart, pictureData):
+    data = {}
+    data['node'] = nodeID
+    data['part'] = picturePart
+    data['data'] = pictureData
+    performPostRequest(data, DATA_URI)
+
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description="Debug Console for the CTSN picture parser")
     argParser.add_argument("--url", dest='url', action = "store", default="localhost", help="The url to post to.")
@@ -40,10 +47,16 @@ if __name__ == '__main__':
 
     keepGoing = True
     while (keepGoing):
-        command = input("\nEnter a number:\n\t1.  Shutdown Picture Parser\n\t0.  Exit\n>")
+        command = input("\nEnter a number:\n\t1.  Shutdown Picture Parser\n\t" + \
+                        "2.  Send encoded picture data\n\t0.  Exit\n>")
 
         if (command == "1"):
             performShutdown()
             print ("\nPicture Parser shutting down, anymore commands won't work")
+        elif (command == "2"):
+            nodeID = input ("Enter Node ID> ")
+            picturePart = input("Enter Picture Part> ")
+            pictureData = input("Enter encoded picture data> ")
+            performData(nodeID, picturePart, pictureData)
         elif (command == "0"):
             keepGoing = False
