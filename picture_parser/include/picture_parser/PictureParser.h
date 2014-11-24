@@ -3,8 +3,13 @@
 
 #include <Poco/Net/HTTPServer.h>
 
+#include "ctsn_common/HTTPPosterInterface.h"
 #include "ctsn_common/ShutdownInterface.h"
 #include "EventExecutorInterface.h"
+#include "picture_parser/CVRunnerInterface.h"
+#include "picture_parser/PictureContainer.h"
+#include "picture_parser/PictureParseEvent.h"
+
 #include "SSemaphore.h"
 
 namespace PictureParser {
@@ -25,6 +30,9 @@ class PictureParser : public CTSNCommon::ShutdownInterface {
         void shutdown() override;
 
         Common::EventExecutorInterface *m_eventExecutor;
+        PictureContainer *m_pc;
+        CVRunnerInterface *m_cvRunner;
+        CTSNCommon::HTTPPosterInterface *m_httpPoster;
 
         OS::SSemaphore m_shutdownSemaphore;
 

@@ -151,5 +151,15 @@ const std::string
 #endif
 NODE_CHECK_URI = "/node_check";
 
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+DATA_URI = "/data";
+
 #endif
 
