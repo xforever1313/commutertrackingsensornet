@@ -3,10 +3,10 @@
 #include <string>
 
 #include "CTSNSharedGlobals.py"
-#include "gateway/HTTPPoster.h"
+#include "ctsn_common/HTTPPoster.h"
 #include "Secrets.py"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 HTTPPoster::HTTPPoster() {
 

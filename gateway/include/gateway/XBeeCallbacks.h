@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "gateway/XBeeCallbackInterface.h"
-#include "gateway/HTTPPosterInterface.h"
+#include "ctsn_common/HTTPPosterInterface.h"
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
 
@@ -80,7 +80,7 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         Common::IO::LoggerBase &m_outLogger;
         Common::IO::LoggerBase &m_errLogger;
 
-        HTTPPosterInterface *m_poster;
+        CTSNCommon::HTTPPosterInterface *m_poster;
 };
 
 }

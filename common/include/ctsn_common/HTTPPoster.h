@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "gateway/HTTPPosterInterface.h"
+#include "ctsn_common/HTTPPosterInterface.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class HTTPPoster : public HTTPPosterInterface {
     public:

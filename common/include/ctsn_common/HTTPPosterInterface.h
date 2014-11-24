@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class HTTPPosterInterface {
     public:

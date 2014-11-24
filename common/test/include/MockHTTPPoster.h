@@ -4,9 +4,9 @@
 #include <gmock/gmock.h>
 #include <string>
 
-#include "gateway/HTTPPosterInterface.h"
+#include "ctsn_common/HTTPPosterInterface.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class MockHTTPPoster : public HTTPPosterInterface {
     public:

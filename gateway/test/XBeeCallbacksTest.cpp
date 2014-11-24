@@ -14,7 +14,7 @@ TEST_GROUP(XBeeCallbacksTest) {
     TEST_SETUP() {
         m_outLogger = new Common::IO::StringLogger();
         m_errLogger = new Common::IO::StringLogger();
-        m_httpPoster = new testing::StrictMock<Gateway::MockHTTPPoster>();
+        m_httpPoster = new testing::StrictMock<CTSNCommon::MockHTTPPoster>();
         m_uut = new Gateway::XBeeCallbacks(*m_outLogger,*m_errLogger);
 
         // Replace real poster with mock one.
@@ -32,7 +32,7 @@ TEST_GROUP(XBeeCallbacksTest) {
 
     Common::IO::StringLogger *m_outLogger;
     Common::IO::StringLogger *m_errLogger;
-    testing::StrictMock<Gateway::MockHTTPPoster> *m_httpPoster;
+    testing::StrictMock<CTSNCommon::MockHTTPPoster> *m_httpPoster;
     Gateway::XBeeCallbacks *m_uut;
 };
 

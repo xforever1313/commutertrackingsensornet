@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "CTSNSharedGlobals.py"
-#include "gateway/HTTPPoster.h"
+#include "ctsn_common/HTTPPoster.h"
 #include "gateway/XBeeCallbacks.h"
 #include "gateway/XBeeConstants.h"
 #include "io/LoggerBase.h"
@@ -44,7 +44,7 @@ XBeeCallbacks::XBeeCallbacks(Common::IO::LoggerBase &outLogger,/* = Common::IO::
                              Common::IO::LoggerBase &errLogger/* = Common::IO::ConsoleLogger::err */) :
     m_outLogger(outLogger),
     m_errLogger(errLogger),
-    m_poster(new HTTPPoster())
+    m_poster(new CTSNCommon::HTTPPoster())
 {
 }
 
