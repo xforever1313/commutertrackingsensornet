@@ -2,7 +2,7 @@
 #include <string>
 
 #include "gateway/DataEvent.h"
-#include "gateway/DataResultTypes.h"
+#include "ctsn_common/DataResultTypes.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/Node.h"
 #include "io/LoggerBase.h"
@@ -10,7 +10,7 @@
 namespace Gateway {
 
 DataEvent::DataEvent(const Node &node,
-                     DataResultType type,
+                     CTSNCommon::DataResultType type,
                      MariaDBInterface *mariadb,
                      Common::IO::LoggerBase &errLogger /* = Common::IO::ConsoleLogger::err*/) :
     m_node(node),

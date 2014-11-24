@@ -122,13 +122,13 @@ TEST(DataHTTPRequestHandlerTest, postResultNotAnIntTest1) {
     m_uut->handleRequest(*m_request, *m_response);
 
     CHECK_EQUAL(m_response->m_response.str(),
-                Gateway::DATA_RESULT_BAD_DATA_TYPE_STRING + badString);
+                CTSNCommon::DATA_RESULT_BAD_DATA_TYPE_STRING + badString);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
 /// Success Test
 TEST(DataHTTPRequestHandlerTest, postSuccess) {
-    Gateway::DataResultType type = Gateway::DataResultType::HORSE;
+    CTSNCommon::DataResultType type = CTSNCommon::DataResultType::HORSE;
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
   
     m_request->m_ss << Gateway::DataHTTPRequestHandler::NODE_FORM_DATA << "="

@@ -5,6 +5,7 @@
 #include <Poco/Net/HTTPServerResponse.h>
 #include <string>
 
+#include "ctsn_common/DataResultTypes.h"
 #include "EventExecutor.h"
 #include "gateway/DataEvent.h"
 #include "gateway/DataHTTPRequestHandler.h"
@@ -45,7 +46,7 @@ void DataHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &req
         const std::string &typeStr = form[RESULT_TYPE_FORM_DATA];
 
         const Node node = m_nodes->convertStringToNode(nodeStr);
-        const DataResultType type = convertStringToResultType(typeStr);
+        const CTSNCommon::DataResultType type = CTSNCommon::convertStringToResultType(typeStr);
 
         std::shared_ptr<DataEvent> event (new DataEvent(node, type, m_mariadb));
         m_eventExecutor->addEvent(event);

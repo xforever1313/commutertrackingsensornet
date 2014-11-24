@@ -2,7 +2,7 @@
 #define DATA_EVENT_H_
 
 #include "EventInterface.h"
-#include "gateway/DataResultTypes.h"
+#include "ctsn_common/DataResultTypes.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/Node.h"
 #include "io/ConsoleLogger.h"
@@ -13,7 +13,7 @@ namespace Gateway {
 class DataEvent : public Common::EventInterface {
     public:
         DataEvent(const Node &node,
-                  DataResultType type,
+                  CTSNCommon::DataResultType type,
                   MariaDBInterface *mariadb,
                   Common::IO::LoggerBase &errLogger = Common::IO::ConsoleLogger::err);
 
@@ -27,7 +27,7 @@ class DataEvent : public Common::EventInterface {
         DataEvent &operator=(const DataEvent&) = delete;
 
         Node m_node;
-        DataResultType m_type;
+        CTSNCommon::DataResultType m_type;
         MariaDBInterface *m_mariadb;
         Common::IO::LoggerBase &m_errLogger;
 };

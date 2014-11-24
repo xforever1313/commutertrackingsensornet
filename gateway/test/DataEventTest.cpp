@@ -4,7 +4,7 @@
 #include "UnitTest.h"
 
 #include "gateway/DataEvent.h"
-#include "gateway/DataResultTypes.h"
+#include "ctsn_common/DataResultTypes.h"
 #include "gateway/Node.h"
 #include "io/StringLogger.h"
 #include "MockMariaDB.h"
@@ -13,7 +13,7 @@ TEST_GROUP(DataEventTest) {
 
     TEST_SETUP() {
         m_node = new Gateway::Node(3, 0x03);
-        m_type = Gateway::DataResultType::WALKER;
+        m_type = CTSNCommon::DataResultType::WALKER;
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_errLogger = new Common::IO::StringLogger();
         m_uut = new Gateway::DataEvent(*m_node, m_type,
@@ -32,7 +32,7 @@ TEST_GROUP(DataEventTest) {
     }
 
     Gateway::Node *m_node;
-    Gateway::DataResultType m_type;
+    CTSNCommon::DataResultType m_type;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     Common::IO::StringLogger *m_errLogger;
     std::string m_expectedQuery;

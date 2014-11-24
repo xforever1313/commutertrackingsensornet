@@ -1,8 +1,9 @@
 #include <stdexcept>
 #include <string>
-#include "gateway/DataResultTypes.h"
 
-namespace Gateway {
+#include "ctsn_common/DataResultTypes.h"
+
+namespace CTSNCommon {
 
 const DataResultType convertStringToResultType(const std::string &s) {
     size_t stringSize = 0;

@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Gateway {
+namespace CTSNCommon {
 
 /**
  * \note if the database changes, so will this.
