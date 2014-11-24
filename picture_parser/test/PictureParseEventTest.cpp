@@ -4,8 +4,10 @@
 #include "UnitTest.h"
 
 #include "b64/decode.h"
+#include "CTSNSharedGlobals.py"
 #include "io/StringLogger.h"
 #include "MockCVRunner.h"
+#include "MockHTTPPoster.h"
 #include "picture_parser/PictureContainer.h"
 #include "picture_parser/PictureParseEvent.h"
 
@@ -16,6 +18,7 @@ TEST_GROUP(PictureParseEventTest) {
         m_pc = new PictureParser::PictureContainer();
         m_errLogger = new Common::IO::StringLogger();
         m_cvRunner = new testing::StrictMock<PictureParser::MockCVRunner>();
+        m_httpPoster = new testing::StrictMock<CTSNCommon::MockHTTPPoster>();
         m_uut = new PictureParser::PictureParseEvent(m_nodeID,
                                                      1,
                                                      m_encodedData,
@@ -23,7 +26,11 @@ TEST_GROUP(PictureParseEventTest) {
                                                      m_cvRunner,
                                                      *m_errLogger);
 
+        delete m_uut->m_httpPoster;
+        m_uut->m_httpPoster = m_httpPoster;
+
         POINTERS_EQUAL(m_uut->m_pc, m_pc);
+        POINTERS_EQUAL(m_uut->m_cvRunner, m_cvRunner);
     }
 
     TEST_TEARDOWN() {
@@ -31,6 +38,8 @@ TEST_GROUP(PictureParseEventTest) {
         delete m_cvRunner;
         delete m_pc;
         delete m_errLogger;
+
+        //http poster is deleted in uut
     }
 
     unsigned int m_nodeID;
@@ -38,6 +47,7 @@ TEST_GROUP(PictureParseEventTest) {
     PictureParser::PictureContainer *m_pc;
     Common::IO::StringLogger *m_errLogger;
     testing::StrictMock<PictureParser::MockCVRunner> *m_cvRunner;
+    testing::StrictMock<CTSNCommon::MockHTTPPoster> *m_httpPoster;
 
     base64::decoder m_decoder;
 
@@ -68,6 +78,11 @@ TEST(PictureParseEventTest, successTest) {
 
     EXPECT_CALL(*m_cvRunner, parsePicture(testing::_))
         .WillOnce(testing::Return(CTSNCommon::DataResultType::HORSE));
+
+    EXPECT_CALL(*m_httpPoster, post(DATA_RESULT_URI,
+                                    "node=" + std::to_string(m_nodeID) + 
+                                     "&type=" + std::to_string(CTSNCommon::DataResultType::HORSE),
+                                    GATEWAY_COMMAND_PORT));
 
     m_uut->execute();
 

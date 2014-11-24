@@ -7,6 +7,7 @@
 #include "EventInterface.h"
 #include "io/LoggerBase.h"
 #include "io/ConsoleLogger.h"
+#include "ctsn_common/HTTPPosterInterface.h"
 #include "picture_parser/CVRunnerInterface.h"
 #include "picture_parser/PictureContainer.h"
 
@@ -33,6 +34,7 @@ class PictureParseEvent : public Common::EventInterface {
         PictureContainer *m_pc;
         CVRunnerInterface *m_cvRunner;
         base64::decoder *m_decoder;
+        CTSNCommon::HTTPPosterInterface *m_httpPoster;
         Common::IO::LoggerBase &m_errLogger;
 };
 

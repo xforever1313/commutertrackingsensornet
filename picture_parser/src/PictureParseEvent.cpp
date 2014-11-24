@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "b64/decode.h"
+#include "CTSNSharedGlobals.py"
+#include "ctsn_common/HTTPPoster.h"
 #include "io/LoggerBase.h"
 #include "picture_parser/CVRunnerInterface.h"
 #include "picture_parser/PictureContainer.h"
@@ -23,12 +25,14 @@ PictureParseEvent::PictureParseEvent(unsigned int nodeID,
     m_pc(pc),
     m_cvRunner(cvRunner),
     m_decoder(new base64::decoder()),
+    m_httpPoster(new CTSNCommon::HTTPPoster()),
     m_errLogger(errLogger)
 {
-    delete m_decoder;
 }
 
 PictureParseEvent::~PictureParseEvent() {
+    delete m_httpPoster;
+    delete m_decoder;
 }
 
 void PictureParseEvent::execute() {
@@ -58,7 +62,13 @@ void PictureParseEvent::execute() {
         if ((*m_pc)[m_nodeID].isReadyToGenerate()) {
             std::vector<uint8_t> picture = (*m_pc)[m_nodeID].generatePicture();
             m_pc->removePicture(m_nodeID);
-            m_cvRunner->parsePicture(picture);
+            CTSNCommon::DataResultType type =
+                m_cvRunner->parsePicture(picture);
+
+            m_httpPoster->post(DATA_RESULT_URI,
+                               "node=" + std::to_string(m_nodeID) +
+                               "&type=" + std::to_string(type),
+                               GATEWAY_COMMAND_PORT);
         }
     }
     catch (const std::exception &e) {
