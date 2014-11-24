@@ -69,7 +69,9 @@ void PictureParseEvent::execute() {
             CTSNCommon::DataResultType type =
                 m_cvRunner->parsePicture(picture);
 
-            m_httpPoster->post(DATA_RESULT_URI,
+            // GATEWAY_IP is defined at compile time with a -D flag.
+            m_httpPoster->post(GATEWAY_IP,
+                               DATA_RESULT_URI,
                                "node=" + std::to_string(m_nodeID) +
                                "&type=" + std::to_string(type),
                                GATEWAY_COMMAND_PORT);

@@ -79,7 +79,8 @@ TEST(PictureParseEventTest, successTest) {
     EXPECT_CALL(*m_cvRunner, parsePicture(testing::_))
         .WillOnce(testing::Return(CTSNCommon::DataResultType::HORSE));
 
-    EXPECT_CALL(*m_httpPoster, post(DATA_RESULT_URI,
+    EXPECT_CALL(*m_httpPoster, post(GATEWAY_IP,
+                                    DATA_RESULT_URI,
                                     "node=" + std::to_string(m_nodeID) + 
                                      "&type=" + std::to_string(CTSNCommon::DataResultType::HORSE),
                                     GATEWAY_COMMAND_PORT));
