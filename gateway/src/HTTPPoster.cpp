@@ -17,7 +17,8 @@ HTTPPoster::~HTTPPoster() {
 }
 
 void HTTPPoster::post(const std::string &url,
-                      const std::string &data) {
+                      const std::string &data,
+                      short portNumber) {
 
     std::string curlCommand = "curl -X POST -A " +
                               USER_AGENT + 
@@ -25,7 +26,7 @@ void HTTPPoster::post(const std::string &url,
                               " --data \"" +
                               data +
                               "\" http://localhost:" +
-                              std::to_string(GATEWAY_COMMAND_PORT) +
+                              std::to_string(portNumber) +
                               url;
                                 
 

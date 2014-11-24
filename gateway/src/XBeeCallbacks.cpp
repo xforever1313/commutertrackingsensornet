@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "CTSNSharedGlobals.py"
 #include "gateway/HTTPPoster.h"
 #include "gateway/XBeeCallbacks.h"
 #include "gateway/XBeeConstants.h"
@@ -67,7 +68,7 @@ void XBeeCallbacks::successfulParse(const std::string &payload) {
             }
         }
 
-        m_poster->post(data[0], data[1]);
+        m_poster->post(data[0], data[1], GATEWAY_COMMAND_PORT);
     }
     catch (const std::runtime_error &e) {
         m_errLogger.writeLineWithTimeStamp(std::string(e.what()) + 

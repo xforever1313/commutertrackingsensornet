@@ -4,6 +4,7 @@
 
 #include "UnitTest.h"
 
+#include "CTSNSharedGlobals.py"
 #include "gateway/XBeeCallbacks.h"
 #include "gateway/XBeeConstants.h"
 #include "io/StringLogger.h"
@@ -56,7 +57,9 @@ TEST(XBeeCallbacksTest, dumpDataTest) {
 TEST(XBeeCallbacksTest, successfulParseTest) {
     std::string s = "/shutdown\tshutdown=true|derp=herp";
 
-    EXPECT_CALL(*m_httpPoster, post("/shutdown", "shutdown=true&derp=herp"));
+    EXPECT_CALL(*m_httpPoster, post("/shutdown", 
+                                    "shutdown=true&derp=herp",
+                                    GATEWAY_COMMAND_PORT));
 
     m_uut->successfulParse(s);
 
@@ -68,7 +71,7 @@ TEST(XBeeCallbacksTest, curlFailTest) {
     const std::string error = "error";
     const std::string s = "/shutdown\tshutdown=true|something=Something";
 
-    EXPECT_CALL(*m_httpPoster, post("/shutdown", "shutdown=true&something=Something"))
+    EXPECT_CALL(*m_httpPoster, post("/shutdown", "shutdown=true&something=Something", GATEWAY_COMMAND_PORT))
         .WillOnce(testing::Throw(std::runtime_error(error)));
 
     m_uut->successfulParse(s);

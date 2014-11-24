@@ -10,7 +10,8 @@ class HTTPPosterInterface {
         virtual ~HTTPPosterInterface(){}
 
         virtual void post(const std::string &url,
-                          const std::string &data) = 0;
+                          const std::string &data,
+                          short portNumber) = 0;
 };
 
 }

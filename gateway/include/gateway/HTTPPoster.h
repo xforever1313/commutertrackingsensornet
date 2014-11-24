@@ -25,7 +25,8 @@ class HTTPPoster : public HTTPPosterInterface {
          *        other than 200
          */
         void post (const std::string &uri,
-                   const std::string &data) override;
+                   const std::string &data,
+                   short portNumber) override;
 };
 
 }

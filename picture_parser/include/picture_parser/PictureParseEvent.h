@@ -7,6 +7,7 @@
 #include "EventInterface.h"
 #include "io/LoggerBase.h"
 #include "io/ConsoleLogger.h"
+#include "picture_parser/CVRunnerInterface.h"
 #include "picture_parser/PictureContainer.h"
 
 namespace PictureParser {
@@ -17,6 +18,7 @@ class PictureParseEvent : public Common::EventInterface {
                           unsigned int picturePiece,
                           const std::string &encodedData,
                           PictureContainer *pc,
+                          CVRunnerInterface *cvRunner,
                           Common::IO::LoggerBase &errLogger = 
                               Common::IO::ConsoleLogger::err);
 
@@ -29,6 +31,7 @@ class PictureParseEvent : public Common::EventInterface {
         unsigned int m_picturePiece;
         std::string m_encodedData;
         PictureContainer *m_pc;
+        CVRunnerInterface *m_cvRunner;
         base64::decoder *m_decoder;
         Common::IO::LoggerBase &m_errLogger;
 };
