@@ -24,13 +24,13 @@ TEST_GROUP(PictureParseEventTest) {
                                                      m_encodedData,
                                                      m_pc,
                                                      m_cvRunner,
+                                                     m_httpPoster,
                                                      *m_errLogger);
 
-        delete m_uut->m_httpPoster;
-        m_uut->m_httpPoster = m_httpPoster;
 
         POINTERS_EQUAL(m_uut->m_pc, m_pc);
         POINTERS_EQUAL(m_uut->m_cvRunner, m_cvRunner);
+        POINTERS_EQUAL(m_uut->m_httpPoster, m_httpPoster);
     }
 
     TEST_TEARDOWN() {
@@ -38,8 +38,7 @@ TEST_GROUP(PictureParseEventTest) {
         delete m_cvRunner;
         delete m_pc;
         delete m_errLogger;
-
-        //http poster is deleted in uut
+        delete m_httpPoster;
     }
 
     unsigned int m_nodeID;

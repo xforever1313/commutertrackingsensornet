@@ -20,6 +20,7 @@ class PictureParseEvent : public Common::EventInterface {
                           const std::string &encodedData,
                           PictureContainer *pc,
                           CVRunnerInterface *cvRunner,
+                          CTSNCommon::HTTPPosterInterface *httpPoster,
                           Common::IO::LoggerBase &errLogger = 
                               Common::IO::ConsoleLogger::err);
 

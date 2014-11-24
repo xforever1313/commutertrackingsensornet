@@ -21,6 +21,7 @@ PictureParseEvent::PictureParseEvent(unsigned int nodeID,
                                      const std::string &encodedData,
                                      PictureContainer *pc,
                                      CVRunnerInterface *cvRunner,
+                                     CTSNCommon::HTTPPosterInterface *httpPoster,
                                      Common::IO::LoggerBase &errLogger
                                         /*=Common::IO::ConsoleLogger::err*/) :
     m_nodeID(nodeID),
@@ -29,13 +30,12 @@ PictureParseEvent::PictureParseEvent(unsigned int nodeID,
     m_pc(pc),
     m_cvRunner(cvRunner),
     m_decoder(new base64::decoder()),
-    m_httpPoster(new CTSNCommon::HTTPPoster()),
+    m_httpPoster(httpPoster),
     m_errLogger(errLogger)
 {
 }
 
 PictureParseEvent::~PictureParseEvent() {
-    delete m_httpPoster;
     delete m_decoder;
 }
 
