@@ -12,7 +12,8 @@ class MockHTTPPoster : public HTTPPosterInterface {
     public:
         virtual ~MockHTTPPoster(){}
 
-        MOCK_METHOD3(post, void(const std::string &url,
+        MOCK_METHOD4(post, void(const std::string &address,
+                                const std::string &url,
                                 const std::string &data,
                                 short port));
 };

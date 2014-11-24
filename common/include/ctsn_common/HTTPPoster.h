@@ -14,7 +14,9 @@ class HTTPPoster : public HTTPPosterInterface {
         ~HTTPPoster();
 
         /**
-         * \brief HTTP Posts the data via curl to localhost.
+         * \brief HTTP Posts the data via curl to the given address.
+         * \param address the address to post to. examples are localhost
+         *        or 192.168.1.1.  DO NOT include the http://
          * \param uri must start with "/".  It is the part after 
          *        the domain.  So http://localhost:1414/something, pass
          *        in "/something".
@@ -24,7 +26,8 @@ class HTTPPoster : public HTTPPosterInterface {
          * \throw std::runtime_error if curl returns a http code
          *        other than 200
          */
-        void post (const std::string &uri,
+        void post (const std::string &address,
+                   const std::string &uri,
                    const std::string &data,
                    short portNumber) override;
 };

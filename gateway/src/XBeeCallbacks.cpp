@@ -68,7 +68,7 @@ void XBeeCallbacks::successfulParse(const std::string &payload) {
             }
         }
 
-        m_poster->post(data[0], data[1], GATEWAY_COMMAND_PORT);
+        m_poster->post("localhost", data[0], data[1], GATEWAY_COMMAND_PORT);
     }
     catch (const std::runtime_error &e) {
         m_errLogger.writeLineWithTimeStamp(std::string(e.what()) + 

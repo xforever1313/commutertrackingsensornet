@@ -16,7 +16,8 @@ HTTPPoster::~HTTPPoster() {
 
 }
 
-void HTTPPoster::post(const std::string &url,
+void HTTPPoster::post(const std::string &address,
+                      const std::string &url,
                       const std::string &data,
                       short portNumber) {
 
@@ -25,7 +26,7 @@ void HTTPPoster::post(const std::string &url,
                               " -sL -w %{http_code}" + 
                               " --data \"" +
                               data +
-                              "\" http://localhost:" +
+                              "\" http://" + address + ":" +
                               std::to_string(portNumber) +
                               url;
                                 
