@@ -14,7 +14,7 @@ class CVRunner : public CVRunnerInterface {
         CVRunner();
         ~CVRunner();
 
-        CTSNCommon::DataResultType parsePicture(const std::vector<uint8_t> &picture);
+        CTSNCommon::DataResultType parsePicture(const std::vector<uint8_t> &picture) override;
 };
 
 }
