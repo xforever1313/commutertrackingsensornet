@@ -28,6 +28,8 @@ class PictureParseEvent : public Common::EventInterface {
         void execute() override;
 
     private:
+        static const std::string INVALID_PICTURE_PART;
+
         unsigned int m_nodeID;
         unsigned int m_picturePiece;
         std::string m_encodedData;

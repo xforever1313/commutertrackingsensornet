@@ -89,3 +89,10 @@ TEST(PictureParseEventTest, successTest) {
     CHECK(m_pc->m_pictures.find(m_nodeID) == m_pc->m_pictures.end());
 }
 
+TEST(PictureParseEventTest, invalidPartTest) {
+    m_uut->m_picturePiece = 5;
+    m_uut->execute();
+    CHECK(m_errLogger->getString().find(PictureParser::PictureParseEvent::INVALID_PICTURE_PART)
+            != std::string::npos);
+}
+

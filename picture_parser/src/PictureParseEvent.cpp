@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -11,6 +12,9 @@
 #include "picture_parser/PictureParseEvent.h"
 
 namespace PictureParser {
+
+const std::string PictureParseEvent::INVALID_PICTURE_PART = 
+    "Invalid picture part number.";
 
 PictureParseEvent::PictureParseEvent(unsigned int nodeID,
                                      unsigned int picturePiece,
@@ -56,7 +60,7 @@ void PictureParseEvent::execute() {
             (*m_pc)[m_nodeID].setSecondHalf(decodedData);
         }
         else {
-
+            throw std::invalid_argument(INVALID_PICTURE_PART);
         }
 
         if ((*m_pc)[m_nodeID].isReadyToGenerate()) {
