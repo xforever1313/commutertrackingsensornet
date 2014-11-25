@@ -1,6 +1,7 @@
 #include <functional>
 #include <iostream>
 
+#include "ctsn_common/HTTPPoster.h"
 #include "CTSNSharedGlobals.py"
 #include "EventExecutor.h"
 #include "gateway/EmailEvent.h"
@@ -39,7 +40,8 @@ Gateway::Gateway() :
     m_socket(nullptr),
     m_server(nullptr),
     m_mariadb(nullptr),
-    m_nodes(nullptr)
+    m_nodes(nullptr),
+    m_httpPoster(new CTSNCommon::HTTPPoster())
 {
 }
 
@@ -54,6 +56,7 @@ Gateway::~Gateway() {
     delete m_eventExecutor;
     delete m_mariadb; //Delete this last, as some left over events may use it.
     delete m_nodes;
+    delete m_httpPoster;
 }
 
 void Gateway::initHTTPServer() {
@@ -62,7 +65,7 @@ void Gateway::initHTTPServer() {
     params->setMaxThreads(2);
 
     m_socket = new Poco::Net::ServerSocket(GATEWAY_COMMAND_PORT);
-    m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this, m_eventExecutor, m_uart, m_mariadb, m_nodes),
+    m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this, m_eventExecutor, m_uart, m_mariadb, m_nodes, m_httpPoster),
                                          *m_socket, params);
 }
 

@@ -4,6 +4,7 @@
 #include <istream>
 #include <Poco/Net/HTTPServer.h>
 
+#include "ctsn_common/HTTPPosterInterface.h"
 #include "EventExecutorInterface.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeContainerInterface.h"
@@ -53,6 +54,8 @@ class Gateway : public CTSNCommon::ShutdownInterface {
 
         MariaDBInterface *m_mariadb;
         NodeContainerInterface *m_nodes;
+
+        CTSNCommon::HTTPPosterInterface *m_httpPoster;
 };
 
 }

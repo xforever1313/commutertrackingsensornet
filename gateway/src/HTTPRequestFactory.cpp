@@ -4,6 +4,7 @@
 
 #include "CTSNSharedGlobals.py"
 #include "ctsn_common/BadClientHTTPRequestHandler.h"
+#include "ctsn_common/HTTPPosterInterface.h"
 #include "gateway/DatabasePokeHTTPRequestHandler.h"
 #include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
@@ -15,6 +16,7 @@
 #include "gateway/NodeCheckHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "ctsn_common/NotFoundHTTPRequestHandler.h"
+#include "gateway/PictureParseHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
 #include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
@@ -32,12 +34,14 @@ HTTPRequestFactory::HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown,
                                        Common::EventExecutorInterface *eventExecutor, 
                                        UartInterface *uart, 
                                        MariaDBInterface *mariadb,
-                                       NodeContainerInterface *nodes) :
+                                       NodeContainerInterface *nodes,
+                                       CTSNCommon::HTTPPosterInterface *httpPoster) :
     m_shutdown(shutdown),
     m_eventExecutor(eventExecutor),
     m_uart(uart),
     m_mariadb(mariadb),
-    m_nodes(nodes)
+    m_nodes(nodes),
+    m_httpPoster(httpPoster)
 {
 }
 
@@ -60,6 +64,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (request.getURI() == DATABASE_POKE_URI) {
         return new DatabasePokeHTTPRequestHandler(m_mariadb, m_eventExecutor);
+    }
+    else if (request.getURI() == DATA_URI) {
+        return new PictureParseHTTPRequestHandler(m_eventExecutor, m_httpPoster);
     }
     else if (request.getURI() == DATA_RESULT_URI) {
         return new DataHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);

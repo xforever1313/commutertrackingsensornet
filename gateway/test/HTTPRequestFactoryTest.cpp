@@ -16,6 +16,7 @@
 #include "gateway/NodeCheckHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "ctsn_common/NotFoundHTTPRequestHandler.h"
+#include "gateway/PictureParseHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
 #include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
@@ -23,6 +24,7 @@
 #include "gateway/XBeeTxHTTPRequestHandler.h"
 #include "MockHTTPServerRequest.h"
 #include "MockEventExecutor.h"
+#include "MockHTTPPoster.h"
 #include "MockMariaDB.h"
 #include "MockNodeContainer.h"
 #include "MockShutdown.h"
@@ -37,18 +39,22 @@ TEST_GROUP(HTTPRequestFactoryTest) {
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_shutdown = new testing::StrictMock<CTSNCommon::MockShutdown> ();
         m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_httpPoster = new testing::StrictMock<CTSNCommon::MockHTTPPoster>();
         m_uut = new Gateway::HTTPRequestFactory(m_shutdown, m_eventExecutor, 
-                                                m_uart, m_mariadb, m_nodes);
+                                                m_uart, m_mariadb, m_nodes,
+                                                m_httpPoster);
 
         POINTERS_EQUAL(m_uut->m_shutdown, m_shutdown);
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
         POINTERS_EQUAL(m_uut->m_uart, m_uart);
         POINTERS_EQUAL(m_uut->m_mariadb, m_mariadb);
         POINTERS_EQUAL(m_uut->m_nodes, m_nodes);
+        POINTERS_EQUAL(m_uut->m_httpPoster, m_httpPoster);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
+        delete m_httpPoster;
         delete m_nodes;
         delete m_shutdown;
         delete m_request;
@@ -63,6 +69,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<CTSNCommon::MockShutdown> *m_shutdown;
     testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockHTTPPoster> *m_httpPoster;
     Gateway::HTTPRequestFactory *m_uut;
 };
 
@@ -109,6 +116,15 @@ TEST(HTTPRequestFactoryTest, createXBeeTxTest) {
     POINTERS_EQUAL(handler->m_uart, m_uart);
     POINTERS_EQUAL(handler->m_nodes, m_nodes);
 
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createPassthroughDataTest) {
+    m_request->setURI(DATA_URI);
+    m_request->set("user-agent", USER_AGENT);
+
+    Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
+    CHECK(dynamic_cast<Gateway::PictureParseHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }
 
