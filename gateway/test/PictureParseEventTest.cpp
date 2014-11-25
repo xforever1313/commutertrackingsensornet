@@ -74,5 +74,5 @@ TEST(PictureParseEventTest, failTest) {
 
     CHECK(m_errLogger->getString().find(error) != 
           std::string::npos);
-
 }
+
