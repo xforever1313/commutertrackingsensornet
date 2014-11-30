@@ -141,4 +141,33 @@ TEST(b64, pictureTest2) {
     }
 }
 
+TEST(b64, pictureTest3) {
+    std::vector<uint8_t> input;
+    std::string encoded;
+    std::vector<uint8_t> decoded;
+
+    std::string file = "../../../../test/ped.png";
+    std::ifstream inFile(file, std::ios::binary);
+    CHECK(inFile.is_open());
+    while (!inFile.eof()) {
+        input.push_back(inFile.get());
+        inFile.peek();
+    }
+
+    inFile.close();
+
+    encoded = m_encoder->encode(input);
+    CHECK(encoded.find('.') == std::string::npos);
+    CHECK(encoded.find('=') == std::string::npos);
+    CHECK(encoded.find('&') == std::string::npos);
+    CHECK(encoded.find('+') == std::string::npos);
+
+    decoded = m_decoder->decode(encoded);
+
+    CHECK_EQUAL(input.size(), decoded.size());
+
+    for (size_t i = 0; i < input.size(); ++i) {
+        CHECK_EQUAL(input[i], decoded[i]);
+    }
+}
 
