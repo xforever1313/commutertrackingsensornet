@@ -169,5 +169,15 @@ TEST(b64, pictureTest3) {
     for (size_t i = 0; i < input.size(); ++i) {
         CHECK_EQUAL(input[i], decoded[i]);
     }
+
+#define MAKE_OUTPUT
+#ifdef  MAKE_OUTPUT
+    std::ofstream outfile("encodedPed", std::ios::binary);
+    CHECK(outfile.is_open());
+    outfile << encoded.substr(0, encoded.size()/2);
+    outfile << "\n";
+    outfile << encoded.substr(encoded.size()/2);
+    outfile.close();
+#endif
 }
 
