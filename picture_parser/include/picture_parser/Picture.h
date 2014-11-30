@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <map>
 #include <vector>
 
 namespace PictureParser {
@@ -18,14 +19,11 @@ class Picture {
         std::vector<uint8_t> generatePicture() const;
 
         /**
-         * \brief sets the first half of the picture.
+         * \brief add picture data.
+         * \param int the picture part.  Pass in 0 when done.
+         * \param data The picture data.
          */
-        void setFirstHalf(const std::vector<uint8_t> &firstHalf);
-
-        /**
-         * \brief sets the second half of the picture.
-         */
-        void setSecondHalf(const std::vector<uint8_t> &secondHalf);
+        void addData(unsigned int picturePart, const std::vector<uint8_t> &data);
 
          /**
           * \return true if both the first and second half have
@@ -34,8 +32,7 @@ class Picture {
          bool isReadyToGenerate() const;
 
     private:
-        std::vector<uint8_t> m_firstPictureHalf;
-        std::vector<uint8_t> m_secondPictureHalf;
+        std::map<unsigned int, std::vector<uint8_t> > m_data;
 };
 
 }

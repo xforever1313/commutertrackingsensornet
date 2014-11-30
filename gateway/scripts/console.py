@@ -179,6 +179,27 @@ def performEncodedDataSend(nodeID, dataFile):
     data2['data'] = fileContents[int(len(fileContents) / 2):]
     performPostRequest(data2, DATA_URI)
 
+def performEncodedDataSendWithXBee(nodeID, dataFile):
+    f = open(dataFile, 'r')
+    i = 1
+    for line in f:
+        data = "node=" + nodeID + "|part=" + str(i) + "|data=" + line
+        sendXBeeMessage(DATA_URI + "\t" + data, "1") #Can only send this to gateway.
+    f.close()
+
+    data = "node=" + nodeID + "|part=0|data=derp" 
+    sendXBeeMessage(DATA_URI + "\t" + data, "1") #Can only send this to gateway.
+
+def sendStressTest(iterations):
+    messageToSend = DATA_URI + "\tnode=2|part=1|data="
+    i = 0
+    while i < int(iterations):
+        messageToSend += "a"
+        i += 1
+
+    sendXBeeMessage(messageToSend, "1")
+    print ("Number of bytes: " + str(len(messageToSend)))
+
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description="Debug Console for the CTSN gateway")
     argParser.add_argument("--url", dest='url', action = "store", default="localhost", help="The url to post to.")
@@ -194,7 +215,8 @@ if __name__ == '__main__':
                         "7.  Poke Database\n\t8.  Send XBee Tx\n\t9.  Send Result\n\t" +\
                         "10  Send HTTP over XBee\n\t" + \
                         "11. Change Node Status\n\t12. Node Check\n\t13. Send data\n\t" + \
-                        "14. Send encoded file\n\t0.  Exit\n>")
+                        "14. Send encoded file\n\t15. Send encoded file over XBee\n\t" + \
+                        "16. Send Bytes Stress Test\n\t0.  Exit\n>")
 
         if (command == "1"):
             messageToSend = input("\nEnter a message to send:\n>")
@@ -238,6 +260,13 @@ if __name__ == '__main__':
             nodeID = input ("Enter Node ID> ")
             data = input ("Enter file location> ")
             performEncodedDataSend(nodeID, data)
+        elif (command == "15"):
+            nodeID = input ("Enter Node ID> ")
+            data = input ("Enter file location> ")
+            performEncodedDataSendWithXBee(nodeID, data)
+        elif (command == "16"):
+            numberOfBytes = input("Enter number of bytes to send> ")
+            sendStressTest(numberOfBytes)
         elif (command == "0"):
             keepGoing = False
 

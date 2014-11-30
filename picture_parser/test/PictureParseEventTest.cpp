@@ -64,9 +64,7 @@ TEST(PictureParseEventTest, successTest) {
     CHECK(!(*m_uut->m_pc)[m_nodeID].isReadyToGenerate());
 
     //Ensure data got filled in.,
-    CHECK(!(*m_uut->m_pc)[m_nodeID].m_firstPictureHalf.empty());
-    CHECK((*m_uut->m_pc)[m_nodeID].m_secondPictureHalf.empty());
-
+    CHECK(!(*m_uut->m_pc)[m_nodeID].m_data.at(1).empty());
 
     CHECK(m_uut->m_encodedData.empty());
     
@@ -75,6 +73,22 @@ TEST(PictureParseEventTest, successTest) {
     m_uut->m_encodedData = m_encodedData;
     m_uut->m_picturePiece = 2;
 
+    m_uut->execute();
+
+    //Ensure the node was added and exists
+    CHECK(m_pc->m_pictures.find(m_nodeID) != m_pc->m_pictures.end());
+
+    // Not ready to generate yet
+    CHECK(!(*m_uut->m_pc)[m_nodeID].isReadyToGenerate());
+
+    //Ensure data got filled in.,
+    CHECK(!(*m_uut->m_pc)[m_nodeID].m_data.at(1).empty());
+    CHECK(!(*m_uut->m_pc)[m_nodeID].m_data.at(2).empty());
+
+    CHECK(m_uut->m_encodedData.empty());
+
+
+    //Ready to finish
     EXPECT_CALL(*m_cvRunner, parsePicture(testing::_))
         .WillOnce(testing::Return(CTSNCommon::DataResultType::HORSE));
 
@@ -84,15 +98,11 @@ TEST(PictureParseEventTest, successTest) {
                                      "&type=" + std::to_string(CTSNCommon::DataResultType::HORSE),
                                     GATEWAY_COMMAND_PORT));
 
+    m_uut->m_encodedData.clear();
+    m_uut->m_picturePiece = 0;
+
     m_uut->execute();
 
     CHECK(m_pc->m_pictures.find(m_nodeID) == m_pc->m_pictures.end());
-}
-
-TEST(PictureParseEventTest, invalidPartTest) {
-    m_uut->m_picturePiece = 5;
-    m_uut->execute();
-    CHECK(m_errLogger->getString().find(PictureParser::PictureParseEvent::INVALID_PICTURE_PART)
-            != std::string::npos);
 }
 

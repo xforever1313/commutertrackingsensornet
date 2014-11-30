@@ -16,23 +16,23 @@ Picture::~Picture() {
 }
 
 std::vector<uint8_t> Picture::generatePicture() const {
-    std::vector<uint8_t> picture = m_firstPictureHalf;
-    for (size_t i = 0; i < m_secondPictureHalf.size(); ++i) {
-        picture.push_back(m_secondPictureHalf[i]);
+    std::vector<uint8_t> picture;
+    for (auto it = m_data.begin(); it != m_data.end(); ++it) {
+        if (it->first != 0) {
+            for (size_t i = 0; i < it->second.size(); ++i) {
+                picture.push_back(it->second[i]);
+            }
+        }
     }
     return picture;
 }
 
-void Picture::setFirstHalf(const std::vector<uint8_t> &firstHalf) {
-    m_firstPictureHalf = firstHalf;
-}
-
-void Picture::setSecondHalf(const std::vector<uint8_t> &secondHalf) {
-    m_secondPictureHalf = secondHalf;
+void Picture::addData(unsigned int picturePart, const std::vector<uint8_t> &data) {
+    m_data.insert(std::pair<unsigned int, std::vector<uint8_t> >(picturePart, data));
 }
 
 bool Picture::isReadyToGenerate() const {
-    return (!m_firstPictureHalf.empty()) && (!m_secondPictureHalf.empty());
+    return m_data.find(0) != m_data.end(); 
 }
 
 }

@@ -17,6 +17,8 @@ TEST_GROUP(PictureContainerTest) {
 };
 
 TEST(PictureContainerTest, addRemoveTest) {
+
+    std::cout << "Here" << std::endl;
     CHECK(m_uut->m_pictures.empty());
 
     PictureParser::Picture &pic1 = (*m_uut)[1]; //Add a new picture.
@@ -31,8 +33,6 @@ TEST(PictureContainerTest, addRemoveTest) {
 
     //Ensure pointers are the same
     POINTERS_EQUAL(&pic1, &pic2);
-    pic1.m_firstPictureHalf.push_back(1);
-    CHECK_EQUAL(pic2.m_firstPictureHalf[0], 1)
 
     PictureParser::Picture &pic3 = (*m_uut)[2]; // new picture
     CHECK_EQUAL(m_uut->m_pictures.size(), 2);

@@ -41,27 +41,16 @@ PictureParseEvent::~PictureParseEvent() {
 
 void PictureParseEvent::execute() {
     try {
-        if (m_picturePiece == 1) {
-            std::vector<uint8_t> decodedData = 
+        std::vector<uint8_t> decodedData;
+        if (m_picturePiece != 0) {
+            decodedData = 
                 m_decoder->decode(m_encodedData);
-
-            //Clear the encoded data so we save memory
-            m_encodedData.clear();
-
-            (*m_pc)[m_nodeID].setFirstHalf(decodedData);
         }
-        else if (m_picturePiece == 2) {
-            std::vector<uint8_t> decodedData = 
-                m_decoder->decode(m_encodedData);
 
-            //Clear the encoded data so we save memory
-            m_encodedData.clear();
+        //Clear the encoded data so we save memory
+        m_encodedData.clear();
 
-            (*m_pc)[m_nodeID].setSecondHalf(decodedData);
-        }
-        else {
-            throw std::invalid_argument(INVALID_PICTURE_PART);
-        }
+        (*m_pc)[m_nodeID].addData(m_picturePiece, decodedData);
 
         if ((*m_pc)[m_nodeID].isReadyToGenerate()) {
             std::vector<uint8_t> picture = (*m_pc)[m_nodeID].generatePicture();

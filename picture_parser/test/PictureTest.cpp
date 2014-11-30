@@ -25,9 +25,9 @@ TEST_GROUP(PictureTest) {
 };
 
 TEST(PictureTest, setFirstHalfTest) {
-    m_uut->setFirstHalf(m_firstHalf);
-    for (size_t i = 0; i < m_uut->m_firstPictureHalf.size(); ++i) {
-        CHECK_EQUAL(m_uut->m_firstPictureHalf[i], m_firstHalf[i]);
+    m_uut->addData(1, m_firstHalf);
+    for (size_t i = 0; i < m_uut->m_data.at(1).size(); ++i) {
+        CHECK_EQUAL(m_uut->m_data.at(1)[i], m_firstHalf[i]);
     }
 
     // Only one half is ready, not ready to generate.
@@ -35,9 +35,9 @@ TEST(PictureTest, setFirstHalfTest) {
 }
 
 TEST(PictureTest, setSecondHalfTest) {
-    m_uut->setSecondHalf(m_secondHalf);
-    for (size_t i = 0; i < m_uut->m_secondPictureHalf.size(); ++i) {
-        CHECK_EQUAL(m_uut->m_secondPictureHalf[i], m_secondHalf[i]);
+    m_uut->addData(2, m_secondHalf);
+    for (size_t i = 0; i < m_uut->m_data.at(2).size(); ++i) {
+        CHECK_EQUAL(m_uut->m_data.at(2)[i], m_secondHalf[i]);
     }
 
     // Only one half is ready, not ready to generate.
@@ -45,8 +45,9 @@ TEST(PictureTest, setSecondHalfTest) {
 }
 
 TEST(PictureTest, generatePictureTest) {
-    m_uut->setFirstHalf(m_firstHalf);
-    m_uut->setSecondHalf(m_secondHalf);
+    m_uut->addData(1, m_firstHalf);
+    m_uut->addData(2, m_secondHalf);
+    m_uut->addData(0, std::vector<uint8_t>{0x10});
 
     CHECK(m_uut->isReadyToGenerate());
 
@@ -58,6 +59,7 @@ TEST(PictureTest, generatePictureTest) {
         else {
             CHECK_EQUAL(picture[i], m_secondHalf[i - m_firstHalf.size()]);
         }
+        CHECK(picture[i] != 0x10); // Ensure the zero vector wasnt added.
     }
 }
 
