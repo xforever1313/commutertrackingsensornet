@@ -193,7 +193,7 @@ def performEncodedDataSendWithXBee(nodeID, dataFile):
         data = "node=" + nodeID + "|part=" + str(i) + "|data=" + line
         sendXBeeMessage(DATA_URI + "\t" + data, "1") #Can only send this to gateway.
         i += 1
-        time.sleep(1)
+        time.sleep(0.5)
     f.close()
 
     data = "node=" + nodeID + "|part=0|data=derp" 

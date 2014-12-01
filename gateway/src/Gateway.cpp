@@ -21,6 +21,7 @@
 namespace Gateway {
 
 void Gateway::RxSignal(int status) {
+    getInstance().m_xbeeController->yield();
     getInstance().m_recvThread->dataReady();
 }
 
