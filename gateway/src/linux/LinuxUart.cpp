@@ -68,7 +68,7 @@ void Uart::open (const std::string &file) {
                 //  PARODD - Odd parity (else even)
                 struct termios options;
                 tcgetattr(m_uartFile, &options);
-                options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;     //<Set baud rate
+                options.c_cflag = B115200 | CS8 | CLOCAL | CREAD;     //<Set baud rate
                 options.c_iflag = IGNPAR;
                 options.c_oflag = 0;
                 options.c_lflag = 0;
