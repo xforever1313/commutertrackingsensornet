@@ -1,0 +1,187 @@
+import SCons.Defaults
+import SCons
+from SCons.Util import unique
+import stat
+import os
+import sys
+import subprocess
+import glob
+import shutil
+from copy import deepcopy
+
+baseDir = os.path.abspath("../")
+sys.path.append(baseDir)
+
+from CTSNGlobals import *
+commonPath = getCommonPath(baseDir)
+sys.path.append(commonPath)
+
+from Globals import *
+from SethCommonGlobals import *
+from SConstructGlobals import *
+
+#Make common environment
+projectName = "CTSN_PI_NODE"
+targetFlags = DOXYGEN_TARGET | CPP_CHECK_TARGET | TESTING_TARGET | PROJECT_TARGET | EXE_TARGET
+envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
+
+###
+# Additional Flags
+###
+piBuild = ARGUMENTS.get('pi_build', '0') == '1'
+piNode = ARGUMENTS.get('pi_node', '0') == '1' #build for the pi as a node
+
+nodeNumber = ARGUMENTS.get('node_id', '2')
+
+additionalFlags = []
+
+if(piBuild):
+    additionalFlags += ['-DSERIAL_PORT=\\"/dev/ttyAMA0\\"', '-DNODE_ID=' + nodeNumber]
+
+else:
+    additionalFlags += ['-DSERIAL_PORT=\\"/dev/ttyUSB0\\"', '-DNODE_ID=' + nodeNumber]
+
+###
+# Files to compile
+###
+
+###include paths:
+systemPaths = []
+
+#Put any additional include paths you need here.
+includePaths = [includeDir, getDateVersionPath(commonPath),
+                os.path.join(getOSPath(commonPath), includeDir),
+                os.path.join(getCommonClassesPath(commonPath), includeDir),
+		        baseDir,
+                os.path.join(getCTSNCommonPath(baseDir), includeDir)]
+
+testIncludePaths = [os.path.join(testDir, includeDir),
+                    os.path.join(getCommonClassesPath(commonPath), testDir, includeDir),
+                    os.path.join(getOSPath(commonPath), testDir, includeDir),
+                    os.path.join(getCTSNCommonPath(baseDir), testDir, includeDir)]
+
+###Source Files
+dateVersionFile = (os.path.join(srcDir, 'PiNodeDateVersion.cpp'))
+piNodeMainFile = os.path.join(srcDir, "main.cpp")
+
+sourceFiles = filterSourceFiles(glob.glob(os.path.join(srcDir, '*.cpp')),
+                                [dateVersionFile, piNodeMainFile])
+sourceTestFiles = glob.glob(os.path.join(testDir, '*.cpp')) + [getTestMain(commonPath)] + \
+                  glob.glob(os.path.join(testDir, srcDir, '*.cpp'))
+
+if (sys.platform == "win32"):
+    sourceFiles += glob.glob(os.path.join(srcDir, 'windows/*.cpp'))
+    sourceTestFiles += glob.glob(os.path.join(testDir, 'windows/*.cpp'))
+else:
+    sourceFiles += glob.glob(os.path.join(srcDir, 'linux/*.cpp'))
+    sourceTestFiles += glob.glob(os.path.join(testDir, 'linux/*.cpp'))
+
+#Remove MariaDB from files to unit test.
+allTestSourceFiles = filterSourceFiles(sourceFiles + sourceTestFiles, [])
+
+coverageFiles = deepcopy(sourceFiles + [dateVersionFile])
+
+###Libs
+
+#Libs needed for the pi
+piLibs = ['z', 'm', 'ssl', 'crypto' ,'dl', 'rt']
+
+#Libs needed on arch
+archLibs = ['z', 'm', 'ssl', 'crypto', 'dl', 'rt']
+
+debugLibs = ['ctsn_common-d', 'CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
+releaseLibs = ['ctsn_common', 'CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
+
+if (ARGUMENTS.get('pi_build', '0') ==  '1'):
+    debugLibs += piLibs
+    releaseLibs += piLibs
+else:
+    debugLibs += archLibs
+    releaseLibs += archLibs
+
+testLibs = debugLibs
+
+###LibPath
+debugLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
+                os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
+                os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE'])]
+releaseLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
+                  os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
+                  os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
+
+testLibPath = debugLibPath
+
+Help(getHelpMessage(envBase))
+
+###
+# Test outputs
+###
+createTestOutputFolder(envBase)
+
+###
+# Environment creation
+###
+
+def addFlags(env):
+    env.Append(CCFLAGS = additionalFlags)
+    for p in systemPaths:
+        env.Append(CCFLAGS = ['-isystem', p])
+
+#Debug Environment
+debugEnvironment = createDebugEnvironment(envBase, includePaths, debugLibs, debugLibPath)
+addFlags(debugEnvironment)
+
+#Release Environment
+releaseEnvironment = createReleaseEnvironment(envBase, includePaths, releaseLibs, releaseLibPath)
+addFlags(releaseEnvironment)
+
+#Unit test environment
+testEnvironment = createUnitTestEnvironment(envBase, includePaths + testIncludePaths, testLibs, testLibPath)
+addFlags(testEnvironment)
+
+#Doxygen
+doxygenFiles = [dateVersionFile] + sourceFiles + sourceTestFiles + glob.glob(os.path.join(includeDir, "*h")) + glob.glob(os.path.join(testDir, includeDir, "*h"))
+
+###
+# Targets
+###
+
+(debugTarget, runDebugTarget) = createExe(debugEnvironment, "CTSNPiNode" + nodeNumber + "-d",
+                                          getCompiledObjectsWithDateVersionObject(debugEnvironment,
+                                                                                  sourceFiles + [piNodeMainFile],
+                                                                                  dateVersionFile, ARGUMENTS))
+
+(releaseTarget, runReleaseTarget)  = createExe(releaseEnvironment, "CTSNPiNode" + nodeNumber,
+                                               getCompiledObjectsWithDateVersionObject(releaseEnvironment,
+                                                                                       sourceFiles + [piNodeMainFile],
+                                                                                       dateVersionFile, ARGUMENTS))
+
+(unitTestTarget, runTestTarget) = createUnitTestExe(testEnvironment,
+                                                    getCompiledObjectsWithDateVersionObject(testEnvironment,
+                                                                                            allTestSourceFiles,
+                                                                                            dateVersionFile,
+                                                                                            ARGUMENTS),
+                                                    coverageFiles)
+
+otherIncludeFiles = [os.path.join(getCppUTestPath(commonPath), includeDir), os.path.join(getGMockPath(commonPath), includeDir)] + systemPaths
+doxygenTarget = createDoxygenTarget(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, 'CTSN Pi Node')
+
+cppCheckTarget = createCppCheckTarget(releaseEnvironment, coverageFiles)
+
+(netBeansTarget, vsTarget, CodeBlocksTarget) = createProjectTargets(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, "CTSNPiNode")
+
+Alias(DEBUG_ALIAS, debugTarget)
+Alias(RUN_DEBUG_ALIAS, runDebugTarget)
+Alias(RELEASE_ALIAS, releaseTarget)
+Alias(RUN_RELEASE_ALIAS, runReleaseTarget)
+Alias(CREATE_LIB_ALIAS, [debugTarget, releaseTarget])
+Alias(DOXYGEN_ALIAS, doxygenTarget)
+Alias(CPP_CHECK_ALIAS, cppCheckTarget)
+Alias(UNIT_TEST_ALIAS, unitTestTarget)
+Alias(RUN_TEST_ALIAS, [unitTestTarget, runTestTarget, cppCheckTarget])
+
+Alias (NIGHTLY_ALIAS, [debugTarget, releaseTarget, doxygenTarget, cppCheckTarget, runTestTarget, netBeansTarget, vsTarget, CodeBlocksTarget])
+Alias (DELTA_ALIAS, [debugTarget, releaseTarget, cppCheckTarget, runTestTarget])
+
+Default([RUN_TEST_ALIAS])
+
