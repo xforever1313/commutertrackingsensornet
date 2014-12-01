@@ -1,4 +1,5 @@
 import argparse
+import time
 import subprocess
 import sys
 
@@ -179,12 +180,20 @@ def performEncodedDataSend(nodeID, dataFile):
     data2['data'] = fileContents[int(len(fileContents) / 2):]
     performPostRequest(data2, DATA_URI)
 
+    data3 = {}
+    data3['node'] = nodeID
+    data3['part'] = '0'
+    data3['data'] = 'derp'
+    performPostRequest(data3, DATA_URI)
+
 def performEncodedDataSendWithXBee(nodeID, dataFile):
     f = open(dataFile, 'r')
     i = 1
     for line in f:
         data = "node=" + nodeID + "|part=" + str(i) + "|data=" + line
         sendXBeeMessage(DATA_URI + "\t" + data, "1") #Can only send this to gateway.
+        i += 1
+        time.sleep(1)
     f.close()
 
     data = "node=" + nodeID + "|part=0|data=derp" 
