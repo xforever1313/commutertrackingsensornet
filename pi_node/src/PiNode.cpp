@@ -1,5 +1,6 @@
 #include <Poco/Net/HTTPServer.h>
 
+#include "ctsn_common/Uart.h"
 #include "CTSNSharedGlobals.py"
 #include "EventExecutor.h"
 #include "io/ConsoleLogger.h"
@@ -7,6 +8,10 @@
 #include "pi_node/PiNode.h"
 
 namespace PiNode  {
+
+void PiNode::RxSignal(int status) {
+
+}
 
 PiNode &PiNode::getInstance() {
     static PiNode piNode;
@@ -16,7 +21,8 @@ PiNode &PiNode::getInstance() {
 PiNode::PiNode() :
     m_eventExecutor(new Common::EventExecutor()),
     m_socket(nullptr),
-    m_server(nullptr)
+    m_server(nullptr),
+    m_uart(new CTSNCommon::Uart(&RxSignal))
 {
 
 }
@@ -25,6 +31,7 @@ PiNode::~PiNode() {
     delete m_server;
     delete m_socket;
     delete m_eventExecutor;
+    delete m_uart;
 }
 
 void PiNode::initHTTPServer() {

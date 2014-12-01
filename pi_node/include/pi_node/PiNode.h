@@ -5,6 +5,7 @@
 
 #include "ctsn_common/HTTPPosterInterface.h"
 #include "ctsn_common/ShutdownInterface.h"
+#include "ctsn_common/UartInterface.h"
 #include "EventExecutorInterface.h"
 
 #include "SSemaphore.h"
@@ -24,12 +25,15 @@ class PiNode : public CTSNCommon::ShutdownInterface {
         void shutdown() override;
 
     private:
+        static void RxSignal(int status);
+
         PiNode();
         Common::EventExecutorInterface *m_eventExecutor;
         OS::SSemaphore m_shutdownSemaphore;
 
         Poco::Net::ServerSocket *m_socket;
         Poco::Net::HTTPServer *m_server;
+        CTSNCommon::UartInterface *m_uart;
 };
 
 }
