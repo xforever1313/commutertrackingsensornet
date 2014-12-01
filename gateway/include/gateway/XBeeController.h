@@ -85,8 +85,10 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         void handleSuccessfulParse();
 
         void reset();
+        uint8_t getNextByte();
 
         std::queue<std::uint8_t> m_data;
+        OS::SMutex m_queueMutex;
         OS::SSemaphore m_dataSemaphore;
 
         std::uint16_t m_dataLength;

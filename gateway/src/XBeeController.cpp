@@ -43,6 +43,7 @@ XBeeController::~XBeeController() {
 
 void XBeeController::addData(const std::vector<std::uint8_t> &data) {
     for (size_t i = 0; i < data.size(); ++i) {
+        std::lock_guard<OS::SMutex> lock(m_queueMutex);
         m_data.push(data[i]);
         m_dataSemaphore.post();
     }
@@ -117,8 +118,7 @@ void XBeeController::handleData() {
 }
 
 void XBeeController::handleStartupState() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
     if (data == XBeeConstants::START_CHARACTER) {
         m_currentState = MSG_START;
         m_bytesProcessed.push_back(data);
@@ -127,8 +127,8 @@ void XBeeController::handleStartupState() {
 }
 
 void XBeeController::handleMessageStartState() {
-    std::uint16_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
+
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
     if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
@@ -161,8 +161,7 @@ void XBeeController::handleMessageStartState() {
 }
 
 void XBeeController::handleGotLength1State() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
@@ -195,8 +194,7 @@ void XBeeController::handleGotLength1State() {
 }
 
 void XBeeController::handleGotLength2State() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
 
     // This is the data frame.  This can only be,
     // on the RX end of things,
@@ -239,8 +237,7 @@ void XBeeController::handleGotLength2State() {
 }
 
 void XBeeController::handleParseModemStatusState() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
     m_bytesProcessed.push_back(data);
     ++m_nonEscapedBytesProcessed;
     ++m_lengthCounter;
@@ -261,8 +258,7 @@ void XBeeController::handleParseModemStatusState() {
 }
 
 void XBeeController::handleIgnoreOptionsState() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
@@ -298,8 +294,7 @@ void XBeeController::handleIgnoreOptionsState() {
 }
 
 void XBeeController::handleIgnoreTxStatusOptions() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
@@ -336,8 +331,7 @@ void XBeeController::handleIgnoreTxStatusOptions() {
 }
 
 void XBeeController::handleParsePayloadState() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
@@ -378,8 +372,7 @@ void XBeeController::handleParsePayloadState() {
 }
 
 void XBeeController::handleTxParseTxRetryState() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+   std::uint8_t data = getNextByte();
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
@@ -415,8 +408,7 @@ void XBeeController::handleTxParseTxRetryState() {
 }
 
 void XBeeController::handleTxParseStatusState() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
     
     if (data == XBeeConstants::START_CHARACTER) {
          handleIncompleteMessage();
@@ -434,9 +426,8 @@ void XBeeController::handleTxParseStatusState() {
 }
 
 void XBeeController::handleTxParseDiscoveryState() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
-    
+    std::uint8_t data = getNextByte();
+
     if (data == XBeeConstants::START_CHARACTER) {
          handleIncompleteMessage();
     }
@@ -453,14 +444,12 @@ void XBeeController::handleTxParseDiscoveryState() {
 }
 
 void XBeeController::handleCheckCheckSumState() {
-    std::uint8_t data = m_data.front();
-    m_data.pop();
+    std::uint8_t data = getNextByte();
 
     // If we got the escape character from the last state,
     // xor it so we get the right checksum.
     if (data == XBeeConstants::ESCAPE_CHARACTER) {
-        data = m_data.front(); // Ditch the escaped character
-        m_data.pop();
+        data = getNextByte(); // Ditch the escaped character
         data = data ^ XBeeConstants::ESCAPE_XOR;
     }
 
@@ -546,6 +535,13 @@ void XBeeController::reset() {
     m_transmitRetryCount = 0;
     m_txStatus = XBeeConstants::TxStatus::UNKNOWN_TX_STATUS;
     m_discoveryStatus = XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS;
+}
+
+uint8_t XBeeController::getNextByte() {
+    std::lock_guard<OS::SMutex> lock(m_queueMutex);
+    std::uint8_t data = m_data.front();
+    m_data.pop();
+    return data;
 }
 
 void XBeeController::handleBadState() {

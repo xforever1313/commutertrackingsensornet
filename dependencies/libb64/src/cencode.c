@@ -7,7 +7,7 @@ For details, see http://sourceforge.net/projects/libb64
 
 #include <b64/cencode.h>
 
-const int CHARS_PER_LINE = 200;
+const int CHARS_PER_LINE = 152;  /* Must be divisible by 4 */
 
 void base64_init_encodestate(base64_encodestate* state_in)
 {
