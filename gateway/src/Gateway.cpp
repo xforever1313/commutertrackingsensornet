@@ -61,8 +61,8 @@ Gateway::~Gateway() {
 
 void Gateway::initHTTPServer() {
     Poco::Net::HTTPServerParams *params = new Poco::Net::HTTPServerParams();
-    params->setMaxQueued(100);
-    params->setMaxThreads(2);
+    params->setMaxQueued(500);
+    params->setMaxThreads(1);
 
     m_socket = new Poco::Net::ServerSocket(GATEWAY_COMMAND_PORT);
     m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this, m_eventExecutor, m_uart, m_mariadb, m_nodes, m_httpPoster),
