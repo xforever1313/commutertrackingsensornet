@@ -26,6 +26,16 @@ PICTURE_PARSER_COMMAND_PORT = 9010;
 #ifdef PYTHON
 ''''
 #endif
+const short
+#ifdef PYTHON
+\''''
+#endif
+PI_NODE_COMMAND_PORT = 9011;
+
+
+#ifdef PYTHON
+''''
+#endif
 const std::string 
 #ifdef PYTHON
 \''''
