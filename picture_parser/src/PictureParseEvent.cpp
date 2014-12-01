@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "b64/decode.h"
 #include "CTSNSharedGlobals.py"
@@ -51,6 +52,7 @@ void PictureParseEvent::execute() {
         m_encodedData.clear();
 
         (*m_pc)[m_nodeID].addData(m_picturePiece, decodedData);
+        std::cout << "Adding to " << m_nodeID << " part " << m_picturePiece << std::endl;
 
         if ((*m_pc)[m_nodeID].isReadyToGenerate()) {
             std::vector<uint8_t> picture = (*m_pc)[m_nodeID].generatePicture();
