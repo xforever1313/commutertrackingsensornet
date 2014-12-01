@@ -6,7 +6,7 @@
 
 namespace Gateway {
 
-UartTxEvent::UartTxEvent(const std::string &message, UartInterface *uart,
+UartTxEvent::UartTxEvent(const std::string &message, CTSNCommon::UartInterface *uart,
                          Common::IO::LoggerBase &logger /*= Common::IO::ConsoleLogger::err*/) :
     m_message(message),
     m_uart(uart),

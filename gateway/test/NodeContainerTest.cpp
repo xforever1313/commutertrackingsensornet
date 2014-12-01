@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 #include "MockMariaDB.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeContainer.h"
 
 TEST_GROUP(NodeContainerTest) {
@@ -22,8 +22,8 @@ TEST_GROUP(NodeContainerTest) {
         CHECK_EQUAL(m_uut->m_nodes.at(0).getID(), 0);
         CHECK_EQUAL(m_uut->m_nodes.at(0).getAddress(),
                     Gateway::NodeContainer::BROADCAST_ADDRESS);
-        Gateway::Node node(1, 0x01);
-        m_uut->m_nodes.insert(std::pair<unsigned int, Gateway::Node> (1, node));
+        CTSNCommon::Node node(1, 0x01);
+        m_uut->m_nodes.insert(std::pair<unsigned int, CTSNCommon::Node> (1, node));
     }
 
     TEST_TEARDOWN() {
@@ -56,7 +56,7 @@ TEST(NodeContainerTest, refreshNodesSuccess) {
     CHECK_EQUAL(m_uut->m_nodes.size(), ids.size() + 1); // 1 for broadcast node
     CHECK_EQUAL(m_uut->m_nodes.at(0).getID(), 0);
     CHECK_EQUAL(m_uut->m_nodes.at(0).getAddress(), Gateway::NodeContainer::BROADCAST_ADDRESS);
-    CHECK_EQUAL(m_uut->m_nodes.at(0).getStatus(), Gateway::Node::NodeStatus::OKAY);
+    CHECK_EQUAL(m_uut->m_nodes.at(0).getStatus(), CTSNCommon::Node::NodeStatus::OKAY);
     for (size_t i = 1; i < m_uut->m_nodes.size(); ++i) {
         CHECK_EQUAL(m_uut->m_nodes.at(i).getID(), i);
         CHECK_EQUAL(m_uut->m_nodes.at(i).getAddress(), i);
@@ -272,7 +272,7 @@ TEST(NodeContainerTest, refreshNodesMariaDBError) {
 }
 
 TEST(NodeContainerTest, convertStringToNodeSuccess) {
-    const Gateway::Node node = m_uut->convertStringToNode("1");
+    const CTSNCommon::Node node = m_uut->convertStringToNode("1");
     CHECK_EQUAL(node.getID(), 1);
 }
 
@@ -297,7 +297,7 @@ TEST(NodeContainerTest, convertStringToNodeNumberInFrontTest) {
 }
 
 TEST(NodeContainerTest, convertStringToNodeZeroTest) {
-    const Gateway::Node node = m_uut->convertStringToNode("0");
+    const CTSNCommon::Node node = m_uut->convertStringToNode("0");
     CHECK_EQUAL(node.getID(), 0);
     CHECK_EQUAL(node.getAddress(), Gateway::NodeContainer::BROADCAST_ADDRESS);
 }
@@ -318,10 +318,10 @@ TEST(NodeContainerTest, setNodeStatusTestSuccess) {
     // Needed for when refresh is called
     std::vector<std::string> ids = {"1", "2", "3"};
     std::vector<std::string> addresses = {"1", "2", "3"};
-    std::vector<std::string> statuses = {std::to_string(Gateway::Node::NodeStatus::OKAY), "2", "3"};
+    std::vector<std::string> statuses = {std::to_string(CTSNCommon::Node::NodeStatus::OKAY), "2", "3"};
 
     std::string expectedQuery = Gateway::NodeContainer::SET_NODE_STATUS_QUERY +
-                                std::to_string(Gateway::Node::NodeStatus::OKAY) +
+                                std::to_string(CTSNCommon::Node::NodeStatus::OKAY) +
                                 " WHERE id=" + std::to_string(nodeID);
 
     EXPECT_CALL(*m_mariadb, mysql_real_query(expectedQuery));
@@ -340,27 +340,27 @@ TEST(NodeContainerTest, setNodeStatusTestSuccess) {
 
 
     bool changed = m_uut->setNodeStatus(nodeID, 
-                                        Gateway::Node::NodeStatus::OKAY);
+                                        CTSNCommon::Node::NodeStatus::OKAY);
 
     // okay is different than the default unknown, changed should be true.
     CHECK(changed);
 
-    Gateway::Node changedNode = m_uut->m_nodes.at(nodeID);
+    CTSNCommon::Node changedNode = m_uut->m_nodes.at(nodeID);
     CHECK_EQUAL(changedNode.getStatus(),
-                Gateway::Node::NodeStatus::OKAY);
+                CTSNCommon::Node::NodeStatus::OKAY);
 }
 
 TEST(NodeContainerTest, setNodeStatusTestNoChange) {
     const unsigned int nodeID = 1; // From test setup
 
     bool changed = m_uut->setNodeStatus(nodeID, 
-                                        Gateway::Node::NodeStatus::UNKNOWN);
+                                        CTSNCommon::Node::NodeStatus::UNKNOWN);
 
     // Unknown is the same as the default status.  No change should happen.
     CHECK(!changed);
 
-    Gateway::Node changedNode = m_uut->m_nodes.at(nodeID);
+    CTSNCommon::Node changedNode = m_uut->m_nodes.at(nodeID);
     CHECK_EQUAL(changedNode.getStatus(),
-                Gateway::Node::NodeStatus::UNKNOWN);
+                CTSNCommon::Node::NodeStatus::UNKNOWN);
 }
 

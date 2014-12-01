@@ -7,7 +7,7 @@
 #include "CTSNSharedGlobals.py"
 #include "ctsn_common/HTTPPoster.h"
 #include "gateway/XBeeCallbacks.h"
-#include "gateway/XBeeConstants.h"
+#include "ctsn_common/XBeeConstants.h"
 #include "io/LoggerBase.h"
 #include "StringOps.h"
 
@@ -125,7 +125,7 @@ void XBeeCallbacks::invalidPacketFrame(uint8_t packetFrame) {
 }
 
 void XBeeCallbacks::transmitSuccess(uint8_t numAttempts, 
-                                    XBeeConstants::DiscoveryStatus discovery) {
+                                    CTSNCommon::XBeeConstants::DiscoveryStatus discovery) {
     std::stringstream ss;
     ss << TRANSMIT_SUCCESS_MESSAGE << "Attempts: " 
        << static_cast<unsigned short>(numAttempts) << "\n\tDiscovery: "
@@ -134,8 +134,8 @@ void XBeeCallbacks::transmitSuccess(uint8_t numAttempts,
 }
 
 void XBeeCallbacks::transmitFailure(uint8_t numAttempts, 
-                                    XBeeConstants::TxStatus errorNumber,
-                                    XBeeConstants::DiscoveryStatus discovery) {
+                                    CTSNCommon::XBeeConstants::TxStatus errorNumber,
+                                    CTSNCommon::XBeeConstants::DiscoveryStatus discovery) {
     std::stringstream ss;
     ss << TRANSMIT_FAILURE_MESSAGE << "Attempts: " 
        << static_cast<unsigned short>(numAttempts) << "\n\tDiscovery: "
@@ -166,13 +166,13 @@ std::string XBeeCallbacks::dumpData(const std::vector<std::uint8_t> &badData) {
     return ss.str();
 }
 
-const std::string XBeeCallbacks::getDiscoveryString(XBeeConstants::DiscoveryStatus discovery) {
+const std::string XBeeCallbacks::getDiscoveryString(CTSNCommon::XBeeConstants::DiscoveryStatus discovery) {
     std::string ret;
     switch(discovery) {
-        case XBeeConstants::DiscoveryStatus::NO_OVERHEAD:
+        case CTSNCommon::XBeeConstants::DiscoveryStatus::NO_OVERHEAD:
             ret = TRANSMIT_NO_DISCOVERY_OVERHEAD;
             break;
-        case XBeeConstants::DiscoveryStatus::ROUTE_DISCOVERY:
+        case CTSNCommon::XBeeConstants::DiscoveryStatus::ROUTE_DISCOVERY:
             ret = TRANSMIT_ROUTE_DISCOVERY_NEEDED;
             break;
         default:
@@ -181,23 +181,23 @@ const std::string XBeeCallbacks::getDiscoveryString(XBeeConstants::DiscoveryStat
     return ret;
 }
 
-const std::string XBeeCallbacks::getTxFailureReason(XBeeConstants::TxStatus txStatus) {
+const std::string XBeeCallbacks::getTxFailureReason(CTSNCommon::XBeeConstants::TxStatus txStatus) {
     std::string ret;
     
     switch(txStatus) {
-        case XBeeConstants::SUCCESS:
+        case CTSNCommon::XBeeConstants::SUCCESS:
             ret = TX_STATUS_SUCCESS;
             break;
-        case XBeeConstants::MAC_ACK_FAILURE:
+        case CTSNCommon::XBeeConstants::MAC_ACK_FAILURE:
             ret = TX_STATUS_MAC_ACK_FAILURE;
             break;
-        case XBeeConstants::INVALID_ENDPOINT:
+        case CTSNCommon::XBeeConstants::INVALID_ENDPOINT:
             ret = TX_STATUS_INVALID_ENDPOINT;
             break;
-        case XBeeConstants::NETWORK_ACK_FAILURE:
+        case CTSNCommon::XBeeConstants::NETWORK_ACK_FAILURE:
             ret = TX_STATUS_NETWORK_ACK_FAILURE;
             break;
-        case XBeeConstants::ROUTE_NOT_FOUND:
+        case CTSNCommon::XBeeConstants::ROUTE_NOT_FOUND:
             ret = TX_STATUS_ROUTE_NOT_FOUND;
             break;
         default:

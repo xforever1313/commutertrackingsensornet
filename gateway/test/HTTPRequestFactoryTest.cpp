@@ -34,7 +34,7 @@
 TEST_GROUP(HTTPRequestFactoryTest) {
     TEST_SETUP() {
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
-        m_uart = new testing::StrictMock<Gateway::MockUart>();
+        m_uart = new testing::StrictMock<CTSNCommon::MockUart>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_shutdown = new testing::StrictMock<CTSNCommon::MockShutdown> ();
@@ -64,7 +64,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
     }
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
-    testing::StrictMock<Gateway::MockUart> *m_uart;
+    testing::StrictMock<CTSNCommon::MockUart> *m_uart;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<CTSNCommon::MockShutdown> *m_shutdown;

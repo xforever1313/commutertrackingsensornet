@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "gateway/XBeeConstants.h"
+#include "ctsn_common/XBeeConstants.h"
 
 namespace Gateway {
 
@@ -91,7 +91,7 @@ class XBeeCallbackInterface {
          *        or not.  byte offset 9
          */
         virtual void transmitSuccess(uint8_t numAttempts, 
-                                     XBeeConstants::DiscoveryStatus discovery) = 0;
+                                     CTSNCommon::XBeeConstants::DiscoveryStatus discovery) = 0;
 
         /**
          * \brief called when a tx failure occurs.
@@ -103,8 +103,8 @@ class XBeeCallbackInterface {
          *        or not.  byte offset 9
          */
         virtual void transmitFailure(uint8_t numAttempts, 
-                                     XBeeConstants::TxStatus errorNumber,
-                                     XBeeConstants::DiscoveryStatus discovery) = 0;
+                                     CTSNCommon::XBeeConstants::TxStatus errorNumber,
+                                     CTSNCommon::XBeeConstants::DiscoveryStatus discovery) = 0;
 };
 
 }

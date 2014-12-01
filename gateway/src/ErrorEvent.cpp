@@ -18,7 +18,7 @@ const std::string ErrorEvent::INVALID_ERROR_NUMBER = "Invalid error number passe
 const std::string ErrorEvent::MISMATCHED_COLUMNS = "MariaDB error: Mismatched Columns";
 const std::string ErrorEvent::SUBJECT = "CTSN ERROR";
 
-ErrorEvent::ErrorEvent(ErrorNumber error, const Node &node, MariaDBInterface *mariadb,
+ErrorEvent::ErrorEvent(ErrorNumber error, const CTSNCommon::Node &node, MariaDBInterface *mariadb,
                        Common::IO::LoggerBase &outLogger /*= Common::IO::ConsoleLogger::out */, 
                        Common::IO::LoggerBase &errLogger /*= Common::IO::ConsoleLogger::err */) :
     m_errorNumber(error),

@@ -6,7 +6,7 @@
 
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeContainerInterface.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "SMutex.h"
 
 namespace Gateway {
@@ -31,7 +31,7 @@ class NodeContainer : public NodeContainerInterface {
          *         Really, the returned node object should only be used to get the addressing information of a
          *         node before discarding it.
          */
-        const Node getNodeFromID(unsigned int id) override;
+        const CTSNCommon::Node getNodeFromID(unsigned int id) override;
 
         /**
          * \brief refreshes the node map by querying the database.
@@ -50,7 +50,7 @@ class NodeContainer : public NodeContainerInterface {
          * \throws std::out_of_range if the node is not a valid node number
          * \throws std::invalid_arugment if the given string is not an int
          */
-        const Node convertStringToNode(const std::string &nodeString) override;
+        const CTSNCommon::Node convertStringToNode(const std::string &nodeString) override;
 
         /**
          * \brief Sets the given node's status
@@ -63,7 +63,7 @@ class NodeContainer : public NodeContainerInterface {
          *         returned if the node's status stored in the database
          *         is the same as what is passed in.
          */
-        bool setNodeStatus(unsigned int id, Node::NodeStatus newStatus) override;
+        bool setNodeStatus(unsigned int id, CTSNCommon::Node::NodeStatus newStatus) override;
 
     private:
         static const uint64_t BROADCAST_ADDRESS;
@@ -86,7 +86,7 @@ class NodeContainer : public NodeContainerInterface {
         NodeContainer(const NodeContainer&) = delete;
         NodeContainer &operator=(const NodeContainer&) = delete;
 
-        std::map<unsigned int, Node> m_nodes;
+        std::map<unsigned int, CTSNCommon::Node> m_nodes;
         OS::SMutex m_nodeMutex;
         MariaDBInterface *const m_mariadb;
         MariaDBResultInterface *m_result;

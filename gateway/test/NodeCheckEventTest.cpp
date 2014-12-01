@@ -5,7 +5,7 @@
 
 #include <UnitTest.h>
 
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/NodeCheckEvent.h"
@@ -56,10 +56,10 @@ TEST_GROUP(NodeCheckEventTest) {
 TEST(NodeCheckEventTest, successTest) {
     testing::InSequence dummy;
 
-    Gateway::Node node1 (1, 0x01, Gateway::Node::NodeStatus::OKAY);
-    Gateway::Node node3 (3, 0x03, Gateway::Node::NodeStatus::UNKNOWN);
-    Gateway::Node node4 (4, 0x04, Gateway::Node::NodeStatus::BATTERY_CRITICAL);
-    Gateway::Node node5 (5, 0x05, Gateway::Node::NodeStatus::OFFLINE);
+    CTSNCommon::Node node1 (1, 0x01, CTSNCommon::Node::NodeStatus::OKAY);
+    CTSNCommon::Node node3 (3, 0x03, CTSNCommon::Node::NodeStatus::UNKNOWN);
+    CTSNCommon::Node node4 (4, 0x04, CTSNCommon::Node::NodeStatus::BATTERY_CRITICAL);
+    CTSNCommon::Node node5 (5, 0x05, CTSNCommon::Node::NodeStatus::OFFLINE);
 
     // What is returned from the query 
     std::vector<std::string> nodes = {std::to_string(node1.getID()),
@@ -86,14 +86,14 @@ TEST(NodeCheckEventTest, successTest) {
     EXPECT_CALL(*m_nodes, convertStringToNode(nodes[1]))
         .WillOnce(testing::Return(node3));
     EXPECT_CALL(*m_nodes, setNodeStatus(node3.getID(), 
-                                        Gateway::Node::NodeStatus::UNKNOWN))
+                                        CTSNCommon::Node::NodeStatus::UNKNOWN))
         .WillOnce(testing::Return(false));
 
     // set node 4 status
     EXPECT_CALL(*m_nodes, convertStringToNode(nodes[2]))
         .WillOnce(testing::Return(node4));
     EXPECT_CALL(*m_nodes, setNodeStatus(node4.getID(),
-                                        Gateway::Node::NodeStatus::UNKNOWN))
+                                        CTSNCommon::Node::NodeStatus::UNKNOWN))
         .WillOnce(testing::Return(true));
 
     // since node 4 returned true, it means the new status is new.

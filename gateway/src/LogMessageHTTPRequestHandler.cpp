@@ -11,7 +11,7 @@
 #include "gateway/Gateway.h"
 #include "gateway/LogEvent.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeContainerInterface.h"
 #include "gateway/MariaDBInterface.h"
 
@@ -44,7 +44,7 @@ void LogMessageHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerReques
         const std::string &messageStr =  form[MESSAGE_FORM_DATA];
 
         ErrorNumber messageType = ErrorMessage::convertStringToMessage(messageStr);
-        const Node node = m_nodes->convertStringToNode(nodeStr);
+        const CTSNCommon::Node node = m_nodes->convertStringToNode(nodeStr);
 
         std::shared_ptr<LogEvent> event(new LogEvent(messageType, node, m_mariadb));
         m_eventExecutor->addEvent(event);

@@ -13,7 +13,7 @@
 
 TEST_GROUP(DataHTTPRequestHandlerTest) {
     TEST_SETUP() {
-        m_node = new Gateway::Node(1, 0x01);
+        m_node = new CTSNCommon::Node(1, 0x01);
 
         m_request =  new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>;
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>;
@@ -49,7 +49,7 @@ TEST_GROUP(DataHTTPRequestHandlerTest) {
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
 
-    Gateway::Node *m_node;
+    CTSNCommon::Node *m_node;
 
     Gateway::DataHTTPRequestHandler *m_uut;
 };

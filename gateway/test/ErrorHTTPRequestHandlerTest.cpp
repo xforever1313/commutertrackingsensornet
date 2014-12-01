@@ -9,7 +9,7 @@
 #include "gateway/ErrorNumbers.h"
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorHTTPRequestHandler.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeContainerInterface.h"
 #include "MockEventExecutor.h"
 #include "MockHTTPServerRequest.h"
@@ -152,7 +152,7 @@ TEST(ErrorHTTPRequestHandlerTest, postMessageTooHigh) {
 
 ///Post success test
 TEST(ErrorHTTPRequestHandlerTest, postSuccess) {
-    Gateway::Node node(1, 0x01);
+    CTSNCommon::Node node(1, 0x01);
 
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
 

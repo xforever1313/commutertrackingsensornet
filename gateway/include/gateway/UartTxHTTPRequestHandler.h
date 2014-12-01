@@ -7,13 +7,14 @@
 
 #include "EventExecutorInterface.h"
 #include "ctsn_common/BaseHTTPRequestHandler.h"
-#include "gateway/UartInterface.h"
+#include "ctsn_common/UartInterface.h"
 
 namespace Gateway {
 
 class UartTxHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
-        UartTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor, UartInterface *uart);
+        UartTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
+                                 CTSNCommon::UartInterface *uart);
         ~UartTxHTTPRequestHandler();
 
         void handleGetRequest(Poco::Net::HTTPServerRequest &request, Poco::Net::HTTPServerResponse &response) override;
@@ -27,7 +28,7 @@ class UartTxHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
         UartTxHTTPRequestHandler() = delete;
 
         Common::EventExecutorInterface *m_eventExecutor;
-        UartInterface *m_uart;
+        CTSNCommon::UartInterface *m_uart;
 };
 
 }

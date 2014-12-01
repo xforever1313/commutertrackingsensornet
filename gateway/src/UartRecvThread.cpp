@@ -7,7 +7,7 @@
 #include <unistd.h>         //Used for UART
 #endif
 
-#include "gateway/UartInterface.h"
+#include "ctsn_common/UartInterface.h"
 #include "gateway/UartRecvCallbackInterface.h"
 #include "gateway/UartRecvThread.h"
 #include "io/LoggerBase.h"
@@ -43,7 +43,7 @@ struct UartRecvThread::UartRecvImpl {
 #error Platform not supported, implement a UartRecvImpl.
 #endif
 
-UartRecvThread::UartRecvThread(UartInterface *uart,
+UartRecvThread::UartRecvThread(CTSNCommon::UartInterface *uart,
                                UartRecvCallbackInterface *callback,
                                Common::IO::LoggerBase &errorLogger /*= Common::IO::ConsoleLogger::err*/) :
     m_uart(uart),

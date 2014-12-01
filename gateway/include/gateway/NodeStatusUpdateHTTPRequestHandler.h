@@ -8,7 +8,6 @@
 #include "EventExecutorInterface.h"
 #include "ctsn_common/BaseHTTPRequestHandler.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/Node.h"
 #include "gateway/NodeContainerInterface.h"
 #include "gateway/NodeStatusUpdateEvent.h"
 

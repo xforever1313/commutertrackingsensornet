@@ -13,7 +13,7 @@
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/LogEvent.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeContainer.h"
 #include "gateway/TextMessageEvent.h"
 #include "io/StringLogger.h"
@@ -22,7 +22,7 @@
 
 TEST_GROUP(ErrorEventTest) {
     TEST_SETUP() {
-        m_node = new Gateway::Node(2, 0x01);
+        m_node = new CTSNCommon::Node(2, 0x01);
         m_errorMessageResult = new testing::StrictMock<Gateway::MockMariaDBResult>();
         m_userResult = new testing::StrictMock<Gateway::MockMariaDBResult>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
@@ -55,7 +55,7 @@ TEST_GROUP(ErrorEventTest) {
         //The results are deleted in m_uut
     }
 
-    Gateway::Node *m_node;
+    CTSNCommon::Node *m_node;
     testing::StrictMock<Gateway::MockMariaDBResult> *m_errorMessageResult;
     testing::StrictMock<Gateway::MockMariaDBResult> *m_userResult;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;

@@ -6,9 +6,9 @@
 #include <string>
 
 #include "EventExecutorInterface.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeContainerInterface.h"
-#include "gateway/XBeeTxEvent.h"
+#include "ctsn_common/XBeeTxEvent.h"
 #include "gateway/XBeeTxHTTPRequestHandler.h"
 
 namespace Gateway {
@@ -20,7 +20,7 @@ const std::string XBeeTxHTTPRequestHandler::MESSAGE_FORM_DATA = "message";
 const std::string XBeeTxHTTPRequestHandler::NODE_FORM_DATA = "node";
 
 XBeeTxHTTPRequestHandler::XBeeTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
-                                                   UartInterface *uart,
+                                                   CTSNCommon::UartInterface *uart,
                                                    NodeContainerInterface *nodes) :
     m_eventExecutor(eventExecutor),
     m_uart(uart),
@@ -45,9 +45,9 @@ void XBeeTxHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &r
         const std::string &message = form[MESSAGE_FORM_DATA];
         const std::string &nodeStr = form[NODE_FORM_DATA];
 
-        Node node = m_nodes->convertStringToNode(nodeStr);
+        CTSNCommon::Node node = m_nodes->convertStringToNode(nodeStr);
 
-        m_eventExecutor->addEvent(std::shared_ptr<Common::EventInterface>(new XBeeTxEvent(node, message, m_uart)));
+        m_eventExecutor->addEvent(std::shared_ptr<Common::EventInterface>(new CTSNCommon::XBeeTxEvent(node, message, m_uart)));
 
         sendSuccessResponse(response, POST_MESSAGE);
     }

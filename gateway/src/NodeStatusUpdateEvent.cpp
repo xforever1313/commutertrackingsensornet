@@ -5,14 +5,14 @@
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeStatusUpdateEvent.h"
 #include "gateway/NodeContainerInterface.h"
 #include "io/LoggerBase.h"
 
 namespace Gateway {
 
-NodeStatusUpdateEvent::NodeStatusUpdateEvent(Node::NodeStatus status,
+NodeStatusUpdateEvent::NodeStatusUpdateEvent(CTSNCommon::Node::NodeStatus status,
                                              unsigned int nodeNumber,
                                              NodeContainerInterface *nodes,
                                              Common::EventExecutorInterface *eventExecutor,
@@ -40,22 +40,22 @@ void NodeStatusUpdateEvent::execute() {
         if (m_nodes->setNodeStatus(m_nodeID, m_status)) {
             ErrorNumber errNumber;
 
-            Node node = m_nodes->getNodeFromID(m_nodeID);
+            CTSNCommon::Node node = m_nodes->getNodeFromID(m_nodeID);
 
             switch(m_status) {
-                case Node::NodeStatus::OKAY:
+                case CTSNCommon::Node::NodeStatus::OKAY:
                     errNumber = NODE_IS_NOW_GOOD;
                     break;
-                case Node::NodeStatus::OFFLINE:
+                case CTSNCommon::Node::NodeStatus::OFFLINE:
                     errNumber = NODE_HAS_GONE_OFFLINE;
                     break;
-                case Node::NodeStatus::LOW_BATTERY:
+                case CTSNCommon::Node::NodeStatus::LOW_BATTERY:
                     errNumber = NODE_HAS_LOW_BATTERY;
                     break;
-                case Node::NodeStatus::BATTERY_CRITICAL:
+                case CTSNCommon::Node::NodeStatus::BATTERY_CRITICAL:
                     errNumber = NODE_HAS_CRITICAL_BATTERY;
                     break;
-                case Node::NodeStatus::UNKNOWN:
+                case CTSNCommon::Node::NodeStatus::UNKNOWN:
                     errNumber = NODE_HAS_UNKNOWN_STATUS;
                     break;
                 default:

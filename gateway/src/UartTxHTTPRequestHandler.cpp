@@ -15,7 +15,7 @@ const std::string UartTxHTTPRequestHandler::POST_MESSAGE = "TX Uart Message Queu
 const std::string UartTxHTTPRequestHandler::GET_MESSAGE = "Usage: message=message_to_send_to_uart";
 const std::string UartTxHTTPRequestHandler::MESSAGE_FORM_DATA = "message";
 
-UartTxHTTPRequestHandler::UartTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor, UartInterface *uart) :
+UartTxHTTPRequestHandler::UartTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor, CTSNCommon::UartInterface *uart) :
     m_eventExecutor(eventExecutor),
     m_uart(uart)
 {

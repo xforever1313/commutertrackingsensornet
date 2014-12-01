@@ -23,7 +23,7 @@ TEST_GROUP(NodeStatusUpdateHTTPRequestHandlerTest) {
                                                                 m_nodes,
                                                                 m_mariadb);
 
-        m_node = new Gateway::Node(1, 0x01);
+        m_node = new CTSNCommon::Node(1, 0x01);
         POINTERS_EQUAL(m_uut->m_nodes, m_nodes);
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
         POINTERS_EQUAL(m_uut->m_mariadb, m_mariadb);
@@ -47,7 +47,7 @@ TEST_GROUP(NodeStatusUpdateHTTPRequestHandlerTest) {
     testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
 
-    Gateway::Node *m_node;
+    CTSNCommon::Node *m_node;
     Gateway::NodeStatusUpdateHTTPRequestHandler *m_uut;
 };
 
@@ -116,13 +116,13 @@ TEST(NodeStatusUpdateHTTPRequestHandlerTest, postBadStatusDataTest) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::Node::INVALID_NODE_STATUS + "0");
+    CHECK_EQUAL(m_response->m_response.str(), CTSNCommon::Node::INVALID_NODE_STATUS + "0");
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
 /// Succes test
 TEST(NodeStatusUpdateHTTPRequestHandlerTest, postSuccess) {
-    Gateway::Node::NodeStatus status = Gateway::Node::NodeStatus::OKAY;
+    CTSNCommon::Node::NodeStatus status = CTSNCommon::Node::NodeStatus::OKAY;
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
   
     m_request->m_ss << Gateway::NodeStatusUpdateHTTPRequestHandler::NODE_FORM_DATA << "="

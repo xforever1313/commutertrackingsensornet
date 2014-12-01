@@ -10,7 +10,7 @@
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/ErrorNumbers.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeContainerInterface.h"
 #include "gateway/MariaDBInterface.h"
 
@@ -44,7 +44,7 @@ void ErrorHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &re
 
 
         ErrorNumber messageType = ErrorMessage::convertStringToMessage(messageStr);
-        Node node = m_nodes->convertStringToNode(nodeStr);
+        CTSNCommon::Node node = m_nodes->convertStringToNode(nodeStr);
 
         std::shared_ptr<ErrorEvent> event(new ErrorEvent(messageType, node, m_mariadb));
         m_eventExecutor->addEvent(event);

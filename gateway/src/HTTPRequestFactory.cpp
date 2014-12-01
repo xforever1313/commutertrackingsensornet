@@ -32,7 +32,7 @@ const std::string HTTPRequestFactory::INVALID_USER_AGENT = "Invalid user";
 
 HTTPRequestFactory::HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown, 
                                        Common::EventExecutorInterface *eventExecutor, 
-                                       UartInterface *uart, 
+                                       CTSNCommon::UartInterface *uart, 
                                        MariaDBInterface *mariadb,
                                        NodeContainerInterface *nodes,
                                        CTSNCommon::HTTPPosterInterface *httpPoster) :

@@ -33,9 +33,9 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         void badModemStatusPacket(const std::vector<std::uint8_t> &badData) override;
          void badTxStatusPacket(const std::vector<std::uint8_t> &badData) override;
         void invalidPacketFrame(uint8_t packetFrame) override;
-        void transmitSuccess(uint8_t numAttempts, XBeeConstants::DiscoveryStatus discovery) override;
-        void transmitFailure(uint8_t numAttempts, XBeeConstants::TxStatus errorNumber,
-                             XBeeConstants::DiscoveryStatus discovery) override;
+        void transmitSuccess(uint8_t numAttempts, CTSNCommon::XBeeConstants::DiscoveryStatus discovery) override;
+        void transmitFailure(uint8_t numAttempts, CTSNCommon::XBeeConstants::TxStatus errorNumber,
+                             CTSNCommon::XBeeConstants::DiscoveryStatus discovery) override;
     private:
         /**
          * \brief dumps all the bad data to hex form... unless
@@ -44,8 +44,8 @@ class XBeeCallbacks : public XBeeCallbackInterface {
          */
         static std::string dumpData(const std::vector<std::uint8_t> &badData);
 
-        static const std::string getDiscoveryString(XBeeConstants::DiscoveryStatus discovery);
-        static const std::string getTxFailureReason(XBeeConstants::TxStatus txStatus);
+        static const std::string getDiscoveryString(CTSNCommon::XBeeConstants::DiscoveryStatus discovery);
+        static const std::string getTxFailureReason(CTSNCommon::XBeeConstants::TxStatus txStatus);
 
         static const char DATA_SEPARATOR; ///< The character that separates the url with the data.
         static const char AMP_REPLACE; ///< The character that is replaced with an &, since XBees cant transmit those >_>

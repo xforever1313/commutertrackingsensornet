@@ -4,7 +4,7 @@
 #include <gmock/gmock.h>
 #include <string>
 
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeContainerInterface.h"
 
 namespace Gateway {
@@ -13,10 +13,10 @@ class MockNodeContainer : public NodeContainerInterface {
     public:
         virtual ~MockNodeContainer(){}
 
-        MOCK_METHOD1(getNodeFromID, const Node(unsigned int));
+        MOCK_METHOD1(getNodeFromID, const CTSNCommon::Node(unsigned int));
         MOCK_METHOD0(refreshNodes, void());
-        MOCK_METHOD1(convertStringToNode, const Node(const std::string&));
-        MOCK_METHOD2(setNodeStatus, bool(unsigned int, Node::NodeStatus));
+        MOCK_METHOD1(convertStringToNode, const CTSNCommon::Node(const std::string&));
+        MOCK_METHOD2(setNodeStatus, bool(unsigned int, CTSNCommon::Node::NodeStatus));
 };
 
 }

@@ -5,7 +5,7 @@
 
 #include "io/ConsoleLogger.h"
 #include "gateway/XBeeCallbackInterface.h"
-#include "gateway/XBeeConstants.h"
+#include "ctsn_common/XBeeConstants.h"
 #include "gateway/XBeeController.h"
 
 namespace Gateway {
@@ -24,11 +24,11 @@ XBeeController::XBeeController(XBeeCallbackInterface *callbacks) :
     m_currentState(STARTUP),
     m_callbacks(callbacks),
     m_escapedCharacter(false),
-    m_packetFrame(XBeeConstants::PacketFrame::UNKNOWN),
-    m_modemStatus(XBeeConstants::ModemStatus::UNKNOWN_STATUS),
+    m_packetFrame(CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN),
+    m_modemStatus(CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS),
     m_transmitRetryCount(0),
-    m_txStatus(XBeeConstants::TxStatus::UNKNOWN_TX_STATUS),
-    m_discoveryStatus(XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS)
+    m_txStatus(CTSNCommon::XBeeConstants::TxStatus::UNKNOWN_TX_STATUS),
+    m_discoveryStatus(CTSNCommon::XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS)
 {
 
 }
@@ -126,7 +126,7 @@ void XBeeController::handleData() {
 
 void XBeeController::handleStartupState() {
     std::uint8_t data = getNextByte();
-    if (data == XBeeConstants::START_CHARACTER) {
+    if (data == CTSNCommon::XBeeConstants::START_CHARACTER) {
         m_currentState = MSG_START;
         m_bytesProcessed.push_back(data);
         ++m_nonEscapedBytesProcessed;
@@ -138,13 +138,13 @@ void XBeeController::handleMessageStartState() {
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == CTSNCommon::XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
     }
     // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == CTSNCommon::XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
@@ -152,7 +152,7 @@ void XBeeController::handleMessageStartState() {
         // all escaped values are xored by.
         if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ XBeeConstants::ESCAPE_XOR;
+            data = data ^ CTSNCommon::XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -172,13 +172,13 @@ void XBeeController::handleGotLength1State() {
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == CTSNCommon::XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
     }
     // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == CTSNCommon::XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
@@ -186,7 +186,7 @@ void XBeeController::handleGotLength1State() {
         // all escaped values are xored by.
         if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ XBeeConstants::ESCAPE_XOR;
+            data = data ^ CTSNCommon::XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -209,7 +209,7 @@ void XBeeController::handleGotLength2State() {
     // If anything else, this is an invalid message and
     // return to the start state. An escape character is
     // invalid here, so no need to check for that.
-    if (data == XBeeConstants::START_CHARACTER) {
+    if (data == CTSNCommon::XBeeConstants::START_CHARACTER) {
         handleIncompleteMessage();
     }
     else {
@@ -217,15 +217,15 @@ void XBeeController::handleGotLength2State() {
         m_bytesProcessed.push_back(data);
         m_checkSumTotal += data;
         ++m_lengthCounter;
-        if (data == XBeeConstants::PacketFrame::RECEIVE_PACKET){
+        if (data == CTSNCommon::XBeeConstants::PacketFrame::RECEIVE_PACKET){
             m_currentState = IGNORE_OPTIONS;
-            m_packetFrame = static_cast<XBeeConstants::PacketFrame>(data);
+            m_packetFrame = static_cast<CTSNCommon::XBeeConstants::PacketFrame>(data);
         }
-        else if (data == XBeeConstants::PacketFrame::MODEM_STATUS) {
+        else if (data == CTSNCommon::XBeeConstants::PacketFrame::MODEM_STATUS) {
             m_currentState = PARSE_MODEM_STATUS;
-            m_packetFrame = static_cast<XBeeConstants::PacketFrame>(data);
+            m_packetFrame = static_cast<CTSNCommon::XBeeConstants::PacketFrame>(data);
         }
-        else if (data == XBeeConstants::PacketFrame::TRANSMIT_STATUS) {
+        else if (data == CTSNCommon::XBeeConstants::PacketFrame::TRANSMIT_STATUS) {
             // Ensure the length is 7, otherwise the packet is invalid
             if (m_dataLength != 0x07) {
                 m_callbacks->badTxStatusPacket(m_bytesProcessed);
@@ -233,7 +233,7 @@ void XBeeController::handleGotLength2State() {
             }
             else {
                 m_currentState = IGNORE_TX_STATUS_OPTIONS;
-                m_packetFrame = static_cast<XBeeConstants::PacketFrame>(data);
+                m_packetFrame = static_cast<CTSNCommon::XBeeConstants::PacketFrame>(data);
             }
         }
         else {
@@ -259,7 +259,7 @@ void XBeeController::handleParseModemStatusState() {
          reset();
     }
     else {
-        m_modemStatus = static_cast<XBeeConstants::ModemStatus>(data);
+        m_modemStatus = static_cast<CTSNCommon::XBeeConstants::ModemStatus>(data);
         m_currentState = CHECK_CHECKSUM;
     }
 }
@@ -269,7 +269,7 @@ void XBeeController::handleIgnoreOptionsState() {
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == CTSNCommon::XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
 
@@ -278,7 +278,7 @@ void XBeeController::handleIgnoreOptionsState() {
     }
     // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == CTSNCommon::XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
@@ -286,7 +286,7 @@ void XBeeController::handleIgnoreOptionsState() {
         // all escaped values are xored by.
         if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ XBeeConstants::ESCAPE_XOR;
+            data = data ^ CTSNCommon::XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -305,7 +305,7 @@ void XBeeController::handleIgnoreTxStatusOptions() {
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == CTSNCommon::XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
 
@@ -314,7 +314,7 @@ void XBeeController::handleIgnoreTxStatusOptions() {
     }
     // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == CTSNCommon::XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
@@ -322,7 +322,7 @@ void XBeeController::handleIgnoreTxStatusOptions() {
         // all escaped values are xored by.
         if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ XBeeConstants::ESCAPE_XOR;
+            data = data ^ CTSNCommon::XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -342,7 +342,7 @@ void XBeeController::handleParsePayloadState() {
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == CTSNCommon::XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
         // Escaped characters do not get added to the checksum
@@ -351,7 +351,7 @@ void XBeeController::handleParsePayloadState() {
     }
     // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == CTSNCommon::XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
@@ -359,7 +359,7 @@ void XBeeController::handleParsePayloadState() {
         // all escaped values are xored by.
         if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ XBeeConstants::ESCAPE_XOR;
+            data = data ^ CTSNCommon::XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -383,7 +383,7 @@ void XBeeController::handleTxParseTxRetryState() {
 
     // If we are not escaped and we get an escaped character
     // set the escaped character flag true
-    if ((data == XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
+    if ((data == CTSNCommon::XBeeConstants::ESCAPE_CHARACTER) && !m_escapedCharacter) {
         m_escapedCharacter = true;
         m_bytesProcessed.push_back(data);
         // Escaped characters do not get added to the checksum
@@ -392,7 +392,7 @@ void XBeeController::handleTxParseTxRetryState() {
     }
     // If we get a start character that is not escaped,
     // we got an incomplete message
-    else if ((data == XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
+    else if ((data == CTSNCommon::XBeeConstants::START_CHARACTER) && !m_escapedCharacter) {
         handleIncompleteMessage();
     }
     else {
@@ -400,7 +400,7 @@ void XBeeController::handleTxParseTxRetryState() {
         // all escaped values are xored by.
         if (m_escapedCharacter) {
             m_escapedCharacter = false;
-            data = data ^ XBeeConstants::ESCAPE_XOR;
+            data = data ^ CTSNCommon::XBeeConstants::ESCAPE_XOR;
         }
 
         m_bytesProcessed.push_back(data);
@@ -417,7 +417,7 @@ void XBeeController::handleTxParseTxRetryState() {
 void XBeeController::handleTxParseStatusState() {
     std::uint8_t data = getNextByte();
     
-    if (data == XBeeConstants::START_CHARACTER) {
+    if (data == CTSNCommon::XBeeConstants::START_CHARACTER) {
          handleIncompleteMessage();
     }
     else {
@@ -426,7 +426,7 @@ void XBeeController::handleTxParseStatusState() {
         ++m_lengthCounter;
         m_checkSumTotal += data;
 
-        m_txStatus = static_cast<XBeeConstants::TxStatus>(data);
+        m_txStatus = static_cast<CTSNCommon::XBeeConstants::TxStatus>(data);
     
         m_currentState = TX_PARSE_DISCOVERY;
     }
@@ -435,7 +435,7 @@ void XBeeController::handleTxParseStatusState() {
 void XBeeController::handleTxParseDiscoveryState() {
     std::uint8_t data = getNextByte();
 
-    if (data == XBeeConstants::START_CHARACTER) {
+    if (data == CTSNCommon::XBeeConstants::START_CHARACTER) {
          handleIncompleteMessage();
     }
     else {
@@ -444,7 +444,7 @@ void XBeeController::handleTxParseDiscoveryState() {
         ++m_lengthCounter;
         m_checkSumTotal += data;
 
-        m_discoveryStatus = static_cast<XBeeConstants::DiscoveryStatus>(data);
+        m_discoveryStatus = static_cast<CTSNCommon::XBeeConstants::DiscoveryStatus>(data);
     
         m_currentState = CHECK_CHECKSUM;
     }
@@ -455,15 +455,15 @@ void XBeeController::handleCheckCheckSumState() {
 
     // If we got the escape character from the last state,
     // xor it so we get the right checksum.
-    if (data == XBeeConstants::ESCAPE_CHARACTER) {
+    if (data == CTSNCommon::XBeeConstants::ESCAPE_CHARACTER) {
         data = getNextByte(); // Ditch the escaped character
-        data = data ^ XBeeConstants::ESCAPE_XOR;
+        data = data ^ CTSNCommon::XBeeConstants::ESCAPE_XOR;
     }
 
     if ((0xff - m_checkSumTotal) == data) {
         handleSuccessfulParse();
     }
-    else if (data == XBeeConstants::START_CHARACTER){
+    else if (data == CTSNCommon::XBeeConstants::START_CHARACTER){
         // Premature start character
         handleIncompleteMessage();
         return; // Return early so we don't reset twice.
@@ -479,22 +479,22 @@ void XBeeController::handleCheckCheckSumState() {
 
 void XBeeController::handleSuccessfulParse() {
     switch(m_packetFrame) {
-        case XBeeConstants::PacketFrame::RECEIVE_PACKET:
+        case CTSNCommon::XBeeConstants::PacketFrame::RECEIVE_PACKET:
             m_callbacks->successfulParse(m_payload);
             break;
 
-        case XBeeConstants::PacketFrame::MODEM_STATUS:
+        case CTSNCommon::XBeeConstants::PacketFrame::MODEM_STATUS:
             switch(m_modemStatus) {
-                case XBeeConstants::ModemStatus::HARDWARE_RESET:
+                case CTSNCommon::XBeeConstants::ModemStatus::HARDWARE_RESET:
                     m_callbacks->hardwareReset();
                     break;
-                case XBeeConstants::ModemStatus::WATCHDOG_TIMER_RESET:
+                case CTSNCommon::XBeeConstants::ModemStatus::WATCHDOG_TIMER_RESET:
                     m_callbacks->watchdogTimerReset();
                     break;
-                case XBeeConstants::ModemStatus::NETWORK_WENT_TO_SLEEP:
+                case CTSNCommon::XBeeConstants::ModemStatus::NETWORK_WENT_TO_SLEEP:
                     m_callbacks->networkWentToSleep();
                     break;
-                case XBeeConstants::ModemStatus::NETWORK_WOKE_UP:
+                case CTSNCommon::XBeeConstants::ModemStatus::NETWORK_WOKE_UP:
                     m_callbacks->networkWokeUp();
                     break;
                 default:
@@ -503,8 +503,8 @@ void XBeeController::handleSuccessfulParse() {
             };
             break;
 
-        case XBeeConstants::TRANSMIT_STATUS:
-            if (m_txStatus == XBeeConstants::TxStatus::SUCCESS) {
+        case CTSNCommon::XBeeConstants::TRANSMIT_STATUS:
+            if (m_txStatus == CTSNCommon::XBeeConstants::TxStatus::SUCCESS) {
                 m_callbacks->transmitSuccess(m_transmitRetryCount, m_discoveryStatus);
             }
             else {
@@ -524,7 +524,7 @@ void XBeeController::handleSuccessfulParse() {
 void XBeeController::handleIncompleteMessage() {
     m_callbacks->incompleteMessage(m_bytesProcessed);
     reset();
-    m_bytesProcessed.push_back(XBeeConstants::START_CHARACTER);
+    m_bytesProcessed.push_back(CTSNCommon::XBeeConstants::START_CHARACTER);
     m_currentState = MSG_START;
 }
 
@@ -537,11 +537,11 @@ void XBeeController::reset() {
     m_escapedCharacter = false;
     m_nonEscapedBytesProcessed = 0;
     m_lengthCounter = 0;
-    m_packetFrame = XBeeConstants::PacketFrame::UNKNOWN;
-    m_modemStatus = XBeeConstants::ModemStatus::UNKNOWN_STATUS;
+    m_packetFrame = CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN;
+    m_modemStatus = CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS;
     m_transmitRetryCount = 0;
-    m_txStatus = XBeeConstants::TxStatus::UNKNOWN_TX_STATUS;
-    m_discoveryStatus = XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS;
+    m_txStatus = CTSNCommon::XBeeConstants::TxStatus::UNKNOWN_TX_STATUS;
+    m_discoveryStatus = CTSNCommon::XBeeConstants::DiscoveryStatus::UNKNOWN_DISCOVERY_STATUS;
 }
 
 uint8_t XBeeController::getNextByte() {

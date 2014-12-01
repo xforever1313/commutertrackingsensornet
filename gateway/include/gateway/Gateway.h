@@ -9,7 +9,7 @@
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeContainerInterface.h"
 #include "ctsn_common/ShutdownInterface.h"
-#include "gateway/UartInterface.h"
+#include "ctsn_common/UartInterface.h"
 #include "gateway/UartRecvThread.h"
 #include "gateway/XBeeCallbackInterface.h"
 #include "gateway/XBeeController.h"
@@ -39,7 +39,7 @@ class Gateway : public CTSNCommon::ShutdownInterface {
         std::istream *m_input;
         Common::IO::LoggerBase *m_output;
 
-        UartInterface *m_uart;
+        CTSNCommon::UartInterface *m_uart;
         XBeeCallbackInterface *m_xbeeCallbacks;
         XBeeController *m_xbeeController;
         UartRecvThread *m_recvThread;

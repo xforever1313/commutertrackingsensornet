@@ -4,7 +4,7 @@
 #define private public
 #define protected public
 
-#include "gateway/Uart.h"
+#include "ctsn_common/Uart.h"
 #include "gateway/UartTxEvent.h"
 #include "io/StringLogger.h"
 #include "MockUart.h"
@@ -14,7 +14,7 @@ TEST_GROUP(UartTxEventTest) {
         m_message = "Message to send";
         m_errorMessage = "ERROR!!!!";
         m_logger = new Common::IO::StringLogger();
-        m_mockUart = new testing::StrictMock<Gateway::MockUart>();
+        m_mockUart = new testing::StrictMock<CTSNCommon::MockUart>();
         m_uut = new Gateway::UartTxEvent(m_message, m_mockUart, *m_logger);
     }
 
@@ -27,7 +27,7 @@ TEST_GROUP(UartTxEventTest) {
     std::string m_message;
     std::string m_errorMessage;
     Common::IO::StringLogger *m_logger;
-    testing::StrictMock<Gateway::MockUart> *m_mockUart;
+    testing::StrictMock<CTSNCommon::MockUart> *m_mockUart;
     Gateway::UartTxEvent *m_uut;
 };
 

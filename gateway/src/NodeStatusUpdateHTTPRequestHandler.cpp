@@ -44,9 +44,9 @@ void NodeStatusUpdateHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServer
         const std::string &nodeStr = form[NODE_FORM_DATA];
         const std::string &statusStr = form[STATUS_FORM_DATA];
 
-        const Node::NodeStatus status = 
-            Node::convertStringToNodeStatus(statusStr);
-        const Node node = m_nodes->convertStringToNode(nodeStr);
+        const CTSNCommon::Node::NodeStatus status = 
+            CTSNCommon::Node::convertStringToNodeStatus(statusStr);
+        const CTSNCommon::Node node = m_nodes->convertStringToNode(nodeStr);
 
         std::shared_ptr<NodeStatusUpdateEvent> event (
             new NodeStatusUpdateEvent(status, node.getID(), m_nodes, m_eventExecutor, m_mariadb));

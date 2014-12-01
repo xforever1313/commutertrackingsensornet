@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "EventExecutorInterface.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/MariaDBInterface.h"
@@ -51,12 +51,12 @@ void NodeCheckEvent::execute() {
 
         for (size_t i = 0; i < nodeIDs.size(); ++i) {
             try {
-                Node node = m_nodes->convertStringToNode(nodeIDs[i]);
+                CTSNCommon::Node node = m_nodes->convertStringToNode(nodeIDs[i]);
                 // Dont do anything if the id is 1.  1 is the gateway,
                 // and an external process handles it.
-                if ((node.getID() != 1) && (node.getStatus() != Node::NodeStatus::OFFLINE)) {
+                if ((node.getID() != 1) && (node.getStatus() != CTSNCommon::Node::NodeStatus::OFFLINE)) {
                     bool changed = m_nodes->setNodeStatus(node.getID(),
-                                                          Node::NodeStatus::UNKNOWN);
+                                                          CTSNCommon::Node::NodeStatus::UNKNOWN);
 
                     // If the status changed, alert the admins
                     if (changed) {

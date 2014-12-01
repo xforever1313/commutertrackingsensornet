@@ -9,9 +9,8 @@
 #include "gateway/MariaDBWrapper.h"
 #include "gateway/NodeContainer.h"
 #include "gateway/TextMessageEvent.h"
-#include "gateway/Uart.h"
+#include "ctsn_common/Uart.h"
 #include "gateway/UartRecvThread.h"
-#include "gateway/UartTxEvent.h"
 #include "gateway/XBeeCallbacks.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "io/InputReader.h"
@@ -34,7 +33,7 @@ Gateway::Gateway() :
     m_eventExecutor(new Common::EventExecutor),
     m_input(&std::cin),
     m_output(&Common::IO::ConsoleLogger::out),
-    m_uart(new Uart(RxSignal)),
+    m_uart(new CTSNCommon::Uart(RxSignal)),
     m_xbeeCallbacks(new XBeeCallbacks()),
     m_xbeeController(new XBeeController(m_xbeeCallbacks)),
     m_recvThread(new UartRecvThread(m_uart, m_xbeeController)),

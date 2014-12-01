@@ -3,7 +3,7 @@
 #include <UnitTest.h>
 
 #include "gateway/ErrorEvent.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeStatusUpdateEvent.h"
 #include "io/StringLogger.h"
 #include "MockEventExecutor.h"
@@ -27,7 +27,7 @@ TEST_GROUP(GetNodeStatusEventTest) {
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
         POINTERS_EQUAL(m_uut->m_mariadb, m_mariadb);
 
-        m_node = new Gateway::Node(1, 0x01);
+        m_node = new CTSNCommon::Node(1, 0x01);
     }
 
     TEST_TEARDOWN() {
@@ -39,11 +39,11 @@ TEST_GROUP(GetNodeStatusEventTest) {
         delete m_node;
     }
 
-    static const Gateway::Node::NodeStatus nodeStatus = 
-                    Gateway::Node::NodeStatus::OKAY;
+    static const CTSNCommon::Node::NodeStatus nodeStatus = 
+                    CTSNCommon::Node::NodeStatus::OKAY;
     static const unsigned int nodeID = 1;
 
-    Gateway::Node *m_node;
+    CTSNCommon::Node *m_node;
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
@@ -66,7 +66,7 @@ TEST(GetNodeStatusEventTest, SuccessTestNoChange) {
 TEST(GetNodeStatusEventTest, SuccessTestOkayChange) {
 
     EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
-                                        Gateway::Node::NodeStatus::OKAY))
+                                        CTSNCommon::Node::NodeStatus::OKAY))
         .WillOnce(testing::Return(true));
 
     EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
@@ -94,10 +94,10 @@ TEST(GetNodeStatusEventTest, SuccessTestOkayChange) {
 }
 
 TEST(GetNodeStatusEventTest, SuccessTestOfflineChange) {
-    m_uut->m_status = Gateway::Node::NodeStatus::OFFLINE;
+    m_uut->m_status = CTSNCommon::Node::NodeStatus::OFFLINE;
 
     EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
-                                        Gateway::Node::NodeStatus::OFFLINE))
+                                        CTSNCommon::Node::NodeStatus::OFFLINE))
         .WillOnce(testing::Return(true));
 
     EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
@@ -125,10 +125,10 @@ TEST(GetNodeStatusEventTest, SuccessTestOfflineChange) {
 }
 
 TEST(GetNodeStatusEventTest, SuccessTestLowBatteryChange) {
-    m_uut->m_status = Gateway::Node::NodeStatus::LOW_BATTERY;
+    m_uut->m_status = CTSNCommon::Node::NodeStatus::LOW_BATTERY;
 
     EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
-                                        Gateway::Node::NodeStatus::LOW_BATTERY))
+                                        CTSNCommon::Node::NodeStatus::LOW_BATTERY))
         .WillOnce(testing::Return(true));
 
     EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
@@ -156,10 +156,10 @@ TEST(GetNodeStatusEventTest, SuccessTestLowBatteryChange) {
 }
 
 TEST(GetNodeStatusEventTest, SuccessTestCriticalBatteryChange) {
-    m_uut->m_status = Gateway::Node::NodeStatus::BATTERY_CRITICAL;
+    m_uut->m_status = CTSNCommon::Node::NodeStatus::BATTERY_CRITICAL;
 
     EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
-                                        Gateway::Node::NodeStatus::BATTERY_CRITICAL))
+                                        CTSNCommon::Node::NodeStatus::BATTERY_CRITICAL))
         .WillOnce(testing::Return(true));
 
     EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
@@ -187,10 +187,10 @@ TEST(GetNodeStatusEventTest, SuccessTestCriticalBatteryChange) {
 }
 
 TEST(GetNodeStatusEventTest, SuccessTestUnknownChange) {
-    m_uut->m_status = Gateway::Node::NodeStatus::UNKNOWN;
+    m_uut->m_status = CTSNCommon::Node::NodeStatus::UNKNOWN;
 
     EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
-                                        Gateway::Node::NodeStatus::UNKNOWN))
+                                        CTSNCommon::Node::NodeStatus::UNKNOWN))
         .WillOnce(testing::Return(true));
 
     EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))
@@ -218,10 +218,10 @@ TEST(GetNodeStatusEventTest, SuccessTestUnknownChange) {
 }
 
 TEST(GetNodeStatusEventTest, SuccessTestUncommonChange) {
-    m_uut->m_status = Gateway::Node::NodeStatus::DOWN;
+    m_uut->m_status = CTSNCommon::Node::NodeStatus::DOWN;
 
     EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
-                                        Gateway::Node::NodeStatus::DOWN))
+                                        CTSNCommon::Node::NodeStatus::DOWN))
         .WillOnce(testing::Return(true));
 
     EXPECT_CALL(*m_nodes, getNodeFromID(nodeID))

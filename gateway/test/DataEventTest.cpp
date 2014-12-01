@@ -5,14 +5,14 @@
 
 #include "gateway/DataEvent.h"
 #include "ctsn_common/DataResultTypes.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "io/StringLogger.h"
 #include "MockMariaDB.h"
 
 TEST_GROUP(DataEventTest) {
 
     TEST_SETUP() {
-        m_node = new Gateway::Node(3, 0x03);
+        m_node = new CTSNCommon::Node(3, 0x03);
         m_type = CTSNCommon::DataResultType::WALKER;
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_errLogger = new Common::IO::StringLogger();
@@ -31,7 +31,7 @@ TEST_GROUP(DataEventTest) {
         delete m_node;
     }
 
-    Gateway::Node *m_node;
+    CTSNCommon::Node *m_node;
     CTSNCommon::DataResultType m_type;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     Common::IO::StringLogger *m_errLogger;

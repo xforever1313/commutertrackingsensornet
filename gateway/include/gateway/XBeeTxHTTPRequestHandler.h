@@ -8,14 +8,14 @@
 #include "EventExecutorInterface.h"
 #include "ctsn_common/BaseHTTPRequestHandler.h"
 #include "gateway/NodeContainerInterface.h"
-#include "gateway/UartInterface.h"
+#include "ctsn_common/UartInterface.h"
 
 namespace Gateway {
 
 class XBeeTxHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler { 
     public:
         XBeeTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor, 
-                                 UartInterface *uart,
+                                 CTSNCommon::UartInterface *uart,
                                  NodeContainerInterface *nodes);
         ~XBeeTxHTTPRequestHandler();
 
@@ -36,7 +36,7 @@ class XBeeTxHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
         XBeeTxHTTPRequestHandler(const XBeeTxHTTPRequestHandler&);
 
         Common::EventExecutorInterface *m_eventExecutor;
-        UartInterface *m_uart;
+        CTSNCommon::UartInterface *m_uart;
         NodeContainerInterface *m_nodes;
 };
 

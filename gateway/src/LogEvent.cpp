@@ -4,12 +4,12 @@
 #include "gateway/ErrorNumbers.h"
 #include "gateway/LogEvent.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "io/LoggerBase.h"
 
 namespace Gateway {
 
-LogEvent::LogEvent(ErrorNumber error, const Node &node, MariaDBInterface *mariadb,
+LogEvent::LogEvent(ErrorNumber error, const CTSNCommon::Node &node, MariaDBInterface *mariadb,
                    Common::IO::LoggerBase &errLogger /* = Common::IO::ConosoleLogger::err*/) :
     m_errorNumber(error),
     m_node(node),

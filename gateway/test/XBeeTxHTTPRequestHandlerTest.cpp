@@ -4,7 +4,7 @@
 #include "UnitTest.h"
 
 #include "EventInterface.h"
-#include "gateway/XBeeTxEvent.h"
+#include "ctsn_common/XBeeTxEvent.h"
 #include "gateway/XBeeTxHTTPRequestHandler.h"
 #include "MockEventExecutor.h"
 #include "MockHTTPServerRequest.h"
@@ -21,7 +21,7 @@ TEST_GROUP(XBeeTxHTTPRequestHandlerTest) {
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>;
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>;
-        m_uart = new testing::StrictMock<Gateway::MockUart>;
+        m_uart = new testing::StrictMock<CTSNCommon::MockUart>;
         m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>;
         m_uut = new Gateway::XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);
 
@@ -47,7 +47,7 @@ TEST_GROUP(XBeeTxHTTPRequestHandlerTest) {
     testing::StrictMock<MockPoco::Net::MockHTTPServerResponse> *m_response;
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
-    testing::StrictMock<Gateway::MockUart> *m_uart;
+    testing::StrictMock<CTSNCommon::MockUart> *m_uart;
     testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
     Gateway::XBeeTxHTTPRequestHandler *m_uut;
 
@@ -55,7 +55,7 @@ TEST_GROUP(XBeeTxHTTPRequestHandlerTest) {
 
 ///Post Tests
 TEST(XBeeTxHTTPRequestHandlerTest, postSuccessTest) {
-    Gateway::Node node(m_nodeNumber, m_nodeNumber);
+    CTSNCommon::Node node(m_nodeNumber, m_nodeNumber);
 
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
 
@@ -73,7 +73,7 @@ TEST(XBeeTxHTTPRequestHandlerTest, postSuccessTest) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    Gateway::XBeeTxEvent *xbeeEvent = dynamic_cast<Gateway::XBeeTxEvent*>(event.get());
+    CTSNCommon::XBeeTxEvent *xbeeEvent = dynamic_cast<CTSNCommon::XBeeTxEvent*>(event.get());
     CHECK_EQUAL(xbeeEvent->m_message, m_message);
     POINTERS_EQUAL(xbeeEvent->m_uart, m_uart);
     CHECK_EQUAL(xbeeEvent->m_node.getID(), node.getID());

@@ -4,12 +4,12 @@
 #include "gateway/DataEvent.h"
 #include "ctsn_common/DataResultTypes.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "io/LoggerBase.h"
 
 namespace Gateway {
 
-DataEvent::DataEvent(const Node &node,
+DataEvent::DataEvent(const CTSNCommon::Node &node,
                      CTSNCommon::DataResultType type,
                      MariaDBInterface *mariadb,
                      Common::IO::LoggerBase &errLogger /* = Common::IO::ConsoleLogger::err*/) :

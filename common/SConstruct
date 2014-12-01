@@ -57,6 +57,13 @@ sourceFiles = filterSourceFiles(glob.glob(os.path.join(srcDir, '*.cpp')),
 sourceTestFiles = glob.glob(os.path.join(testDir, '*.cpp')) + [getTestMain(commonPath)] + \
                   glob.glob(os.path.join(testDir, srcDir, '*.cpp'))
 
+if (sys.platform == "win32"):
+    sourceFiles += glob.glob(os.path.join(srcDir, 'windows/*.cpp'))
+    sourceTestFiles += glob.glob(os.path.join(testDir, 'windows/*.cpp'))
+else:
+    sourceFiles += glob.glob(os.path.join(srcDir, 'linux/*.cpp'))
+    sourceTestFiles += glob.glob(os.path.join(testDir, 'linux/*.cpp'))
+
 #Remove any files that dont need to be tested.
 allTestSourceFiles = filterSourceFiles(sourceFiles + sourceTestFiles, [])
 

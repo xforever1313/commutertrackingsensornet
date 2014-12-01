@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "gateway/MariaDBWrapper.h"
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 #include "gateway/NodeContainer.h"
 #include "SMutex.h"
 
@@ -59,7 +59,7 @@ void NodeContainer::refreshNodes() {
     }
 
     //Time to iterate through the results and create nodes.
-    std::map <unsigned int, Node> newNodes;
+    std::map <unsigned int, CTSNCommon::Node> newNodes;
     for (size_t i = 0; i < ids.size(); ++i) {
         size_t idStringSize = 0;
         size_t addressStringSize = 0;
@@ -84,16 +84,16 @@ void NodeContainer::refreshNodes() {
             throw std::invalid_argument(INVALID_DATABASE_DATA + " id: " + ids[i] + " address: " + addresses[i]);
         }
 
-        Node::NodeStatus status;
+        CTSNCommon::Node::NodeStatus status;
         try {
-            status = Node::convertStringToNodeStatus(statuses[i]);
+            status = CTSNCommon::Node::convertStringToNodeStatus(statuses[i]);
         }
         catch (const std::exception &e) {
             throw std::invalid_argument(INVALID_DATABASE_DATA + " Bad Status: " + statuses[i]);
         }
 
-        Node newNode(id, address, status);
-        newNodes.insert(std::pair<unsigned int, Node> (newNode.getID(), newNode));
+        CTSNCommon::Node newNode(id, address, status);
+        newNodes.insert(std::pair<unsigned int, CTSNCommon::Node> (newNode.getID(), newNode));
     }
 
     //remember to lock the mutex!
@@ -102,13 +102,13 @@ void NodeContainer::refreshNodes() {
     m_nodes.insert(newNodes.begin(), newNodes.end());
 }
 
-const Node NodeContainer::getNodeFromID(unsigned int id) {
+const CTSNCommon::Node NodeContainer::getNodeFromID(unsigned int id) {
     std::lock_guard<OS::SMutex> lock(m_nodeMutex);
     return m_nodes.at(id);
 }
 
-const Node NodeContainer::convertStringToNode(const std::string &nodeString) {
-    Node node (0, 0);
+const CTSNCommon::Node NodeContainer::convertStringToNode(const std::string &nodeString) {
+    CTSNCommon::Node node (0, 0);
     try {
         size_t stringSize;
         unsigned int nodeNumber = std::stol(nodeString, &stringSize);
@@ -133,13 +133,13 @@ const Node NodeContainer::convertStringToNode(const std::string &nodeString) {
 
 void NodeContainer::clearNodes() {
     m_nodes.clear();
-    m_nodes.insert(std::pair<unsigned int, Node>(0, Node(0,
+    m_nodes.insert(std::pair<unsigned int, CTSNCommon::Node>(0, CTSNCommon::Node(0,
                                                          BROADCAST_ADDRESS,
-                                                         Node::NodeStatus::OKAY)));
+                                                         CTSNCommon::Node::NodeStatus::OKAY)));
 }
 
 bool NodeContainer::setNodeStatus(unsigned int id, 
-                                  Node::NodeStatus newStatus) {
+                                  CTSNCommon::Node::NodeStatus newStatus) {
 
     // No need to trouble the database if the passed in status
     // is the same as what is saved.

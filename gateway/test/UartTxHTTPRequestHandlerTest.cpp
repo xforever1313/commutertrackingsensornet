@@ -20,7 +20,7 @@ TEST_GROUP(UartTxHTTPRequestHandlerTest) {
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>;
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>;
-        m_uart = new testing::StrictMock<Gateway::MockUart>;
+        m_uart = new testing::StrictMock<CTSNCommon::MockUart>;
         m_uut = new Gateway::UartTxHTTPRequestHandler(m_eventExecutor, m_uart);
 
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
@@ -40,7 +40,7 @@ TEST_GROUP(UartTxHTTPRequestHandlerTest) {
     testing::StrictMock<MockPoco::Net::MockHTTPServerResponse> *m_response;
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
-    testing::StrictMock<Gateway::MockUart> *m_uart;
+    testing::StrictMock<CTSNCommon::MockUart> *m_uart;
     Gateway::UartTxHTTPRequestHandler *m_uut;
 };
 

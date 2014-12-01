@@ -45,7 +45,7 @@ void DataHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &req
         const std::string &nodeStr = form[NODE_FORM_DATA];
         const std::string &typeStr = form[RESULT_TYPE_FORM_DATA];
 
-        const Node node = m_nodes->convertStringToNode(nodeStr);
+        const CTSNCommon::Node node = m_nodes->convertStringToNode(nodeStr);
         const CTSNCommon::DataResultType type = CTSNCommon::convertStringToResultType(typeStr);
 
         std::shared_ptr<DataEvent> event (new DataEvent(node, type, m_mariadb));

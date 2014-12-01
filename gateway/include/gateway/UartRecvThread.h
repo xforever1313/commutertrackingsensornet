@@ -1,7 +1,7 @@
 #ifndef UARTRECVTHREAD_H
 #define UARTRECVTHREAD_H
 
-#include "gateway/UartInterface.h"
+#include "ctsn_common/UartInterface.h"
 #include "gateway/UartRecvCallbackInterface.h"
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
@@ -16,7 +16,7 @@ class UartRecvThread : public OS::SThread {
         /**
          * \note Constructor only constructs object, start() must be called before the thread begins.
          */
-        UartRecvThread(UartInterface *uart,
+        UartRecvThread(CTSNCommon::UartInterface *uart,
                        UartRecvCallbackInterface *callback,
                        Common::IO::LoggerBase &errorLogger = Common::IO::ConsoleLogger::err);
 
@@ -40,7 +40,7 @@ class UartRecvThread : public OS::SThread {
         UartRecvThread() = delete;
         void run() override;
 
-        UartInterface *m_uart;
+        CTSNCommon::UartInterface *m_uart;
         UartRecvCallbackInterface *m_callback;
         Common::IO::LoggerBase &m_errorLogger;
         OS::SSemaphore m_dataSemaphore;

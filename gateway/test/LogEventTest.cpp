@@ -11,7 +11,7 @@
 
 TEST_GROUP(LogEventTest) {
     TEST_SETUP() {
-        m_node = new Gateway::Node(1, 0x01);
+        m_node = new CTSNCommon::Node(1, 0x01);
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_errorLogger = new Common::IO::StringLogger();
         m_uut = new Gateway::LogEvent(Gateway::ErrorNumber::TEST_ERROR, *m_node, m_mariadb, *m_errorLogger);
@@ -24,7 +24,7 @@ TEST_GROUP(LogEventTest) {
         delete m_node;
     }
 
-    Gateway::Node *m_node;
+    CTSNCommon::Node *m_node;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     Common::IO::StringLogger *m_errorLogger;
     Gateway::LogEvent *m_uut;

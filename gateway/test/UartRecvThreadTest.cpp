@@ -16,7 +16,7 @@ TEST_GROUP(UartRecvThreadTest) {
         m_data = {0x00, 0x01, 0x02, 0xFF};
 
         m_errorLogger = new Common::IO::StringLogger();
-        m_mockUart = new testing::StrictMock<Gateway::MockUart>();
+        m_mockUart = new testing::StrictMock<CTSNCommon::MockUart>();
         m_callback = new testing::StrictMock<Gateway::MockUartRecvCallback>();
         m_uut = new Gateway::UartRecvThread(m_mockUart, m_callback,
                                             *m_errorLogger);
@@ -35,7 +35,7 @@ TEST_GROUP(UartRecvThreadTest) {
     std::vector<std::uint8_t> m_data;
 
     Common::IO::StringLogger *m_errorLogger;
-    testing::StrictMock<Gateway::MockUart> *m_mockUart;
+    testing::StrictMock<CTSNCommon::MockUart> *m_mockUart;
     testing::StrictMock<Gateway::MockUartRecvCallback> *m_callback;
     Gateway::UartRecvThread *m_uut;
 };
