@@ -1,7 +1,9 @@
 #include <cstdint>
+#include <stdexcept>
 #include <mutex>
 #include <vector>
 
+#include "io/ConsoleLogger.h"
 #include "gateway/XBeeCallbackInterface.h"
 #include "gateway/XBeeConstants.h"
 #include "gateway/XBeeController.h"
@@ -68,7 +70,12 @@ void XBeeController::run() {
 
         // Ensure the wait wasn't because we shutdown.
         if (!m_dataSemaphore.isShutdown()) {
-            handleData();
+            try {
+                handleData();
+            }
+            catch (const std::runtime_error &e) {
+                Common::IO::ConsoleLogger::err.writeLineWithTimeStamp(e.what());
+            }
         }
     }while (isAlive());
 }
@@ -154,8 +161,8 @@ void XBeeController::handleMessageStartState() {
         // Do not increment m_lengthCounter since we are not past the length states yet.
 
         //Get the MSB of the length
-        data = data << 8;
-        m_dataLength |= data;
+        std::uint16_t expandedData = data << 8;
+        m_dataLength |= expandedData;
         m_currentState = GOT_LENGTH1;
     }
 }
@@ -539,6 +546,9 @@ void XBeeController::reset() {
 
 uint8_t XBeeController::getNextByte() {
     std::lock_guard<OS::SMutex> lock(m_queueMutex);
+    if (m_data.empty()) {
+        throw std::runtime_error("Empty Queue!");
+    }
     std::uint8_t data = m_data.front();
     m_data.pop();
     return data;
