@@ -2,9 +2,9 @@
 #include <stdexcept>
 #include <string>
 
-#include "gateway/Node.h"
+#include "ctsn_common/Node.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 const std::string Node::INVALID_NODE_STATUS = "Invalid NodeStatusString - ";
 

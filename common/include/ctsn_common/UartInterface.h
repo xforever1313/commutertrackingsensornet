@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class UartInterface {
     public:

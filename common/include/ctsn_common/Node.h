@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class Node {
     public:

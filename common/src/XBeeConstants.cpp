@@ -1,8 +1,8 @@
 #include <cstdint>
 
-#include "gateway/XBeeConstants.h"
+#include "ctsn_common/XBeeConstants.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 const uint8_t XBeeConstants::START_CHARACTER = '~';
 const uint8_t XBeeConstants::ESCAPE_CHARACTER = 0x7D;

@@ -6,12 +6,12 @@
 #include <vector>
 
 #include "EventInterface.h"
-#include "gateway/Node.h"
-#include "gateway/UartInterface.h"
+#include "ctsn_common/Node.h"
+#include "ctsn_common/UartInterface.h"
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class XBeeTxEvent : public Common::EventInterface {
     public:

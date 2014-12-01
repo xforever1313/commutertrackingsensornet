@@ -3,19 +3,18 @@
 #include <vector>
 
 #include "UnitTest.h"
-#include "gateway/XBeeConstants.h"
-#include "gateway/XBeeController.h"
-#include "gateway/XBeeTxEvent.h"
+#include "ctsn_common/XBeeConstants.h"
+#include "ctsn_common/XBeeTxEvent.h"
 #include "io/StringLogger.h"
 #include "MockUart.h"
 
 TEST_GROUP(XBeeTxEventTest){
     TEST_SETUP() {
-        m_node = new Gateway::Node(1, 0x0000000000001001);
+        m_node = new CTSNCommon::Node(1, 0x0000000000001001);
         m_message = "Hello! :)";
         m_logger = new Common::IO::StringLogger();
-        m_mockUart = new testing::StrictMock<Gateway::MockUart>();
-        m_uut = new Gateway::XBeeTxEvent(*m_node, m_message, m_mockUart, *m_logger);
+        m_mockUart = new testing::StrictMock<CTSNCommon::MockUart>();
+        m_uut = new CTSNCommon::XBeeTxEvent(*m_node, m_message, m_mockUart, *m_logger);
 
         POINTERS_EQUAL(m_uut->m_uart, m_mockUart);
         CHECK_EQUAL(m_uut->m_node.getID(), m_node->getID());
@@ -32,24 +31,24 @@ TEST_GROUP(XBeeTxEventTest){
     std::string m_message;
 
 
-    Gateway::Node *m_node;
+    CTSNCommon::Node *m_node;
     Common::IO::StringLogger *m_logger;
-    testing::StrictMock<Gateway::MockUart> *m_mockUart;
-    Gateway::XBeeTxEvent *m_uut;
+    testing::StrictMock<CTSNCommon::MockUart> *m_mockUart;
+    CTSNCommon::XBeeTxEvent *m_uut;
 };
 
 TEST(XBeeTxEventTest, successTestWithEscaped) {
     m_uut->m_node.m_address = 0x00007e0000001001;
     std::vector<std::uint8_t> expectedData = {
-        Gateway::XBeeConstants::START_CHARACTER,
+        CTSNCommon::XBeeConstants::START_CHARACTER,
         0x00,           // Length 1
         0x12,           // Length 2
         0x10,           // Frame type
         0x01,           // Frame ID
         0x00,           // Address 0
         0x00,           // Address 1
-        Gateway::XBeeConstants::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeConstants::START_CHARACTER ^ Gateway::XBeeConstants::ESCAPE_XOR),    // Address 2
+        CTSNCommon::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(CTSNCommon::XBeeConstants::START_CHARACTER ^ CTSNCommon::XBeeConstants::ESCAPE_XOR),    // Address 2
         0x00,           // Address 3
         0x00,           // Address 4
         0x00,           // Address 5
@@ -59,21 +58,21 @@ TEST(XBeeTxEventTest, successTestWithEscaped) {
         0xFE,           // Reserved
         0x00,           // Broadcast Radius
         0x00,           // Transmit Options
-        Gateway::XBeeConstants::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeConstants::START_CHARACTER ^ Gateway::XBeeConstants::ESCAPE_XOR),  // 0x7E
-        Gateway::XBeeConstants::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeConstants::ESCAPE_CHARACTER ^ Gateway::XBeeConstants::ESCAPE_XOR), // 0x7D
-        Gateway::XBeeConstants::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeConstants::XON ^ Gateway::XBeeConstants::ESCAPE_XOR), // 0x11
-        Gateway::XBeeConstants::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeConstants::XOFF ^ Gateway::XBeeConstants::ESCAPE_XOR), // 0x13
+        CTSNCommon::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(CTSNCommon::XBeeConstants::START_CHARACTER ^ CTSNCommon::XBeeConstants::ESCAPE_XOR),  // 0x7E
+        CTSNCommon::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(CTSNCommon::XBeeConstants::ESCAPE_CHARACTER ^ CTSNCommon::XBeeConstants::ESCAPE_XOR), // 0x7D
+        CTSNCommon::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(CTSNCommon::XBeeConstants::XON ^ CTSNCommon::XBeeConstants::ESCAPE_XOR), // 0x11
+        CTSNCommon::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(CTSNCommon::XBeeConstants::XOFF ^ CTSNCommon::XBeeConstants::ESCAPE_XOR), // 0x13
         0x43            // Checksum
     };
 
-    m_uut->m_message = std::string("") + static_cast<char>(Gateway::XBeeConstants::START_CHARACTER) + 
-                       static_cast<char>(Gateway::XBeeConstants::ESCAPE_CHARACTER) +
-                       static_cast<char>(Gateway::XBeeConstants::XON) +
-                       static_cast<char>(Gateway::XBeeConstants::XOFF);
+    m_uut->m_message = std::string("") + static_cast<char>(CTSNCommon::XBeeConstants::START_CHARACTER) + 
+                       static_cast<char>(CTSNCommon::XBeeConstants::ESCAPE_CHARACTER) +
+                       static_cast<char>(CTSNCommon::XBeeConstants::XON) +
+                       static_cast<char>(CTSNCommon::XBeeConstants::XOFF);
 
     EXPECT_CALL(*m_mockUart, send(expectedData));
 
@@ -84,7 +83,7 @@ TEST(XBeeTxEventTest, successTestWithEscaped) {
 
 TEST(XBeeTxEventTest, successTestWithOutEscapeCharacters) {
     std::vector<std::uint8_t> expectedData = {
-        Gateway::XBeeConstants::START_CHARACTER,
+        CTSNCommon::XBeeConstants::START_CHARACTER,
         0x00,           // Length 1
         0x17,           // Length 2
         0x10,           // Frame type
@@ -123,11 +122,11 @@ TEST(XBeeTxEventTest, successTestWithOutEscapeCharacters) {
 TEST(XBeeTxEventTest, successTestWithLengthEscaped) {
     uint64_t length = 0x1113; // XON and XOFF
     std::vector<std::uint8_t> expectedData = {
-        Gateway::XBeeConstants::START_CHARACTER,
-        Gateway::XBeeConstants::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeConstants::XON ^ Gateway::XBeeConstants::ESCAPE_XOR), // Length 1 - 0x11
-        Gateway::XBeeConstants::ESCAPE_CHARACTER,
-        static_cast<uint8_t>(Gateway::XBeeConstants::XOFF ^ Gateway::XBeeConstants::ESCAPE_XOR), // Length2 - 0x13
+        CTSNCommon::XBeeConstants::START_CHARACTER,
+        CTSNCommon::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(CTSNCommon::XBeeConstants::XON ^ CTSNCommon::XBeeConstants::ESCAPE_XOR), // Length 1 - 0x11
+        CTSNCommon::XBeeConstants::ESCAPE_CHARACTER,
+        static_cast<uint8_t>(CTSNCommon::XBeeConstants::XOFF ^ CTSNCommon::XBeeConstants::ESCAPE_XOR), // Length2 - 0x13
         0x10,           // Frame type
         0x01,           // Frame ID
         0x00,           // Address 0
@@ -169,7 +168,7 @@ TEST(XBeeTxEventTest, successTestWithLengthEscaped) {
 
 TEST(XBeeTxEventTest, errorTest) {
     std::vector<std::uint8_t> expectedData = {
-        Gateway::XBeeConstants::START_CHARACTER,
+        CTSNCommon::XBeeConstants::START_CHARACTER,
         0x00,           // Length 1
         0x17,           // Length 2
         0x10,           // Frame type

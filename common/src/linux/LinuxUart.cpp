@@ -14,9 +14,9 @@
 
 #include <string>
 
-#include "gateway/Uart.h"
+#include "ctsn_common/Uart.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 struct sigaction saio;
 

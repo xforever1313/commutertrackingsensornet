@@ -6,11 +6,11 @@
 #include <stdexcept>
 #include <string>
 
-#include "gateway/UartInterface.h"
+#include "ctsn_common/UartInterface.h"
 
 typedef void(*RecvISR)(int);
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class Uart : public UartInterface {
     public:

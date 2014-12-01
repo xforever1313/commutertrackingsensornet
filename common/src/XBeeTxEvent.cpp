@@ -2,12 +2,11 @@
 #include <string>
 #include <vector>
 
-#include "gateway/Node.h"
-#include "gateway/XBeeConstants.h"
-#include "gateway/XBeeController.h"
-#include "gateway/XBeeTxEvent.h"
+#include "ctsn_common/Node.h"
+#include "ctsn_common/XBeeConstants.h"
+#include "ctsn_common/XBeeTxEvent.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 XBeeTxEvent::XBeeTxEvent(const Node &node,
                          const std::string &message,

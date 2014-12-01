@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class XBeeConstants {
     public:

@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "gateway/UartInterface.h"
+#include "ctsn_common/UartInterface.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class MockUart : public UartInterface {
     public:
