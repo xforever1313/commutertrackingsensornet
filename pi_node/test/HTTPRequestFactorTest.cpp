@@ -20,7 +20,8 @@ TEST_GROUP(HTTPRequestFactoryTest) {
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_shutdown = new testing::StrictMock<CTSNCommon::MockShutdown> ();
         m_uut = new PiNode::HTTPRequestFactory(m_shutdown,
-                                                      m_eventExecutor);
+                                               m_eventExecutor,
+                                               nullptr);
 
         POINTERS_EQUAL(m_uut->m_shutdown, m_shutdown);
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);

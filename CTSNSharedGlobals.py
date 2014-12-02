@@ -171,5 +171,15 @@ const std::string
 #endif
 DATA_URI = "/data";
 
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+PICTURE_SEND_URI = "/picture_send";
+
 #endif
 

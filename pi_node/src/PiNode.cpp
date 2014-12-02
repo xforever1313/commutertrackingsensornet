@@ -41,15 +41,20 @@ void PiNode::initHTTPServer() {
 
     m_socket = new Poco::Net::ServerSocket(PI_NODE_COMMAND_PORT);
     m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this,
-                                                                m_eventExecutor),
+                                                                m_eventExecutor,
+                                                                m_uart),
                                          *m_socket, params);
 }
 
 void  PiNode::start() {
-    bool serverStarted = true;
+    bool serverStarted = false;
     try {
         initHTTPServer();
         m_server->start();
+        serverStarted = true;
+
+        // SERIAL_PORT is defined at compile time with the -D flag.
+        m_uart->open(SERIAL_PORT);
     }
     catch (const std::exception &e) {
         Common::IO::ConsoleLogger::err.writeLineWithTimeStamp(e.what());
@@ -59,6 +64,8 @@ void  PiNode::start() {
     if (serverStarted) {
         m_server->stop();
     }
+
+    m_uart->close();
 }
 
 void PiNode::shutdown() {

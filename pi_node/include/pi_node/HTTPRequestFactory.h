@@ -7,15 +7,15 @@
 
 #include "ctsn_common/ShutdownInterface.h"
 #include "EventExecutorInterface.h"
-//#include "gateway/UartInterface.h"
+#include "ctsn_common/UartInterface.h"
 
 namespace PiNode {
 
 class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
     public:
         HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown,
-                           //UartInterface *uart,
-                           Common::EventExecutorInterface *eventExecutor);
+                           Common::EventExecutorInterface *eventExecutor,
+                           CTSNCommon::UartInterface *uart);
 
         ~HTTPRequestFactory();
 
@@ -28,7 +28,7 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
 
         CTSNCommon::ShutdownInterface *m_shutdown;
         Common::EventExecutorInterface *m_eventExecutor;
-        //UartInterface *m_uart;
+        CTSNCommon::UartInterface *m_uart;
 };
 
 }

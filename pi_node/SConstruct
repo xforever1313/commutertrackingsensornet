@@ -53,7 +53,8 @@ includePaths = [includeDir, getDateVersionPath(commonPath),
                 os.path.join(getOSPath(commonPath), includeDir),
                 os.path.join(getCommonClassesPath(commonPath), includeDir),
 		        baseDir,
-                os.path.join(getCTSNCommonPath(baseDir), includeDir)]
+                os.path.join(getCTSNCommonPath(baseDir), includeDir),
+                os.path.join(getLibb64Path(baseDir), includeDir)]
 
 testIncludePaths = [os.path.join(testDir, includeDir),
                     os.path.join(getCommonClassesPath(commonPath), testDir, includeDir),
@@ -89,8 +90,8 @@ piLibs = ['z', 'm', 'ssl', 'crypto' ,'dl', 'rt']
 #Libs needed on arch
 archLibs = ['z', 'm', 'ssl', 'crypto', 'dl', 'rt']
 
-debugLibs = ['ctsn_common-d', 'CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
-releaseLibs = ['ctsn_common', 'CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
+debugLibs = ['b64-d', 'ctsn_common-d', 'CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
+releaseLibs = ['b64', 'ctsn_common', 'CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 
 if (ARGUMENTS.get('pi_build', '0') ==  '1'):
     debugLibs += piLibs
@@ -104,10 +105,13 @@ testLibs = debugLibs
 ###LibPath
 debugLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
                 os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
-                os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE'])]
+                os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
+                os.path.join(getLibb64Path(baseDir), libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE'])]
+
 releaseLibPath = [os.path.join(getOSPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
                   os.path.join(getCommonClassesPath(commonPath), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
-                  os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
+                  os.path.join(getCTSNCommonPath(baseDir), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE']),
+                  os.path.join(getLibb64Path(baseDir), libDir, envBase['SYSTEM'], releaseDir, envBase['LIB_TYPE'])]
 
 testLibPath = debugLibPath
 

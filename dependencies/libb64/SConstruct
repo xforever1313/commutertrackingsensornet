@@ -44,6 +44,10 @@ includePaths = [includeDir]
 
 
 sourceFiles = glob.glob(os.path.join(srcDir, '*.c'))
+if (piBuild):
+    #Cant build decode for the pi yet.
+    sourceFiles.remove(os.path.join(srcDir, 'cdecode.c'))
+
 sourceTestFiles = glob.glob(os.path.join(testDir, '*.cpp')) + [getTestMain(commonPath)]
 
 Help(getHelpMessage(envBase))
