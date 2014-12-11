@@ -4,6 +4,7 @@
 Client:Actor
 Gateway:Gateway "Gateway"
 /UartRX:UartRx "UartRX"
+/XBeeParser:XBee "XBee Parser"
 /HttpServer:HttpServer "Http Server"
 /EventExecutor:EventExecutor "Event Queue"
 
@@ -17,25 +18,33 @@ Gateway:UartRX.new()
 UartRX:>UartRX.Start()
 Gateway:
 
+Gateway:XBeeParser.new()
+XBeeParser:>XBeeParser.Start()
+Gateway:
+XBeeParser:XBeeParser.waitForCharacters() &
+
 XBee:UartRX.IncommingUartMessage &
-UartRX:UartRX.ReadAndParseMessage()
-UartRX:HttpServer.postRequest()
-HttpServer:HttpServer.ProcessRequest()
-HttpServer:EventExecutor.queueEvent()
+UartRX:UartRX.Read() &
+UartRX:XBeeParser.addToCharacterQueue():
+UartRX:
 
-UartRX:XBee.Ack or Error &
+XBeeParser:XBeeParser.parsePacket() &
+XBeeParser:HttpServer.postRequest() &
+XBeeParser:XBeeParser.waitForCharacters()
+HttpServer:HttpServer.ProcessRequest() &
+HttpServer:EventExecutor.queueEvent() &
 
-EventExecutor:EventExecutor.ExecuteEvent()
+EventExecutor:EventExecutor.ExecuteEvent()&
 
-UartRX[1]:
+XBeeParser:
 
 Client:HttpServer.PostRequest &
-HttpServer:HttpServer.ProcessRequest()
+HttpServer:HttpServer.ProcessRequest() &
 HttpServer:EventExecutor.queueEvent()
 HttpServer:Client.HttpResponse
-HttpServer[1]:
 
-EventExecutor[1]:
+
+EventExecutor:
 EventExecutor:EventExecutor.ExecuteEvent()
 ]]></source>
 <configuration>
