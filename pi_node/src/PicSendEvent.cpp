@@ -60,10 +60,20 @@ void PicSendEvent::execute() {
                                             m_uart);
             txEvent.execute();
 
-            std::chrono::milliseconds sleepTime(500);
+            std::chrono::milliseconds sleepTime(1000);
             std::this_thread::sleep_for(sleepTime);
         }
         
+        //Send the final part
+        std::string message = "/data\tnode=" + 
+                              //NODE_ID is set by the -D flag
+                              std::to_string(NODE_ID) + 
+                              "|part=0|data=derp";
+
+        CTSNCommon::XBeeTxEvent txEvent(node,
+                                        message,
+                                        m_uart);
+        txEvent.execute();
     }
     catch (const std::exception &e) {
         Common::IO::ConsoleLogger::err.writeLineWithTimeStamp(e.what());
