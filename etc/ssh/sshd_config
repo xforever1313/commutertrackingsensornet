@@ -1,0 +1,10 @@
+#Add these to your sshd_config
+
+Port 22 #Recommended that this is changed
+
+RSAAuthentication yes
+PubKeyAuthentication yes
+
+#Force key logins
+PasswordAuthentication no
+
