@@ -1,0 +1,6 @@
+#Comment out the following.  Otherwise, the uart can not
+#be used (It will be a console instead)
+
+#Spawn a getty on Raspberry Pi serial line
+#T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100
+

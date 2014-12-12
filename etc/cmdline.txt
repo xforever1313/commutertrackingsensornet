@@ -1,0 +1,12 @@
+# On the raspberry pi, this lives in /boot/cmdline.txt.
+# On startup, the raspberry pi dumps a bunch of info out the
+# serial port, this disables that.
+
+#Comment out what it was before:
+
+# dwc_otg.lpm_enable=0 console=ttyAMA0,115200 kgdboc=ttyAMA0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait
+
+#and replace with:
+
+dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait
+
