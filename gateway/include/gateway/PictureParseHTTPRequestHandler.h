@@ -11,6 +11,14 @@
 
 namespace Gateway {
 
+/**
+ * \class PictureParseHTTPRequestHandler
+ * \brief Handles the http request when an agent wants to send a picture piece
+ *        to the big computer for processing.
+ * \note To use, do an http post request with the data in the following form:
+ *       node=nodeID&part=picturePartNumber&data=base64EncodedData
+ * \warning This is just a temporary workaround.  Consider this deprecated.
+ */
 class PictureParseHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         PictureParseHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,

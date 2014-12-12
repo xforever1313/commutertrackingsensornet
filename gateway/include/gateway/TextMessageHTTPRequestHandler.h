@@ -11,6 +11,14 @@
 
 namespace Gateway {
 
+/**
+ * \class TextMessageHTTPRequestHandler
+ * \brief Handles the http request when an agent wants the gateway to
+ *        send an email out.
+ * \note To use, do an http post request with the data in the following form:
+ *       numbers=xxxxxxxxx,yyyyyyyyy&providers=1,2&subject=theSubject&message=the message to send.
+ *       The address and the names must have the same amount of comma separated values in it.
+ */
 class TextMessageHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         TextMessageHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor);

@@ -10,6 +10,11 @@
 
 namespace Gateway {
 
+/**
+ * \class DatabasePokeEvent
+ * \brief Pokes the database with a dummy query so that the
+ *        connection to the database doesn't get timed out.
+ */
 class DatabasePokeEvent : public Common::EventInterface {
     public:
         DatabasePokeEvent(MariaDBInterface *mariadb,

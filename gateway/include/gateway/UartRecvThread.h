@@ -11,6 +11,11 @@
 
 namespace Gateway {
 
+/**
+ * \class UartRecvThread
+ * \brief This class has one job, read stuff from uart,
+ *        and call the callback with the data and go back to reading.
+ */
 class UartRecvThread : public OS::SThread {
     public:
         /**

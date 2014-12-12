@@ -13,6 +13,13 @@
 
 namespace Gateway {
 
+/**
+ * \class NodeStatusUpdateHTTPRequestHandler
+ * \brief Handles the http request when a trail node wants the
+          gateway to update its status.
+ * \note To use, do an http post request with the data in the following form:
+ *       node=nodeNumber&status=statusNumber
+ */
 class NodeStatusUpdateHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         NodeStatusUpdateHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
@@ -21,7 +28,7 @@ class NodeStatusUpdateHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHan
 
         ~NodeStatusUpdateHTTPRequestHandler();
 
-        void handlePostRequest(Poco::Net::HTTPServerRequest &request, 
+        void handlePostRequest(Poco::Net::HTTPServerRequest &request,
                                Poco::Net::HTTPServerResponse &response) override;
         void handleGetRequest(Poco::Net::HTTPServerRequest &request,
                               Poco::Net::HTTPServerResponse &response) override;
@@ -33,7 +40,7 @@ class NodeStatusUpdateHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHan
         static const std::string POST_SUCCESS_MESSAGE;
         static const std::string POST_MISSING_FIELD_MESSAGE;
         static const std::string NODE_FORM_DATA;
-        static const std::string STATUS_FORM_DATA; 
+        static const std::string STATUS_FORM_DATA;
 
         Common::EventExecutorInterface *m_eventExecutor;
         NodeContainerInterface *m_nodes;

@@ -19,7 +19,7 @@ namespace Gateway {
 struct MYSQL_RES_t;
 
 /**
- * \class
+ * \class MariaDBInterface
  * \brief Interface so that MariaDB function calls can be abstracted out
  *        and mocked.
  */
@@ -28,7 +28,7 @@ class MariaDBInterface {
         virtual ~MariaDBInterface() {}
 
         virtual void mysql_init() = 0;
-        
+
         virtual void mysql_real_connect(const char *host,
                                         const char *user,
                                         const char *password,
@@ -55,7 +55,7 @@ class MariaDBInterface {
 class MariaDBResultInterface {
     public:
         virtual ~MariaDBResultInterface(){}
-        
+
         virtual void storeResult() = 0;
         virtual void freeResult() = 0;
         virtual std::vector<std::string> getValuesFromColumn(const std::string &columnName) =  0;

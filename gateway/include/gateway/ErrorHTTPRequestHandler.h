@@ -12,10 +12,17 @@
 
 namespace Gateway {
 
+/**
+ * \class ErrorHTTPRequestHandler
+ * \brief Handles the http request when an agent wants the gateway to
+ *        handle an error occurring.
+ * \note To use, do an http post request with the data in the following form:
+ *       node=nodeNumber&message=errorNumber
+ */
 class ErrorHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
 
     public:
-        ErrorHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor, 
+        ErrorHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
                                 MariaDBInterface *mariadb,
                                 NodeContainerInterface *nodes);
 

@@ -12,9 +12,16 @@
 
 namespace Gateway {
 
-class XBeeTxHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler { 
+/**
+ * \class XBeeTxHTTPRequestHandler
+ * \brief Handles the http request when an agent wants the gateway to
+ *        send a message out via XBee.
+ * \note To use, do an http post request with the data in the following form:
+ *       node=nodeNumberToSendTo&message=message to send.
+ */
+class XBeeTxHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
-        XBeeTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor, 
+        XBeeTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
                                  CTSNCommon::UartInterface *uart,
                                  NodeContainerInterface *nodes);
         ~XBeeTxHTTPRequestHandler();
@@ -22,7 +29,7 @@ class XBeeTxHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
         void handleGetRequest(Poco::Net::HTTPServerRequest &request,
                               Poco::Net::HTTPServerResponse &response) override;
 
-        void handlePostRequest(Poco::Net::HTTPServerRequest &request, 
+        void handlePostRequest(Poco::Net::HTTPServerRequest &request,
                                Poco::Net::HTTPServerResponse &response) override;
 
     private:

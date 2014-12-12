@@ -14,9 +14,14 @@
 
 namespace Gateway {
 
+/**
+ * \class HTTPRequestFactory
+ * \brief Sends to the Poco Library handlers for whatever URI an agent
+ *        requests.
+ */
 class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
     public:
-        HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown, 
+        HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown,
                            Common::EventExecutorInterface *eventExecutor,
                            CTSNCommon::UartInterface *uart,
                            MariaDBInterface *mariadb,

@@ -9,6 +9,11 @@
 
 namespace Gateway {
 
+/**
+ * \class XBeeCallbackInterface
+ * \brief This class is an interface that is called when the XBee Controller
+ *        is done parsing a packet.
+ */
 class XBeeCallbackInterface {
     public:
         virtual ~XBeeCallbackInterface(){}
@@ -20,7 +25,7 @@ class XBeeCallbackInterface {
         virtual void successfulParse(const std::string &payload) = 0;
 
         /**
-         * \brief called if a message is incomplete, that is the start character appears 
+         * \brief called if a message is incomplete, that is the start character appears
          *        before it was expected.
          * \param badData The data that caused the bad message.
          */
@@ -67,7 +72,7 @@ class XBeeCallbackInterface {
         virtual void invalidModemStatus(uint8_t badStatus) = 0;
 
         /**
-         * \brief called if there's something structurally wrong with the 
+         * \brief called if there's something structurally wrong with the
          *        modem status packet.
          */
         virtual void badModemStatusPacket(const std::vector<std::uint8_t> &badData) = 0;
@@ -90,7 +95,7 @@ class XBeeCallbackInterface {
          * \param discovery whether or not there was discovery overhead
          *        or not.  byte offset 9
          */
-        virtual void transmitSuccess(uint8_t numAttempts, 
+        virtual void transmitSuccess(uint8_t numAttempts,
                                      CTSNCommon::XBeeConstants::DiscoveryStatus discovery) = 0;
 
         /**
@@ -102,7 +107,7 @@ class XBeeCallbackInterface {
          * \param discovery whether or not there was discovery overhead
          *        or not.  byte offset 9
          */
-        virtual void transmitFailure(uint8_t numAttempts, 
+        virtual void transmitFailure(uint8_t numAttempts,
                                      CTSNCommon::XBeeConstants::TxStatus errorNumber,
                                      CTSNCommon::XBeeConstants::DiscoveryStatus discovery) = 0;
 };

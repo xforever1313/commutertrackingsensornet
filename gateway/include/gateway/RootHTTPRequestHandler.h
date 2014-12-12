@@ -9,6 +9,10 @@
 
 namespace Gateway {
 
+/**
+ * \class RootHTTPRequestHandler
+ * \brief Handles when an agent access the root ('/') URI
+ */
 class RootHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         RootHTTPRequestHandler();

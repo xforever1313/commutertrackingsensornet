@@ -12,11 +12,15 @@
 
 namespace Gateway {
 
+/**
+ * \class XBeeCallbacks
+ * \brief These XBeecallbacks are specific to the gateway node.
+ */
 class XBeeCallbacks : public XBeeCallbackInterface {
     public:
-         XBeeCallbacks(Common::IO::LoggerBase &outLogger = 
+         XBeeCallbacks(Common::IO::LoggerBase &outLogger =
                            Common::IO::ConsoleLogger::out,
-                       Common::IO::LoggerBase &errLogger = 
+                       Common::IO::LoggerBase &errLogger =
                           Common::IO::ConsoleLogger::err);
 
         ~XBeeCallbacks();
@@ -39,7 +43,7 @@ class XBeeCallbacks : public XBeeCallbackInterface {
     private:
         /**
          * \brief dumps all the bad data to hex form... unless
-         *        it is in the alphanum range (0x21-0x7E) in the ascii table, 
+         *        it is in the alphanum range (0x21-0x7E) in the ascii table,
          *        then it converts it to the out the ascii symbol.
          */
         static std::string dumpData(const std::vector<std::uint8_t> &badData);

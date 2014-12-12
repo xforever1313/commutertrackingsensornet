@@ -12,6 +12,11 @@
 
 namespace Gateway {
 
+/**
+ * \class DatabasePokeHTTPRequestHandler
+ * \brief Handles the http request when an agent wants the gateway to
+ *        execute a DatabasePokeEvent.
+ */
 class DatabasePokeHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
 
     public:

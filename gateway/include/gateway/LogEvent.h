@@ -10,9 +10,19 @@
 
 namespace Gateway {
 
+/**
+ * \class LogEvent
+ * \brief Call this class when an error needs to be logged to the database.
+ * \note This class only logs to the database, and does not send out emails or texts.
+ */
 class LogEvent : public Common::EventInterface {
 
     public:
+        /**
+         * \brief Constructor
+         * \param error The error number to log.
+         * \param node The node that generated the error.
+         */
         LogEvent(ErrorNumber error, const CTSNCommon::Node &node, MariaDBInterface *mariadb,
                  Common::IO::LoggerBase &errLogger = Common::IO::ConsoleLogger::err);
 

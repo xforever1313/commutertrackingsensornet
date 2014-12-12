@@ -10,6 +10,14 @@
 
 namespace Gateway {
 
+/**
+ * \class NodeCheckEvent
+ * \brief This event checks each node in the database to see
+ *        when the last time their status was updated.
+ *        If its been more than an hour since the last update AND
+ *        The node is not offline, this event makes the node's status
+ *        "unknown" and creates error events saying which nodes are unknown.
+ */
 class NodeCheckEvent : public Common::EventInterface {
     public:
         NodeCheckEvent(Common::EventExecutorInterface *eventExecutor,

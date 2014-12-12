@@ -15,8 +15,11 @@ namespace Gateway {
 class Emailer : public EmailerInterface {
     public:
         /**
-         * \param addresses The KEY in the map is the address, the VALUE 
-         *                  is the name
+         * \param addresses The KEY in the map is the person's email address, the VALUE
+         *                  is the person's name.  This is done so there's only one email address
+         *                  allowed in the map, but multiple people can be tied to multple addresses.
+         * \param subject The email's subject
+         * \param message The message to be sent (the email body).
          */
         Emailer(const std::map <std::string, std::string> &addresses,
                 const std::string &subject, const std::string &message);

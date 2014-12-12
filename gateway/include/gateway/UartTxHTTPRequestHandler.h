@@ -11,6 +11,13 @@
 
 namespace Gateway {
 
+/**
+ * \class UartTxHTTPRequestHandler
+ * \brief Handles the http request when an agent wants the gateway to
+ *        send a message out over uart with no preprocessing.
+ * \note To use, do an http post request with the data in the following form:
+ *       message=the message you want to send
+ */
 class UartTxHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         UartTxHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,

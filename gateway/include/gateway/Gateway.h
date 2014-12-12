@@ -19,6 +19,12 @@
 
 namespace Gateway {
 
+/**
+ * \class Gateway
+ * \brief Constructs and starts everything up.  It will
+ *        then wait until a shutdown event occurs and it will
+ *        tear everything down.
+ */
 class Gateway : public CTSNCommon::ShutdownInterface {
     public:
         static Gateway &getInstance();

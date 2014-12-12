@@ -12,7 +12,7 @@
 namespace Gateway {
 
 /**
- * \brief a static class that contains all the nodes.
+ * \brief a class that contains all the nodes.
  */
 class NodeContainer : public NodeContainerInterface {
     public:

@@ -13,18 +13,29 @@
 
 namespace Gateway {
 
+/**
+ * \class ErrorEvent
+ * \brief Executed when an error occurs and the database needs to be
+ *        updated, along with emails and texts being sent out to admins
+ */
 class ErrorEvent : public Common::EventInterface {
 
     public:
+        /**
+         * \brief Constructor
+         * \param error The error number that occurred
+         * \param node The node that generated the error
+         */
         ErrorEvent(ErrorNumber error, const CTSNCommon::Node &node, MariaDBInterface *mariadb,
                    Common::IO::LoggerBase &outLogger = Common::IO::ConsoleLogger::out,
                    Common::IO::LoggerBase &errLogger = Common::IO::ConsoleLogger::err);
 
         ~ErrorEvent();
 
-        // \note Execute is not specifically unit tested as we don't want to
-        // actually send emails or texts.  Instead, each method
-        // execute calls is tested separetly
+        /** \note Execute is not specifically unit tested as we don't want to
+         *        actually send emails or texts.  Instead, each method
+         *        execute calls is tested separetly
+         */
         void execute() override;
 
     private:

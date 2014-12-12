@@ -6,6 +6,10 @@
 
 namespace Gateway {
 
+/**
+ * \class UartRecvCallbackInterface
+ * \brief These are callbacks when uart data is received.
+ */
 class UartRecvCallbackInterface {
     public:
         virtual ~UartRecvCallbackInterface() {}

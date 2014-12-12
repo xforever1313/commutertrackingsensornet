@@ -14,6 +14,13 @@
 
 namespace Gateway {
 
+/**
+ * \class LogMessageHTTPRequestHandler
+ * \brief Handles the http request when an agent wants the gateway to
+ *        log an error to the database..
+ * \note To use, do an http post request with the data in the following form:
+ *       node=nodeNumber&message=errorNumber
+ */
 class LogMessageHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
 
     public:

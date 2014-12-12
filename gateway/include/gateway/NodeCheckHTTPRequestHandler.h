@@ -12,6 +12,13 @@
 
 namespace Gateway {
 
+/**
+ * \class NodeCheckHTTPRequestHandler
+ * \brief Handles the http request when an agent wants the gateway to
+ *        log an error to the database..
+ * \note To use, do an http post request with the data in the following form:
+ *       check=true
+ */
 class NodeCheckHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         NodeCheckHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,

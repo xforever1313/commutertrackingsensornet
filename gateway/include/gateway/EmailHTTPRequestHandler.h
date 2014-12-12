@@ -11,6 +11,14 @@
 
 namespace Gateway {
 
+/**
+ * \class EmailHTTPRequestHandler
+ * \brief Handles the http request when an agent wants the gateway to
+ *        send an email out.
+ * \note To use, do an http post request with the data in the following form:
+ *       addresses=xxx@xxx.com,yyy@yyy.com&names=person 1,person 2&subject=theSubject&message=the message to send.
+ *       The address and the names must have the same amount of comma separated values in it.
+ */
 class EmailHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
 
     public:
@@ -33,7 +41,7 @@ class EmailHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
         EmailHTTPRequestHandler() = delete;
 
         Common::EventExecutorInterface *m_eventExecutor;
-}; 
+};
 
 }
 

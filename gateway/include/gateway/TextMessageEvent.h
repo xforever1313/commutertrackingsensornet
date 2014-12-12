@@ -10,6 +10,10 @@
 
 namespace Gateway {
 
+/**
+ * \class TextMessageEvent
+ * \brief This event sents a text message to the provided numbers.
+ */
 class TextMessageEvent : public Common::EventInterface {
     public:
         enum Provider {
@@ -33,7 +37,10 @@ class TextMessageEvent : public Common::EventInterface {
         static Provider convertStringToProvider(const std::string &s);
 
         /**
-         * \param numbers The Keys are the phone number in the form of 1112223333
+         * \param numbers The Keys are the phone number in the form of 1112223333.  This is in the form
+         *                of a map so a number only appears once, and is tied to a provider.
+         * \param subject The subject of the message to be sent.
+         * \param message The message itself (the body).
          */
         TextMessageEvent(const std::map<std::string, Provider> &numbers,
                          const std::string &subject,
@@ -47,7 +54,7 @@ class TextMessageEvent : public Common::EventInterface {
 
     private:
         /**
-         * \brief Converts a string like (555)-555-2243 to 5555552243.  
+         * \brief Converts a string like (555)-555-2243 to 5555552243.
          *        Spaces and symbols are stripped from the string
          * \throw std::invalid_argument if a letter is detected.
          */

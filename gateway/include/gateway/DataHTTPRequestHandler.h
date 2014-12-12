@@ -13,6 +13,11 @@
 
 namespace Gateway {
 
+/**
+ * \class DataHTTPRequestHandler
+ * \brief Handles the http request when an agent wants to tell the database
+ *        an entity was discovered on the trail.
+ */
 class DataHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         DataHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,

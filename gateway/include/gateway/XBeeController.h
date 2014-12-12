@@ -15,6 +15,10 @@
 
 namespace Gateway {
 
+/**
+ * \class XBeeController
+ * \brief Parses the xbee packet and calls the correct callback.
+ */
 class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
     public:
         /**

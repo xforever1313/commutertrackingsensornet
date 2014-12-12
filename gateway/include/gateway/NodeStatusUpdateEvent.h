@@ -11,9 +11,21 @@
 
 namespace Gateway {
 
+/**
+ * \class NodeStatusUpdateEvent
+ * \brief This event should be called when a node's status changes.
+ *        It will update the database and send an email and text to
+ *        the admins.
+ */
 class NodeStatusUpdateEvent : public Common::EventInterface {
     public:
-        NodeStatusUpdateEvent(CTSNCommon::Node::NodeStatus status, 
+        /**
+         * \brief Constructor
+         * \param status The new status for the node
+         * \param nodeNumber The node id number that needs to be updated.
+         * \param nodes A pointer to a node container object.
+         */
+        NodeStatusUpdateEvent(CTSNCommon::Node::NodeStatus status,
                               unsigned int nodeNumber,
                               NodeContainerInterface *nodes,
                               Common::EventExecutorInterface *eventExecutor,
