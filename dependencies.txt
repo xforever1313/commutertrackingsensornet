@@ -1,0 +1,9 @@
+Dependencies:
+
+Software:
+    SCons - The build system
+    Python3 - For the debug consoles
+    libpoco-dev - HTTP library for C++
+    mariadb-client - For talking to the database.
+    gcc for the raspberry pi - Only if you want to cross-compile for the raspberry pi.  Link here: https://github.com/raspberrypi/tools/tree/master/arm-bcm2708
+    libccv - For Computer Vision.
