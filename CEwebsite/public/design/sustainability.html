@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="../css/styles.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="../css/print.css" type="text/css" media="print">
+		<title>CTSN Design - Sustainability</title>
+	</head>
+	<body>
+		<div id="header">
+			<h1>Commuter Tracking Sensor Network</h1>
+		</div>
+		
+		<!-- Main nav -->
+		<div id="nav">
+			<ul class="navlist">
+				<li class="navli"><a href="../index.html">Home</a></li>
+				<li class="navlicurr"><a href="../design.html">Design</a></li>
+				<li class="navli"><a href="../teambios.html">Team</a></li>
+				<li class="navli"><a href="../media.html">Media</a></li>
+				<li class="navli"><a href="../resources.html">Resources</a></li>
+			</ul>
+		</div>
+		
+		<!-- Side nav -->
+		<div id="content">
+			<div id="sidebar">
+				<ul class="navlist">
+					<li><a class="vertnava" href="compvision.html">Computer Vision</a></li>
+					<li><a class="vertnava" href="networking.html">Networking</a></li>
+					<li><a class="vertnava" href="powermgmt.html">Power Management</a></li>
+					<li><a class="vertnavacurr" href="sustainability.html">Sustainability</a></li>
+					<li><a class="vertnava" href="userinterface.html">User Interface</a></li>
+				</ul>
+			</div>
+			
+			<!-- Vocabulary on right panel -->
+			<aside>
+				<h4>Important terms</h4>
+				<div class="impterm">
+					<p><em>Half-Wave Rectifier:</em></p>
+					<p>A simple circuit composed of a diode in parallel with the load.
+					Capacitors are commonly added to smooth the resulting DC signal.</p>
+				</div>
+				<div class="impterm">
+					<p><em>Peak-to-peak AC</em></p>
+					<p>AC voltage reading taken from the positive peak of the waveform
+					to the negative trough. A non peak-to-peak voltage reading is usually
+					derived by taking the peak-to-peak value and dividing by two.</p>
+				</div>
+				<div class="impterm">
+					<p><em>Aeroelastic Flutter</em></p>
+					<p>Also known as aeroelasticity. Comparable to the effect of blowing across
+					a blade of grass to cause vibration. The Windbelt band oscillates due to this
+					principle.</p>
+				</div>
+			</aside>
+		
+			<!-- Main section -->
+			<div id="section">
+				<!-- Informational -->
+				<p>In order to keep sensor nodes out on the trail for extended periods
+				of time without the need for maintenance, it was determined that some
+				element of sustainability would be required, which would be realized
+				through use of a sustainable energy source. The figure below shows
+				certain concepts that were chosen to provide this energy source, along
+				with a rating of 1 to 5 (highest) for several critical categories.</p>
+				<!-- Pugh Chart -->
+				<table>
+					<caption class="design">Sustainability Concept Ratings</caption>
+					<tr>
+						<th>Alternatives</th>
+						<th>Windbelt</th>
+						<th>Solar</th>
+						<th>Turbine</th>
+						<th>None</th>
+					</tr>
+					<tr> 
+						<td>Efficient</td>
+						<td>5</td>
+						<td>5</td>
+						<td>3</td>
+						<td>1</td>
+					</tr>
+					<tr> 
+						<td>Unique</td>
+						<td>5</td>
+						<td>3</td>
+						<td>3</td>
+						<td>1</td>
+					</tr>
+					<tr> 
+						<td>Adequate</td>
+						<td>3</td>
+						<td>5</td>
+						<td>4</td>
+						<td>1</td>
+					</tr>
+					<tr> 
+						<td>Low-Profile</td>
+						<td>5</td>
+						<td>3</td>
+						<td>1</td>
+						<td>5</td>
+					</tr>
+					<tr> 
+						<td>Cost</td>
+						<td>5</td>
+						<td>3</td>
+						<td>1</td>
+						<td>5</td>
+					</tr>
+					<tr class="sumrow">
+						<td>Sum</td>
+						<td>23</td>
+						<td>19</td>
+						<td>12</td>
+						<td>13</td>
+					</tr>
+				</table>
+				<p>Windbelt technology was determined to provide the greatest efficiency
+				in terms of wind per volt, supplying upwards of 2V for 25MPH wind gusts
+				and anywhere between 0.5V to 1.5V during sustained periods. It was determined
+				to be the most unique application out of all other concepts due to it being
+				a relatively new model, developed by Shawn Frayne of Humdinger Technologies in
+				recent years. Although the Windbelt would not necessarily provide as much
+				power as a solar panel, its low-profile design and low cost made it stand
+				out as the correct option.</p>
+				<figure class="design">
+					<img src="../images/faradayslaw.jpg" 
+						 alt="Faraday's Law" width="400" height="315">
+					<figcaption class="design">Faraday's Law</figcaption>
+				</figure>
+				<p>The Windbelt is a direct application of Faraday's Law as shown above. EMF
+				is generated when either pole of a magnet oscillates within close proximity
+				of the core of an inductor coil. Oscillation occurs as a result of wind causing
+				a mylar-coated taffeta band to vibrate, similar to the vibration that occurs
+				when blowing along a blade of grass. If oscillation is of the correct frequency,
+				and there is no torsion in the band, the magnet attached to the band can produce
+				electromagnetic flux at a similar frequency as that of the band. </p>
+				<figure class="design">
+					<img src="../images/windbeltver5.jpg" 
+						 alt="Windbelt Prototype" width="350" height="263">
+					<figcaption class="design">Windbelt Prototype V5</figcaption>
+				</figure>
+				<p>Prototype 5 of the Windbelt included two inductor coils with 1000 windings each,
+				and the band was positioned between them with two magnets fixed to it placed
+				carefully so that they oscillate between the cores of both coils. In theory, this
+				would allow for a larger EMF change over time. The belt produced about 2V AC with
+				the windings connected in series. When connected to a half-wave rectifier, it
+				was able to produce 1.25V DC and 3mA of current. This met the specifications for
+				input signal for the next stage of the power management circuit.</p>
+				<!-- Risk assessment -->
+				<h4>Windbelt Risks</h4>
+				<p> Originally there was risk that the Windbelt would not provide enough voltage
+				due to the nature of the induction coils, and the fact that they were hand wound. 
+				This risk has been ruled out, as the Windbelt voltage and current levels have both
+				been measured.</p>
+				<!-- Test plan -->
+				<h4>Windbelt Test Plan</h4>
+				<ul> 
+					<li>Vary the length of the belt, fan speed, and fan angle to maximize AC current
+					production.</li>
+					<li>Test AC/DC rectification component using half-wave and full-wave versions of 
+					the circuit, checking for minimal ripple voltage.</li>
+				</ul>
+			</div>
+		</div>
+		
+		<div id="footer">
+			<div id="copyright">CTSN &copy; 2014</div>
+			<div id="timestamp">Last updated on:
+				<script>document.write(document.lastModified);</script></div>
+		</div>
+	</body>
+</html>

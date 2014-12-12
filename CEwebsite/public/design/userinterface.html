@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="../css/styles.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="../css/print.css" type="text/css" media="print">
+        <link type="text/css" rel="stylesheet" href="../css/leaflet.css"/>
+        <script src="../js/leaflet.js"></script>
+		<title>CTSN Design - User Interface</title>
+        <script type = "text/javascript">
+            window.onload=function() {
+                var map = L.map('map').setView([51.505, -0.09], 10);
+                var osmURL = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+                var osmAttrib = 'Map Data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+                var osm = new L.TileLayer(osmURL, {minZoom: 8, maxZoom: 15, attribution: osmAttrib});
+
+                //Start the map
+                map.setView(new L.LatLng(43.08, -77.678419), 11);
+                map.addLayer(osm);
+
+                var icon = L.icon({
+                    iconUrl:"../images/marker-icon.png",
+                    iconSize: [25,41],
+                    iconAnchor:[12.5, 41],
+                    popupAnchor:[0, -30],
+                });
+
+                var marker1HTML = '<p><strong>ID:</strong> 1</p>';
+                marker1HTML += '<p><strong>Name:</strong> Gateway</p>';
+                marker1HTML += '<p><strong>Status:</strong><span style="color:#006600;"> okay</span></p>';
+                var marker1 = L.marker([43.0845, -77.6785]).setIcon(icon).addTo(map).bindPopup(marker1HTML);
+
+                var marker2HTML = '<p><strong>ID:</strong> 2</p>';
+                marker2HTML += '<p><strong>Name:</strong> Node 2</p>';
+                marker2HTML += '<p><strong>Status:</strong><span style="color:#000000;"> unknown</span></p>';
+                var marker2 = L.marker([43.0845, -77.5785]).setIcon(icon).addTo(map).bindPopup(marker2HTML);
+
+                var marker3HTML = '<p><strong>ID:</strong> 3</p>';
+                marker3HTML += '<p><strong>Name:</strong> Node 3</p>';
+                marker3HTML += '<p><strong>Status:</strong><span style="color:#000000;"> offline</span></p>';
+                var marker3 = L.marker([43.1, -77.5785]).setIcon(icon).addTo(map).bindPopup(marker3HTML);
+            }
+        </script>
+	</head>
+	<body>
+		<div id="header">
+			<h1>Commuter Tracking Sensor Network</h1>
+		</div>
+		
+		<!-- Main nav -->
+		<div id="nav">
+			<ul class="navlist">
+				<li class="navli"><a href="../index.html">Home</a></li>
+				<li class="navlicurr"><a href="../design.html">Design</a></li>
+				<li class="navli"><a href="../teambios.html">Team</a></li>
+				<li class="navli"><a href="../media.html">Media</a></li>
+				<li class="navli"><a href="../resources.html">Resources</a></li>
+			</ul>
+		</div>
+		
+		<!-- Side nav -->
+		<div id="content">
+			<div id="sidebar">
+				<ul class="navlist">
+					<li><a class="vertnava" href="compvision.html">Computer Vision</a></li>
+					<li><a class="vertnava" href="networking.html">Networking</a></li>
+					<li><a class="vertnava" href="powermgmt.html">Power Management</a></li>
+					<li><a class="vertnava" href="sustainability.html">Sustainability</a></li>
+					<li><a class="vertnavacurr" href="userinterface.html">User Interface</a></li>
+				</ul>
+			</div>
+			
+			<!-- Vocabulary on right pane -->
+			<aside>
+				<h4>Important terms</h4>
+				<div class="impterm">
+					<p><em>Django:</em></p>
+					<p>A free an open source web application framework, written in Python, which 
+					follows the model-view-controller architectural pattern.</p>
+				</div>
+				<div class="impterm">
+					<p><em>UART:</em></p>
+					<p>Universal Asynchronous Receiver Transmitter. A hardware component that allows
+					translation of data between parallel and serial forms. They are commonly used to 
+					transfer serial data through a USB interface.</p>
+				</div>
+			</aside>
+			
+			<!-- Main center panel -->
+			<div id="section">
+				<!-- Informational -->
+				<p>Users that have any vested interest in the data that is sent to the Gateway
+				server from the nodes can access that data through a website, also served from the Pi.
+				Django provides the framework for the website, which is implemented largely in Python,
+				however some HTML and CSS is required within the Python template language to get 
+				web pages to render as desired.</p>
+				<figure class="design">
+					<img src="../images/websitemockup.gif" 
+						 alt="Website Mockup" width="500" height="372">
+					<figcaption class="design">Website Preliminary Layout</figcaption>
+				</figure>
+				<p>As shown above in early versions of the website design, the site can be accessed
+				to view such things as data from the trails and status of the nodes (such as battery readings).
+				It can also be used by admins to control the nodes remotely, allowing for power cycling 
+				and putting nodes in a low-power state. This is highly beneficial due to the size of the
+				trail, the distance between nodes, and the time it would take to access and maintain them
+				on foot.</p>
+				<figure class="design">
+					<img src="../images/websitemockup2.gif" 
+						 alt="Maintenance Mode" width="500" height="592">
+					<figcaption class="design">Admin Messages Page</figcaption>
+				</figure>
+				<p>The figure above shows the admin message page. As shown, it displays
+				all messages sent from a node to the Gateway regarding informations, warnings, and errors.</p>
+				<figure class="design">
+					<img src="../images/websitemockup3.gif" 
+						 alt="Node Down" width="500" height="592">
+					<figcaption class="design">Node Maintenance Page</figcaption>
+				</figure>
+				<p>Hardware maintenance can be performed remotely through the Node Down maintenance page, where
+				the user can press a reset or power button to power cycle a mode in a bad state, given that
+				the state in which it is in is recoverable.</p>
+                
+                <figure class="design">
+					<img src="../images/nodestatuspage.gif" 
+						 alt="Node Down" width="500" height="592">
+					<figcaption class="design">Node Status Page</figcaption>
+				</figure>
+                <p>Almost every page has a map with each node displayed, including the node status page above.
+                Users can interact with this map by dragging it around, zooming in and out, and clicking on a blue marker, which represents a node.
+                Clicking on a marker makes a popup which displays getting information about the corresponding node.
+                In the above example, a user clicked on Node 1, and is looking at the status, which is set to okay.
+                This map is powered by a library called leaflet.js.  Its basemap is OpenStreetMap.  A demo of leaflet.js is below:
+                </p>
+				
+                <figure class="design">
+                    <noscript>Javascript is required to see the interactive map.</noscript>
+                    <div id = "map" style = "height:500px; width:500px;">
+                    </div>
+                    <figcaption class="design">Leaflet.js example.</figcaption>
+                </figure>
+                
+				<!-- Risk Assessment -->
+				<h3>Gateway Node and Website Risks</h3>
+				<ul>
+					<li>Security
+						<ul>
+							<li>SSH Keys are required to login via SSH</li>
+							<li>SSH and HTTP ports are not default</li>
+							<li>IP addresses are banned after multiple failed attempts</li>
+							<li>Unneeded ports are CLOSED, or hidden behind the router's firewall</li>
+						</ul>
+					</li>
+					<li>Hard Drive Space
+						<ul>
+							<li>11 GB left on pi (should be plenty)</li>
+							<li>Can upgrade SD card</li>
+							<li>Can use external Hard drive as primary hard drive
+								<ul>
+									<li>SD card will only be for booting</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li>Lack of Processing Power
+						<ul>
+							<li>No problems yet</li>
+							<li>Database, Website, and Gateway Program can each go on their own pi if needed</li>
+							<li>Code is cross-platform (for Linux), "easy" to upgrade to a more powerful system</li>
+							<li>Will most likely be a low traffic site</li>
+							<li>Gateway Program uses no CPU unless something is happening</li>
+							<li>PI is stripped down
+								<ul>
+									<li>No GUI, several things are not installed</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				
+				<!-- Testing Strategy -->
+				<h3>Testing Strategy for Gateway and Website</h3>
+				<p>Unit Tests will be written to find small bugs early. At present time, C++ has been used to
+				write upwards of 180 unit tests. The debug console can be used to run manual integration tests,
+				and tests exist so far for sending email, sending SMS, logging error messages, sending UART 
+				messages, and shutting down Gateway processes.</p>
+					<p>Security testing will involve allowing a small team of RIT security majors to penetration
+				test the server, reporting any flaws in design.</p>
+			</div>
+		</div>
+		
+		<div id="footer">
+			<div id="copyright">CTSN &copy; 2014</div>
+			<div id="timestamp">Last updated on:
+				<script>document.write(document.lastModified);</script></div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="../css/styles.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="../css/print.css" type="text/css" media="print">
+		<title>CTSN - Media - Prototyping a Boost Converter</title>
+	</head>
+	<body>
+		<div id="header">
+			<h1>Commuter Tracking Sensor Network</h1>
+		</div>
+		
+		<!-- Main nav -->
+		<div id="nav">
+			<ul class="navlist">
+				<li class="navli"><a href="../index.html">Home</a></li>
+				<li class="navli"><a href="../design.html">Design</a></li>
+				<li class="navli"><a href="../teambios.html">Team</a></li>
+				<li class="navlicurr"><a href="../media.html">Media</a></li>
+				<li class="navli"><a href="../resources.html">Resources</a></li>
+			</ul>
+		</div>
+		
+		<div id="content">
+			<!-- Side nav -->
+			<div id="sidebar">
+				<ul class="navlist">
+					<li><a class="vertnava" href="../pictures.html">Pictures</a></li>
+					<li><a class="vertnava" href="../videos.html">Videos</a></li>
+				</ul>
+			</div>
+			
+			<!-- Prototyping TI BQ25504 page -->
+			<div id="section">
+				<h3>Prototyping a Texas Instruments BQ25504</h3>
+				<p>The TIBQ25504 is a high efficiency battery management system that requires a certain
+				amount of configuration to achieve desired values at the V<sub>BAT</sub> and V<sub>STOR</sub>
+				pins.  In addition, the boost converter has a built in status signal that can be connected
+				to a micro-controller and utilized as desired.</p>
+				<p>Configuring the over-voltage and under-voltage thresholds for the attached battery simply
+				reduces or expands the range of voltages that the device can produce under varying degrees
+				of load and levels of battery charge. The device also allows the programmer to set a MPP to maximize
+				the power produced by the connected sustainable source.</p>
+				<p>Due to limitations of the Evaluation Module for the battery management device,  a slightly more
+				complicated procedure was used to test the hardware. This process is outlined as follows:</p>
+				<ol class="procedure">
+					<li>Download TI's <a class="inline" href="http://www.ti.com/lit/zip/sluraq1">spreadsheet tool</a>
+					and enter the desired parameters depending on the battery being used. A good MPPT configuration
+					to start off with is 80% of maximum voltage. This can be tweaked later on in the prototyping process. </li>
+					<li>Download the <a class="inline" href="http://www.ti.com/lit/zip/slum238">SPICE model</a>
+					for the device and run a transient analysis after replacing the included resistors with the values
+					calculated in the spreadsheet tool. This can be done using OrCad Cadence or other SPICE software.</li>
+					<li>Verify that V<sub>BAT</sub> and V<sub>STOR</sub> values are as expected, and make any
+					necessary modifications, adjusting the spreadsheet and simulating with the new values.</li>
+					<li>Obtain a QFN to DIP converter from a reliable source. The example pictured was purchased
+					from dEcolectrix, a company in Edderitz, Germany that specializes in custom PCB design. Ensure that
+					the model chosen has a 3x3mm body and 0.5mm pitch between pins. Purchase 16x breakaway headers, the bq25504
+					and the required resistors, capacitors, and inductors as specified in the 
+					<a class="inline" href="http://www.ti.com/lit/ds/symlink/bq25504.pdf">device manual</a> and the spreadsheet.</li>
+					<!-- INSERT PICTURE OF QFN TO DIP CONVERTER HERE -->
+					<li>Use any re-flow soldering technique necessary to adhere the QFN chip to the PCB. Since the leads
+					are on the bottom of the chip, traditional means of soldering are not an option. This can be done 
+					through use of professional facilities, or by creating a customized <a class="inline" 
+					href="http://spectrum.ieee.org/geek-life/hands-on/the-poor-mans-solder-reflow-oven">soldering oven</a>. 
+					Be sure to align pin one with the correct pin on the board for proper pin numbering. </li>
+					<li>Build the circuit on a breadboard and check voltage characteristics at the V<sub>BAT</sub> and 
+					V<sub>STOR</sub> outputs without load or battery. Make any necessary adjustments to obtain values 
+					similar to those obtained in OrCad. Keep in mind that the breadboard will never perform as well as a custom PCB. Also,
+					the over-voltage threshold will dictate the highest voltage produced by the boost converter, and this value should
+					not exceed the maximum voltage allowed by the storage element. For example, a Li-Ion battery should not be charged
+					at higher than 4.2V to prevent electroplating.</li>
+					<li>Connect the battery (to the V<sub>BAT</sub> pin) before and after cold-start to verify cold-start functionality. </li>
+					<li>Perform cold-start with the battery connected, and connect the desired load to the V<sub>STOR</sub> pin. The
+					voltage should drop at both pins slightly as voltage is exchanged for current. Note that if the voltage drops below
+					the under-voltage threshold, the boost converter will cut power to the load, and voltage will drop on the 
+					V<sub>STOR</sub> pin. If this occurs, the under-voltage threshold should be reconsidered to allow
+					for the voltage drop.</li>
+					<li>The V<sub>BAT OK</sub> signal should be configured to hold high for the interval from V<sub>STOR</sub> high
+					when load is connected to V<sub>STOR</sub> low when load is connected, and the under-voltage threshold is almost reached.
+					Keep the battery chemistry in mind when choosing this low threshold as well. For instance Li-Ion batteries should not be
+					discharged below a certain voltage (3.0V - 3.2V) with load attached.</li>
+					<li>Run the prototype for extended periods. If possible, run until over-voltage and under-voltage thresholds are reached.
+					Check battery voltage when fully depleted and fully charged to characterize the battery for MPPT. Use formulas in the 
+					data sheet to figure out the maximum power point, and enter this into the spreadsheet to tweak its corresponding
+					resistor net.</li>
+				</ol>
+			</div>
+		</div>
+		
+		<div id="footer">
+			<div id="copyright">CTSN &copy; 2014</div>
+			<div id="timestamp">Last updated on:
+				<script>document.write(document.lastModified);</script></div>
+		</div>
+	</body>
+</html>

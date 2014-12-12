@@ -1,0 +1,306 @@
+body{
+	font-family: Verdana, Arial, sans-serif;
+	width: 95%;
+	margin: 0 auto;
+    color: black;
+}
+
+#header{
+	text-align: center;
+	padding: 0.5em;
+	background-color: white;
+    color: black;
+}
+
+#nav{
+    display: none;
+	text-align: center;
+	background-color: white;
+	font-weight: bold;
+	border: 5px solid black;
+}
+
+.navlist{
+    display: none;
+	list-style-type: none;
+    margin: 0;
+    padding: 0;
+	overflow: hidden;
+}
+
+.navli,.navlicurr{
+	display: none;
+}
+
+.navlicurr{
+    display: none;
+	background-color: white;
+}
+
+#content{
+	overflow: auto;
+	background-color: white;
+}
+
+#sidebar{
+    display: none;
+	float: left;
+	text-shadow:1px 2px 5px black;
+	font-style: italic;
+	background-color: white;
+}
+
+.vertnava, .vertnavacurr{
+    display: none;
+	display: block;
+	border-bottom: 1px solid;
+}
+
+.vertnavacurr{
+    display: none;
+	background-color: white;
+}
+
+.fullsection{
+	padding-left: 1em;
+	padding-right: 1em;
+	display: block;
+	text-align: justify;
+	border: 3px solid black;
+	border-radius: 5px;
+	min-height: 335px;
+}
+
+#section{
+	padding-left: 1em;
+	padding-right: 1em;
+	display: block;
+	text-align: justify;
+	overflow: auto;
+}
+
+#column1,#column2{
+	width: 45%;
+	padding-left: 1em;
+	padding-right: 1em;
+	display: block;
+}
+
+#column2{
+	position: absolute; top: 13em; right: 0px;
+}
+
+figure.market{
+    display: none;
+	text-align: center;
+	font-weight: bold;
+	border: 2px solid black;
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: white;
+}
+
+figure.teambios{
+    display: none;
+	float: right;
+	border: 5px solid black;
+	border-radius: 10px;
+}
+
+figure.design{
+    display: none;
+	text-align: center;
+	border: 10px solid black;
+	border-radius: 20px;
+	width: 500px;
+	background-color: white;
+	margin-left:auto;
+	margin-right: auto;
+}
+
+figure.aside{
+    display: none;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+figcaption.design, caption.design, figcaption.bioscapt{
+	text-align: center;
+	font-style: italic;
+	font-family: Georgia;
+	font-weight:bold;
+}
+
+.banner{
+	text-align: center;
+	font-family: Georgia,serif;
+}
+
+.summary{
+	padding-left: 1em;
+	padding-right: 1em;
+	text-align: justify;
+}
+
+ol,ul.speclist{
+	font-size: 12px;
+}
+
+.picul{
+    display: none;
+	list-style-type: none;
+	text-align: center;
+}
+
+.picli{
+    display: none;
+	display: inline-block;
+	width: 200px;
+	padding-bottom: 10px;
+	margin: 10px;
+	font-style: italic;
+	font-family: Georgia, serif;
+	border: 5px solid black;
+	border-radius: 5px;
+	background-color: white;
+}
+
+.vidtable{
+    display: none;
+	margin-left:auto;
+	margin-right:auto;
+	border: 4px solid black;
+	width: 646px;
+	padding: 0em;
+	margin-bottom: 0em;
+	text-align: left;
+	font-family: Georgia, Serif;
+	background-color: white;
+}
+
+.viddiv{
+    display: none;
+	text-align: center;
+}
+
+.iframecontainer{
+    display: none;
+	text-align: center;
+}
+
+iframe,iframe.bigvid{
+    display: none;
+	border: 3px solid black;
+}
+
+iframe.bigvid{
+    display: none;
+	height: 480px;
+	width: 640px;
+}
+
+table{
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table,th,td{
+	border: 2px solid black;
+	border-collapse: collapse;
+}
+
+th{
+	background-color: white;
+}
+
+.sumrow{
+	font-weight: bold;
+	background-color: white;
+}
+
+embedvid{
+    display: none;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+aside{
+	float: right;
+	width: 175px;
+	height: auto;
+	padding-left: 1em;
+	padding-right: 1em;
+	background-color: white;
+	font-size: 10px;
+	border-left: 2px solid black;
+}
+
+.impterm{
+	border-bottom: 2px dashed black;
+}
+
+#footer{
+	text-align: center;
+	padding: 2em;
+	background-color: white;
+	border-top: 3px solid black;
+}
+
+#copyright{
+	float: left;
+}
+
+#timestamp{
+	float: right;
+}
+
+a{
+	text-decoration: none;
+	padding: 1em;
+	color: black;
+}
+a.sponsor{
+	display: none;
+	padding: 0em;
+}
+a.sponsor:hover{
+    display: none;
+	background-color: white;
+}
+a:hover{
+    display: none;
+	background-color: white;
+}
+a:visited{
+    display: none;
+	color: black;
+}
+a.inline{
+	padding: 0em;
+	color: black;
+}
+a.inline:hover{
+    display: none;
+	background-color: white;
+	color: black;
+}
+a.thumb{
+	text-decoration: none;
+	color: black;
+}
+a.thumb:hover{
+    display: none;
+	background-color: white;
+}
+a.intable{
+	text-decoration: none;
+	color: black;
+}
+a.intable:hover{
+    display: none;
+	background-color: white;
+	color: black;
+}
