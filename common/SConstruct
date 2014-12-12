@@ -141,11 +141,12 @@ releaseLib = createStaticLib(releaseEnvironment, "ctsn_common",
                                                     coverageFiles)
 
 otherIncludeFiles = [os.path.join(getCppUTestPath(commonPath), includeDir), os.path.join(getGMockPath(commonPath), includeDir)] + systemPaths
-doxygenTarget = createDoxygenTarget(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, 'CTSN Common')
+doxygenTarget = createDoxygenTarget(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, 
+                                    'CTSN Common - Files that are common for multiple projects in the CTSN.')
 
 cppCheckTarget = createCppCheckTarget(releaseEnvironment, coverageFiles)
 
-(netBeansTarget, vsTarget, CodeBlocksTarget) = createProjectTargets(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, "CTSNGateway")
+(netBeansTarget, vsTarget, CodeBlocksTarget) = createProjectTargets(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, "CTSNCommon")
 
 Alias(DEBUG_LIB_ALIAS, debugLib)
 Alias(RELEASE_LIB_ALIAS, releaseLib)

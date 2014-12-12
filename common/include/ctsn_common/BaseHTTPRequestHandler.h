@@ -7,6 +7,12 @@
 #include <string>
 
 namespace CTSNCommon {
+
+/**
+ * \class BaseHTTPRequestHandler
+ * \brief All http request handlers inherit from this.  They must implement
+ *        handlePostRequest and handleGetRequest.
+ */
 class BaseHTTPRequestHandler : public Poco::Net::HTTPRequestHandler {
     public:
         /**

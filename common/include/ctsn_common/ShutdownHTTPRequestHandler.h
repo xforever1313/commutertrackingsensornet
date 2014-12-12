@@ -10,6 +10,12 @@
 
 namespace CTSNCommon {
 
+/**
+ * \class ShutdownHTTPRequestHandler
+ * \brief When posted to, this handler calls shutdown on the passed in ShutdownInterface.
+ * \note To use, do an http post request with the data in the following form:
+ *       shutdown=true
+ */
 class ShutdownHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         ShutdownHTTPRequestHandler(CTSNCommon::ShutdownInterface *shutdown);

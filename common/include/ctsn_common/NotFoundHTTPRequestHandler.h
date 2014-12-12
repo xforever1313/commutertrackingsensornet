@@ -9,6 +9,10 @@
 
 namespace CTSNCommon {
 
+/**
+ * \class NotFoundHTTPRequestHandler
+ * \brief This handler is called when a client tries to access an invalid URI.
+ */
 class NotFoundHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         NotFoundHTTPRequestHandler();

@@ -13,10 +13,18 @@
 
 namespace CTSNCommon {
 
+/**
+ * \class XBeeTxEvent
+ * \brief Puts together a packet to send to an XBee, and sends it over uart.
+ */
 class XBeeTxEvent : public Common::EventInterface {
     public:
         /**
-         * \warning any message more than 2^16 in length will be truncated to 2^16
+         * \brief Constructor
+         * \param node The node to send the message to.
+         * \param message The message to send.
+         * \warning The XBee will not send a message more than 255 characters.  Passing in
+         *          a message more than that will produce a TX error.
          */
         XBeeTxEvent(const Node &node,
                     const std::string &message, UartInterface *uart,

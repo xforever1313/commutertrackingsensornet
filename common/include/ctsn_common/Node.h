@@ -6,6 +6,10 @@
 
 namespace CTSNCommon {
 
+/**
+ * \class Node
+ * \brief Represents a trail node object.
+ */
 class Node {
     public:
         /**
@@ -26,6 +30,12 @@ class Node {
             END                     ///< Not an error number, only used for error checking
         };
 
+        /**
+         * \brief Constructor
+         * \param id The node's identification number
+         * \param address The node's mac address (hard coded into the XBee)
+         * \param status The node's current status.
+         */
         Node (unsigned int id, uint64_t address,
               NodeStatus status = NodeStatus::UNKNOWN);
         ~Node();

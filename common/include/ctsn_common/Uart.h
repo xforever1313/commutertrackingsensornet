@@ -12,14 +12,22 @@ typedef void(*RecvISR)(int);
 
 namespace CTSNCommon {
 
+/**
+ * \class Uart
+ * \brief Wraps the OS's uart functions.
+ */
 class Uart : public UartInterface {
     public:
         /**
-         * \param interrupt - a pointer to a function when there
-         *                    is data on the uart's receive
+         * \param recvISR - a pointer to a function that is called when there
+         *                  is data on the uart's receive pin
          *
          */
         Uart(const RecvISR &recvISR);
+
+        /**
+         * \note close() is called.
+         */
         ~Uart();
 
         /**

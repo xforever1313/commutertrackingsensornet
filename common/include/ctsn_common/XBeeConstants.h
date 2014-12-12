@@ -5,6 +5,10 @@
 
 namespace CTSNCommon {
 
+/**
+ * \class XBeeConstants
+ * \brief Constants needed for XBee parsing.
+ */
 class XBeeConstants {
     public:
         /**

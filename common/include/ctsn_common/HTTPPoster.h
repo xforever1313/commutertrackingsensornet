@@ -7,6 +7,10 @@
 
 namespace CTSNCommon {
 
+/**
+ * \class HTTPPoster
+ * \brief see the post() method for more information.
+ */
 class HTTPPoster : public HTTPPosterInterface {
     public:
         HTTPPoster();
@@ -17,7 +21,7 @@ class HTTPPoster : public HTTPPosterInterface {
          * \brief HTTP Posts the data via curl to the given address.
          * \param address the address to post to. examples are localhost
          *        or 192.168.1.1.  DO NOT include the http://
-         * \param uri must start with "/".  It is the part after 
+         * \param uri must start with "/".  It is the part after
          *        the domain.  So http://localhost:1414/something, pass
          *        in "/something".
          * \param data  Must have the http format.

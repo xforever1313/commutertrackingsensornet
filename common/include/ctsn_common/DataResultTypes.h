@@ -6,8 +6,11 @@
 namespace CTSNCommon {
 
 /**
+ * \enum DataResultType
+ * \brief This enum has values that represent the different entites
+ *        that the trail can detect.
  * \note if the database changes, so will this.
- * \todo make this similar to the nodecontainers so we dont need 
+ * \todo make this similar to the nodecontainers so we dont need
  *       to update this every time we compile.
  */
 enum DataResultType{

@@ -9,6 +9,10 @@
 
 namespace CTSNCommon {
 
+/**
+ * \class BadClientHTTPRequestHandler
+ * \brief This handler is called when a client's user agent is not valid.
+ */
 class BadClientHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         BadClientHTTPRequestHandler();
