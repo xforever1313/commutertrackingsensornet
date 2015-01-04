@@ -24,6 +24,9 @@ if ('expand_logs=1' in sys.argv):
 else:
     expandLogs = False
 
+if ('pi_build=1' in sys.argv):
+    del(targets['4picture_parser'])
+
 args = ""
 
 for arg in sys.argv[1:]:
