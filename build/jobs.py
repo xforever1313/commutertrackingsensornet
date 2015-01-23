@@ -17,3 +17,5 @@ targets["4picture_parser"] = os.path.join(rootDir, "picture_parser")
 
 targets["5gateway"] = os.path.join(rootDir,"gateway")
 
+targets["6pi_node"] = os.path.join(rootDir, "pi_node")
+
