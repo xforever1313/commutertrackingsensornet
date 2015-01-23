@@ -12,7 +12,7 @@
 #include "gateway/LogEvent.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
 #include "ctsn_common/Node.h"
-#include "gateway/NodeContainerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "gateway/MariaDBInterface.h"
 
 namespace Gateway {
@@ -25,7 +25,7 @@ const std::string LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA = "message";
 
 LogMessageHTTPRequestHandler::LogMessageHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
                                                            MariaDBInterface *mariadb,
-                                                           NodeContainerInterface *nodeContainer) :
+                                                           CTSNCommon::NodeContainerInterface *nodeContainer) :
     m_eventExecutor(eventExecutor),
     m_mariadb(mariadb),
     m_nodes(nodeContainer)

@@ -5,11 +5,11 @@
 #include <Poco/Net/HTTPServerResponse.h>
 #include <string>
 
+#include "ctsn_common/NodeContainerInterface.h"
 #include "EventExecutorInterface.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeCheckEvent.h"
 #include "gateway/NodeCheckHTTPRequestHandler.h"
-#include "gateway/NodeContainerInterface.h"
 
 namespace Gateway {
 
@@ -19,14 +19,14 @@ const std::string NodeCheckHTTPRequestHandler::POST_FALSE_MESSAGE =
     "Node check not occurring";
 const std::string NodeCheckHTTPRequestHandler::POST_MISSING_FIELD =
     "Missing Field";
-const std::string NodeCheckHTTPRequestHandler::GET_MESSAGE = 
+const std::string NodeCheckHTTPRequestHandler::GET_MESSAGE =
     "Usage: check=true";
 const std::string NodeCheckHTTPRequestHandler::CHECK_FORM_DATA =
     "check";
 
 NodeCheckHTTPRequestHandler::NodeCheckHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
                                                          MariaDBInterface *mariadb,
-                                                         NodeContainerInterface *nodes) :
+                                                         CTSNCommon::NodeContainerInterface *nodes) :
 
     m_eventExecutor(eventExecutor),
     m_mariadb(mariadb),

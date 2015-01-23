@@ -7,10 +7,10 @@
 
 #include "EventExecutorInterface.h"
 #include "ctsn_common/BaseHTTPRequestHandler.h"
-#include "gateway/NodeContainerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "ctsn_common/UartInterface.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 /**
  * \class XBeeTxHTTPRequestHandler

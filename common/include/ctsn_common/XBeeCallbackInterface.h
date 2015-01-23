@@ -7,7 +7,7 @@
 
 #include "ctsn_common/XBeeConstants.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 /**
  * \class XBeeCallbackInterface

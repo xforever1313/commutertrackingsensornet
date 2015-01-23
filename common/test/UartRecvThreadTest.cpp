@@ -5,7 +5,7 @@
 #define private public
 #define protected public
 
-#include "gateway/UartRecvThread.h"
+#include "ctsn_common/UartRecvThread.h"
 #include "io/StringLogger.h"
 #include "MockUart.h"
 #include "MockUartRecvCallback.h"
@@ -17,9 +17,9 @@ TEST_GROUP(UartRecvThreadTest) {
 
         m_errorLogger = new Common::IO::StringLogger();
         m_mockUart = new testing::StrictMock<CTSNCommon::MockUart>();
-        m_callback = new testing::StrictMock<Gateway::MockUartRecvCallback>();
-        m_uut = new Gateway::UartRecvThread(m_mockUart, m_callback,
-                                            *m_errorLogger);
+        m_callback = new testing::StrictMock<CTSNCommon::MockUartRecvCallback>();
+        m_uut = new CTSNCommon::UartRecvThread(m_mockUart, m_callback,
+                                               *m_errorLogger);
 
         CHECK(m_uut->m_isAlive);
         CHECK(m_uut->isAlive());
@@ -36,8 +36,8 @@ TEST_GROUP(UartRecvThreadTest) {
 
     Common::IO::StringLogger *m_errorLogger;
     testing::StrictMock<CTSNCommon::MockUart> *m_mockUart;
-    testing::StrictMock<Gateway::MockUartRecvCallback> *m_callback;
-    Gateway::UartRecvThread *m_uut;
+    testing::StrictMock<CTSNCommon::MockUartRecvCallback> *m_callback;
+    CTSNCommon::UartRecvThread *m_uut;
 };
 
 TEST(UartRecvThreadTest, killTest) {

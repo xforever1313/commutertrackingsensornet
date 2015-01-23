@@ -25,7 +25,7 @@ TEST_GROUP(LogMessageHTTPRequestHandlerTest) {
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
-        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
         m_uut = new Gateway::LogMessageHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
 
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
@@ -47,7 +47,7 @@ TEST_GROUP(LogMessageHTTPRequestHandlerTest) {
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
-    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
     Gateway::LogMessageHTTPRequestHandler *m_uut;
 };
 
@@ -89,7 +89,7 @@ TEST(LogMessageHTTPRequestHandlerTest, exceptionTest) {
     std::string badNode = "1abc";
 
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::NODE_FORM_DATA << "=" << badNode << "&";
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "1";
 
@@ -105,7 +105,7 @@ TEST(LogMessageHTTPRequestHandlerTest, exceptionTest) {
 ///Invaid Message Tests
 TEST(LogMessageHTTPRequestHandlerTest, postMessageNotAnIntTest1) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "1abc";
 
@@ -117,7 +117,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postMessageNotAnIntTest1) {
 
 TEST(LogMessageHTTPRequestHandlerTest, postMessageNotAnIntTest2) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "abc";
 
@@ -129,7 +129,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postMessageNotAnIntTest2) {
 
 TEST(LogMessageHTTPRequestHandlerTest, postMessageTooLow) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << Gateway::ErrorNumber::FIRST;
 
@@ -141,7 +141,7 @@ TEST(LogMessageHTTPRequestHandlerTest, postMessageTooLow) {
 
 TEST(LogMessageHTTPRequestHandlerTest, postMessageTooHigh) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::LogMessageHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << Gateway::ErrorNumber::END;
 

@@ -5,26 +5,27 @@
 #include <Poco/Net/HTTPServerResponse.h>
 #include <string>
 
+#include "ctsn_common/NodeContainerInterface.h"
 #include "EventExecutor.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/NodeStatusUpdateEvent.h"
 #include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 
-namespace Gateway { 
+namespace Gateway {
 
-const std::string NodeStatusUpdateHTTPRequestHandler::GET_MESSAGE = 
+const std::string NodeStatusUpdateHTTPRequestHandler::GET_MESSAGE =
     "Usage: node=x&status=y";
 const std::string NodeStatusUpdateHTTPRequestHandler::POST_SUCCESS_MESSAGE =
     "Node status updated";
-const std::string NodeStatusUpdateHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE = 
+const std::string NodeStatusUpdateHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE =
     "Missing Field";
 const std::string NodeStatusUpdateHTTPRequestHandler::NODE_FORM_DATA = "node";
 const std::string NodeStatusUpdateHTTPRequestHandler::STATUS_FORM_DATA = "status";
 
 NodeStatusUpdateHTTPRequestHandler::NodeStatusUpdateHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
-                                           NodeContainerInterface *nodes,
-                                           MariaDBInterface *mariadb) :
+                                                                       CTSNCommon::NodeContainerInterface *nodes,
+                                                                       MariaDBInterface *mariadb) :
     m_eventExecutor(eventExecutor),
     m_nodes(nodes),
     m_mariadb(mariadb)
@@ -36,7 +37,7 @@ NodeStatusUpdateHTTPRequestHandler::~NodeStatusUpdateHTTPRequestHandler() {
 
 }
 
-void NodeStatusUpdateHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &request, 
+void NodeStatusUpdateHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &request,
                                                            Poco::Net::HTTPServerResponse &response) {
 
    try {
@@ -44,7 +45,7 @@ void NodeStatusUpdateHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServer
         const std::string &nodeStr = form[NODE_FORM_DATA];
         const std::string &statusStr = form[STATUS_FORM_DATA];
 
-        const CTSNCommon::Node::NodeStatus status = 
+        const CTSNCommon::Node::NodeStatus status =
             CTSNCommon::Node::convertStringToNodeStatus(statusStr);
         const CTSNCommon::Node node = m_nodes->convertStringToNode(nodeStr);
 

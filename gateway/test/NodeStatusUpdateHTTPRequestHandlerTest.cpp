@@ -16,7 +16,7 @@ TEST_GROUP(NodeStatusUpdateHTTPRequestHandlerTest) {
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>;
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
-        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
 
         m_uut = new Gateway::NodeStatusUpdateHTTPRequestHandler(m_eventExecutor,
@@ -44,7 +44,7 @@ TEST_GROUP(NodeStatusUpdateHTTPRequestHandlerTest) {
     testing::StrictMock<MockPoco::Net::MockHTTPServerResponse> *m_response;
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
-    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
 
     CTSNCommon::Node *m_node;
@@ -59,9 +59,9 @@ TEST(NodeStatusUpdateHTTPRequestHandlerTest, postMissingAllFieldsTest) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), 
+    CHECK_EQUAL(m_response->m_response.str(),
                 Gateway::NodeStatusUpdateHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE);
-    CHECK_EQUAL(m_response->_status, 
+    CHECK_EQUAL(m_response->_status,
                 Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
@@ -124,10 +124,10 @@ TEST(NodeStatusUpdateHTTPRequestHandlerTest, postBadStatusDataTest) {
 TEST(NodeStatusUpdateHTTPRequestHandlerTest, postSuccess) {
     CTSNCommon::Node::NodeStatus status = CTSNCommon::Node::NodeStatus::OKAY;
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::NodeStatusUpdateHTTPRequestHandler::NODE_FORM_DATA << "="
                     << std::to_string(m_node->getID()) << "&";
-    m_request->m_ss << Gateway::NodeStatusUpdateHTTPRequestHandler::STATUS_FORM_DATA 
+    m_request->m_ss << Gateway::NodeStatusUpdateHTTPRequestHandler::STATUS_FORM_DATA
                     << "=" << std::to_string(status);
 
     EXPECT_CALL(*m_nodes, convertStringToNode(std::to_string(m_node->getID())))
@@ -139,7 +139,7 @@ TEST(NodeStatusUpdateHTTPRequestHandlerTest, postSuccess) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    Gateway::NodeStatusUpdateEvent *NodeStatusevent = 
+    Gateway::NodeStatusUpdateEvent *NodeStatusevent =
         dynamic_cast<Gateway::NodeStatusUpdateEvent*>(event.get());
     CHECK(event != nullptr);
 
@@ -148,7 +148,7 @@ TEST(NodeStatusUpdateHTTPRequestHandlerTest, postSuccess) {
     POINTERS_EQUAL(NodeStatusevent->m_nodes, m_nodes);
     POINTERS_EQUAL(NodeStatusevent->m_eventExecutor, m_eventExecutor);
     POINTERS_EQUAL(NodeStatusevent->m_mariadb, m_mariadb);
-    
+
     CHECK_EQUAL(m_response->m_response.str(),
                 Gateway::NodeStatusUpdateHTTPRequestHandler::POST_SUCCESS_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);

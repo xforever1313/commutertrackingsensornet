@@ -17,7 +17,7 @@ TEST_GROUP(NodeCheckHTTPRequestHandlerTest) {
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>;
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
-        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
 
         m_uut = new Gateway::NodeCheckHTTPRequestHandler(m_eventExecutor,
@@ -42,7 +42,7 @@ TEST_GROUP(NodeCheckHTTPRequestHandlerTest) {
     testing::StrictMock<MockPoco::Net::MockHTTPServerResponse> *m_response;
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
-    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
 
     Gateway::NodeCheckHTTPRequestHandler *m_uut;
@@ -56,9 +56,9 @@ TEST(NodeCheckHTTPRequestHandlerTest, postMissingField) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), 
+    CHECK_EQUAL(m_response->m_response.str(),
                 Gateway::NodeCheckHTTPRequestHandler::POST_MISSING_FIELD);
-    CHECK_EQUAL(m_response->_status, 
+    CHECK_EQUAL(m_response->_status,
                 Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 
 }
@@ -88,7 +88,7 @@ TEST(NodeCheckHTTPRequestHandlerTest, postTrue) {
     m_uut->handleRequest(*m_request, *m_response);
 
     // Test to ensure the right event was created.
-    Gateway::NodeCheckEvent *checkEvent = 
+    Gateway::NodeCheckEvent *checkEvent =
         dynamic_cast<Gateway::NodeCheckEvent*>(event.get());
 
     CHECK(checkEvent != nullptr);
@@ -113,5 +113,5 @@ TEST(NodeCheckHTTPRequestHandlerTest, getTest) {
     CHECK_EQUAL(m_response->m_response.str(),
                 Gateway::NodeCheckHTTPRequestHandler::GET_MESSAGE);
 
-    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);   
+    CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);
 }

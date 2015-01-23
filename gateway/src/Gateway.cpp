@@ -10,8 +10,8 @@
 #include "gateway/NodeContainer.h"
 #include "gateway/TextMessageEvent.h"
 #include "ctsn_common/Uart.h"
-#include "gateway/UartRecvThread.h"
-#include "gateway/XBeeCallbacks.h"
+#include "ctsn_common/UartRecvThread.h"
+#include "ctsn_common/XBeeCallbacks.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "io/InputReader.h"
 #include "Secrets.py"
@@ -34,9 +34,9 @@ Gateway::Gateway() :
     m_input(&std::cin),
     m_output(&Common::IO::ConsoleLogger::out),
     m_uart(new CTSNCommon::Uart(RxSignal)),
-    m_xbeeCallbacks(new XBeeCallbacks()),
-    m_xbeeController(new XBeeController(m_xbeeCallbacks)),
-    m_recvThread(new UartRecvThread(m_uart, m_xbeeController)),
+    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks()),
+    m_xbeeController(new CTSNCommon::XBeeController(m_xbeeCallbacks)),
+    m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController)),
     m_socket(nullptr),
     m_server(nullptr),
     m_mariadb(nullptr),

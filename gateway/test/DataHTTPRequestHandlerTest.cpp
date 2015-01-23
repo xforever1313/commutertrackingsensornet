@@ -20,7 +20,7 @@ TEST_GROUP(DataHTTPRequestHandlerTest) {
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
-        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
 
         m_uut = new Gateway::DataHTTPRequestHandler(m_eventExecutor,
                                                     m_mariadb,
@@ -47,7 +47,7 @@ TEST_GROUP(DataHTTPRequestHandlerTest) {
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
-    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
 
     CTSNCommon::Node *m_node;
 
@@ -93,7 +93,7 @@ TEST(DataHTTPRequestHandlerTest, postNodeNotAnIntTest1) {
     std::string badString = "1abc";
     std::string error = "error";
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::DataHTTPRequestHandler::NODE_FORM_DATA << "=" << badString << "&";
     m_request->m_ss << Gateway::DataHTTPRequestHandler::RESULT_TYPE_FORM_DATA << "=" << "1";
 
@@ -110,10 +110,10 @@ TEST(DataHTTPRequestHandlerTest, postNodeNotAnIntTest1) {
 TEST(DataHTTPRequestHandlerTest, postResultNotAnIntTest1) {
     std::string badString = "1abc";
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::DataHTTPRequestHandler::NODE_FORM_DATA << "="
                     << std::to_string(m_node->getID()) << "&";
-    m_request->m_ss << Gateway::DataHTTPRequestHandler::RESULT_TYPE_FORM_DATA 
+    m_request->m_ss << Gateway::DataHTTPRequestHandler::RESULT_TYPE_FORM_DATA
                     << "=" << badString;
 
     EXPECT_CALL(*m_nodes, convertStringToNode(std::to_string(m_node->getID())))
@@ -130,10 +130,10 @@ TEST(DataHTTPRequestHandlerTest, postResultNotAnIntTest1) {
 TEST(DataHTTPRequestHandlerTest, postSuccess) {
     CTSNCommon::DataResultType type = CTSNCommon::DataResultType::HORSE;
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::DataHTTPRequestHandler::NODE_FORM_DATA << "="
                     << std::to_string(m_node->getID()) << "&";
-    m_request->m_ss << Gateway::DataHTTPRequestHandler::RESULT_TYPE_FORM_DATA 
+    m_request->m_ss << Gateway::DataHTTPRequestHandler::RESULT_TYPE_FORM_DATA
                     << "=" << std::to_string(type);
 
     EXPECT_CALL(*m_nodes, convertStringToNode(std::to_string(m_node->getID())))

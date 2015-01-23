@@ -10,7 +10,7 @@
 #include "gateway/ErrorEvent.h"
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "ctsn_common/Node.h"
-#include "gateway/NodeContainerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "MockEventExecutor.h"
 #include "MockHTTPServerRequest.h"
 #include "MockHTTPServerResponse.h"
@@ -24,7 +24,7 @@ TEST_GROUP(ErrorHTTPRequestHandlerTest) {
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
-        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
         m_uut = new Gateway::ErrorHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
 
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
@@ -47,7 +47,7 @@ TEST_GROUP(ErrorHTTPRequestHandlerTest) {
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
-    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
     Gateway::ErrorHTTPRequestHandler *m_uut;
 };
 
@@ -88,7 +88,7 @@ TEST(ErrorHTTPRequestHandlerTest, postNodeNotAnIntTest1) {
     std::string badString = "1abc";
     std::string error = "error";
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << badString << "&";
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "1";
 
@@ -104,7 +104,7 @@ TEST(ErrorHTTPRequestHandlerTest, postNodeNotAnIntTest1) {
 ///Invaid Message Tests
 TEST(ErrorHTTPRequestHandlerTest, postMessageNotAnIntTest1) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "1abc";
 
@@ -116,7 +116,7 @@ TEST(ErrorHTTPRequestHandlerTest, postMessageNotAnIntTest1) {
 
 TEST(ErrorHTTPRequestHandlerTest, postMessageNotAnIntTest2) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << "abc";
 
@@ -128,7 +128,7 @@ TEST(ErrorHTTPRequestHandlerTest, postMessageNotAnIntTest2) {
 
 TEST(ErrorHTTPRequestHandlerTest, postMessageTooLow) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << Gateway::ErrorNumber::FIRST;
 
@@ -140,7 +140,7 @@ TEST(ErrorHTTPRequestHandlerTest, postMessageTooLow) {
 
 TEST(ErrorHTTPRequestHandlerTest, postMessageTooHigh) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-  
+
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::NODE_FORM_DATA << "=" << "1&";
     m_request->m_ss << Gateway::ErrorHTTPRequestHandler::MESSAGE_FORM_DATA << "=" << Gateway::ErrorNumber::END;
 

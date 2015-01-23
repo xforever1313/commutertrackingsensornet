@@ -18,7 +18,7 @@ TEST_GROUP(NodeCheckEventTest) {
     TEST_SETUP() {
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
-        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
         m_result = new testing::StrictMock<Gateway::MockMariaDBResult>();
         m_errLogger = new Common::IO::StringLogger();
         m_uut = new Gateway::NodeCheckEvent(m_eventExecutor,
@@ -47,7 +47,7 @@ TEST_GROUP(NodeCheckEventTest) {
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     testing::StrictMock<Gateway::MockMariaDBResult> *m_result;
-    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
 
     Common::IO::StringLogger *m_errLogger;
     Gateway::NodeCheckEvent *m_uut;
@@ -61,7 +61,7 @@ TEST(NodeCheckEventTest, successTest) {
     CTSNCommon::Node node4 (4, 0x04, CTSNCommon::Node::NodeStatus::BATTERY_CRITICAL);
     CTSNCommon::Node node5 (5, 0x05, CTSNCommon::Node::NodeStatus::OFFLINE);
 
-    // What is returned from the query 
+    // What is returned from the query
     std::vector<std::string> nodes = {std::to_string(node1.getID()),
                                       std::to_string(node3.getID()),
                                       std::to_string(node4.getID()),
@@ -85,7 +85,7 @@ TEST(NodeCheckEventTest, successTest) {
     // set node 3 status
     EXPECT_CALL(*m_nodes, convertStringToNode(nodes[1]))
         .WillOnce(testing::Return(node3));
-    EXPECT_CALL(*m_nodes, setNodeStatus(node3.getID(), 
+    EXPECT_CALL(*m_nodes, setNodeStatus(node3.getID(),
                                         CTSNCommon::Node::NodeStatus::UNKNOWN))
         .WillOnce(testing::Return(false));
 
@@ -135,7 +135,7 @@ TEST(NodeCheckEventTest, databaseExceptionTest) {
 TEST(NodeCheckEventTest, nodeConversionFailureTest) {
     std::string error = "error";
 
-    // What is returned from the query 
+    // What is returned from the query
     std::vector<std::string> nodes = {"derp"};
 
     EXPECT_CALL(*m_nodes, refreshNodes());

@@ -7,9 +7,9 @@
 
 #include "EventExecutorInterface.h"
 #include "ctsn_common/BaseHTTPRequestHandler.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "gateway/DataEvent.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/NodeContainerInterface.h"
 
 namespace Gateway {
 
@@ -22,7 +22,7 @@ class DataHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         DataHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
                                MariaDBInterface *mariadb,
-                               NodeContainerInterface *nodes);
+                               CTSNCommon::NodeContainerInterface *nodes);
 
         ~DataHTTPRequestHandler();
 
@@ -43,7 +43,7 @@ class DataHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
 
         Common::EventExecutorInterface *m_eventExecutor;
         MariaDBInterface *m_mariadb;
-        NodeContainerInterface *m_nodes;
+        CTSNCommon::NodeContainerInterface *m_nodes;
 };
 
 }

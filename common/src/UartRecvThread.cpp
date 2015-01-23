@@ -8,16 +8,16 @@
 #endif
 
 #include "ctsn_common/UartInterface.h"
-#include "gateway/UartRecvCallbackInterface.h"
-#include "gateway/UartRecvThread.h"
+#include "ctsn_common/UartRecvCallbackInterface.h"
+#include "ctsn_common/UartRecvThread.h"
 #include "io/LoggerBase.h"
 #include "SSemaphore.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 #ifdef LINUX
 /**
- * \brief sends sigio to the uart so it returns upon destruction.  This MUST be created 
+ * \brief sends sigio to the uart so it returns upon destruction.  This MUST be created
  *        in the run loop.
  * \todo If using windows, a new version of this must be created since this
  *       is strictly linux specific

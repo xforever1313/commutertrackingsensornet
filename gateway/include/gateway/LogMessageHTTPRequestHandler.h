@@ -7,9 +7,9 @@
 
 #include "EventExecutorInterface.h"
 #include "ctsn_common/BaseHTTPRequestHandler.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "gateway/ErrorNumbers.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/NodeContainerInterface.h"
 #include "gateway/LogEvent.h"
 
 namespace Gateway {
@@ -26,7 +26,7 @@ class LogMessageHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         LogMessageHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
                                      MariaDBInterface *mariadb,
-                                     NodeContainerInterface *nodes);
+                                     CTSNCommon::NodeContainerInterface *nodes);
 
         ~LogMessageHTTPRequestHandler();
 
@@ -45,7 +45,7 @@ class LogMessageHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
 
         Common::EventExecutorInterface *m_eventExecutor;
         MariaDBInterface *m_mariadb;
-        NodeContainerInterface *m_nodes;
+        CTSNCommon::NodeContainerInterface *m_nodes;
 };
 
 }

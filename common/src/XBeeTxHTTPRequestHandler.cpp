@@ -7,11 +7,11 @@
 
 #include "EventExecutorInterface.h"
 #include "ctsn_common/Node.h"
-#include "gateway/NodeContainerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "ctsn_common/XBeeTxEvent.h"
-#include "gateway/XBeeTxHTTPRequestHandler.h"
+#include "ctsn_common/XBeeTxHTTPRequestHandler.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 const std::string XBeeTxHTTPRequestHandler::POST_MESSAGE = "Message send to node";
 const std::string XBeeTxHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE = "Missing Field!";
@@ -25,7 +25,7 @@ XBeeTxHTTPRequestHandler::XBeeTxHTTPRequestHandler(Common::EventExecutorInterfac
     m_eventExecutor(eventExecutor),
     m_uart(uart),
     m_nodes(nodes)
-{    
+{
 
 }
 
@@ -38,7 +38,7 @@ void XBeeTxHTTPRequestHandler::handleGetRequest(Poco::Net::HTTPServerRequest &re
     sendSuccessResponse(response, GET_MESSAGE);
 }
 
-void XBeeTxHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &request, 
+void XBeeTxHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &request,
                                                  Poco::Net::HTTPServerResponse &response) {
     try {
         Poco::Net::HTMLForm form(request, request.stream());

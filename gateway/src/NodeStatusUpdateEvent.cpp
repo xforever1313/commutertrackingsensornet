@@ -6,15 +6,15 @@
 #include "gateway/ErrorNumbers.h"
 #include "gateway/MariaDBInterface.h"
 #include "ctsn_common/Node.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "gateway/NodeStatusUpdateEvent.h"
-#include "gateway/NodeContainerInterface.h"
 #include "io/LoggerBase.h"
 
 namespace Gateway {
 
 NodeStatusUpdateEvent::NodeStatusUpdateEvent(CTSNCommon::Node::NodeStatus status,
                                              unsigned int nodeNumber,
-                                             NodeContainerInterface *nodes,
+                                             CTSNCommon::NodeContainerInterface *nodes,
                                              Common::EventExecutorInterface *eventExecutor,
                                              MariaDBInterface *mariadb,
                                              Common::IO::LoggerBase &errLogger

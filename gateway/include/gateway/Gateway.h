@@ -7,12 +7,12 @@
 #include "ctsn_common/HTTPPosterInterface.h"
 #include "EventExecutorInterface.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/NodeContainerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "ctsn_common/ShutdownInterface.h"
 #include "ctsn_common/UartInterface.h"
-#include "gateway/UartRecvThread.h"
-#include "gateway/XBeeCallbackInterface.h"
-#include "gateway/XBeeController.h"
+#include "ctsn_common/UartRecvThread.h"
+#include "ctsn_common/XBeeCallbackInterface.h"
+#include "ctsn_common/XBeeController.h"
 #include "io/LoggerBase.h"
 #include "SMutex.h"
 #include "SSemaphore.h"
@@ -46,9 +46,9 @@ class Gateway : public CTSNCommon::ShutdownInterface {
         Common::IO::LoggerBase *m_output;
 
         CTSNCommon::UartInterface *m_uart;
-        XBeeCallbackInterface *m_xbeeCallbacks;
-        XBeeController *m_xbeeController;
-        UartRecvThread *m_recvThread;
+        CTSNCommon::XBeeCallbackInterface *m_xbeeCallbacks;
+        CTSNCommon::XBeeController *m_xbeeController;
+        CTSNCommon::UartRecvThread *m_recvThread;
 
         OS::SMutex m_shutdownMutex;
         bool m_isShutdown;
@@ -59,7 +59,7 @@ class Gateway : public CTSNCommon::ShutdownInterface {
         Poco::Net::HTTPServer *m_server;
 
         MariaDBInterface *m_mariadb;
-        NodeContainerInterface *m_nodes;
+        CTSNCommon::NodeContainerInterface *m_nodes;
 
         CTSNCommon::HTTPPosterInterface *m_httpPoster;
 };

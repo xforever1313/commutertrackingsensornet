@@ -5,12 +5,12 @@
 #include <string>
 #include <vector>
 
-#include "gateway/XBeeCallbackInterface.h"
 #include "ctsn_common/HTTPPosterInterface.h"
+#include "ctsn_common/XBeeCallbackInterface.h"
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 /**
  * \class XBeeCallbacks

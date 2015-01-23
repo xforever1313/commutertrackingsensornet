@@ -5,8 +5,8 @@
 #include <map>
 
 #include "gateway/MariaDBInterface.h"
-#include "gateway/NodeContainerInterface.h"
 #include "ctsn_common/Node.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "SMutex.h"
 
 namespace Gateway {
@@ -14,7 +14,7 @@ namespace Gateway {
 /**
  * \brief a class that contains all the nodes.
  */
-class NodeContainer : public NodeContainerInterface {
+class NodeContainer : public CTSNCommon::NodeContainerInterface {
     public:
         NodeContainer(MariaDBInterface *const mariadb);
 

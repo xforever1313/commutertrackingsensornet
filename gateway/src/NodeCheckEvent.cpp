@@ -9,19 +9,19 @@
 #include "gateway/MariaDBInterface.h"
 #include "gateway/MariaDBWrapper.h"
 #include "gateway/NodeCheckEvent.h"
-#include "gateway/NodeContainerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "io/LoggerBase.h"
 
 namespace Gateway {
 
 // it takes 1 hour before the nodes become unknown.
-const std::string NodeCheckEvent::OUT_OF_DATE_NODE_QUERY = 
+const std::string NodeCheckEvent::OUT_OF_DATE_NODE_QUERY =
     "SELECT * FROM node WHERE TIMESTAMPDIFF(HOUR, node.update_time, NOW()) >= 1";
 
 NodeCheckEvent::NodeCheckEvent(Common::EventExecutorInterface *eventExecutor,
                                MariaDBInterface *mariadb,
-                               NodeContainerInterface *nodes,
-                               Common::IO::LoggerBase &errLogger /*= 
+                               CTSNCommon::NodeContainerInterface *nodes,
+                               Common::IO::LoggerBase &errLogger /*=
                                Common::IO::ConsoleLogger::err*/) :
 
     m_eventExecutor(eventExecutor),
@@ -43,7 +43,7 @@ void NodeCheckEvent::execute() {
 
         m_mariadb->mysql_real_query(OUT_OF_DATE_NODE_QUERY);
         m_result->storeResult();
-    
+
         std::vector<std::string> nodeIDs;
         nodeIDs = m_result->getValuesFromColumn("id");
 

@@ -2,14 +2,14 @@
 #define UARTRECVTHREAD_H
 
 #include "ctsn_common/UartInterface.h"
-#include "gateway/UartRecvCallbackInterface.h"
+#include "ctsn_common/UartRecvCallbackInterface.h"
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
 #include "SMutex.h"
 #include "SSemaphore.h"
 #include "SThread.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 /**
  * \class UartRecvThread

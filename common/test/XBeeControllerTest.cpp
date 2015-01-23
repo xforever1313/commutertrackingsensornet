@@ -6,17 +6,17 @@
 #include "UnitTest.h"
 
 #include "ctsn_common/XBeeConstants.h"
-#include "gateway/XBeeController.h"
+#include "ctsn_common/XBeeController.h"
 #include "MockXBeeCallback.h"
 
 TEST_GROUP(XBeeControllerTest) {
     TEST_SETUP() {
-        m_callbacks = new testing::StrictMock<Gateway::MockXBeeCallback>();
-        m_uut = new Gateway::XBeeController(m_callbacks);
+        m_callbacks = new testing::StrictMock<CTSNCommon::MockXBeeCallback>();
+        m_uut = new CTSNCommon::XBeeController(m_callbacks);
 
         CHECK(m_uut->isAlive());
         CHECK(m_uut->m_isAlive);
-        CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+        CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
         CHECK_EQUAL(m_uut->m_dataLength, 0);
         CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
         CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
@@ -34,8 +34,8 @@ TEST_GROUP(XBeeControllerTest) {
         delete m_callbacks;
     }
 
-    testing::StrictMock<Gateway::MockXBeeCallback> *m_callbacks;
-    Gateway::XBeeController *m_uut;
+    testing::StrictMock<CTSNCommon::MockXBeeCallback> *m_callbacks;
+    CTSNCommon::XBeeController *m_uut;
 };
 
 TEST(XBeeControllerTest, killTest) {
@@ -86,7 +86,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
 
     // First character: Garbage data.  Should remain in startup state.
     m_uut->run();
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 1);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 1);
     CHECK_EQUAL(m_uut->m_dataLength, 0);
@@ -94,7 +94,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
 
     // Second character: Garbage data.  Should remain in startup state.
     m_uut->run();
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 2);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 2);
     CHECK_EQUAL(m_uut->m_dataLength, 0);
@@ -103,7 +103,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
 
     // Third Character: Start character.  Should go to MSG_START state.
     m_uut->run();
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 3);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 3);
     CHECK_EQUAL(m_uut->m_dataLength, 0);
@@ -113,7 +113,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
 
     // Forth Character: MSB Length.  Should go to LENGTH1 State
     m_uut->run();
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::GOT_LENGTH1);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::GOT_LENGTH1);
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 4);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 4);
     CHECK_EQUAL(m_uut->m_dataLength, 0); // Length is still zero.
@@ -123,7 +123,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
 
     // Fifth Character: LSB Length.  Should go into LENGTH2 State
     m_uut->run();
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::GOT_LENGTH2);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::GOT_LENGTH2);
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - 5);
     CHECK_EQUAL(m_uut->m_data.size(), data.size() - 5);
     CHECK_EQUAL(m_uut->m_dataLength, 0x14); // Length is now what is expected.
@@ -141,17 +141,17 @@ TEST(XBeeControllerTest, verboseStateTest) {
         m_uut->run();
         if (i == 16) {
             // At this point, we want to move on to reading the payload
-            CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::PARSE_PAYLOAD);
+            CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::PARSE_PAYLOAD);
         }
         else {
             // Still have more characters to ignore!
-            CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::IGNORE_OPTIONS);
+            CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::IGNORE_OPTIONS);
         }
         CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - i - 1);
         CHECK_EQUAL(m_uut->m_data.size(), data.size() - i - 1);
         CHECK_EQUAL(m_uut->m_checkSumTotal, runningCheckSum);
         CHECK_EQUAL(m_uut->m_bytesProcessed[i - 2], data[i]);
-        CHECK_EQUAL(m_uut->m_bytesProcessed.size(), i - 1); 
+        CHECK_EQUAL(m_uut->m_bytesProcessed.size(), i - 1);
     }
 
     // Characters 20 - 27, The payload.  The data we actually care about.
@@ -161,11 +161,11 @@ TEST(XBeeControllerTest, verboseStateTest) {
         m_uut->run();
         if (i == 24) {
             //We read the entire payload.  Move on to check the checksum.
-            CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::CHECK_CHECKSUM);
+            CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::CHECK_CHECKSUM);
             CHECK_EQUAL(m_uut->m_payload, "Hello :)");
         }
         else {
-            CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::PARSE_PAYLOAD);
+            CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::PARSE_PAYLOAD);
         }
         CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), data.size() - i - 1);
         CHECK_EQUAL(m_uut->m_data.size(), data.size() - i - 1);
@@ -187,7 +187,7 @@ TEST(XBeeControllerTest, verboseStateTest) {
 
     m_uut->run();  // Run the last state.
 
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
     CHECK_EQUAL(m_uut->m_dataSemaphore.getSemaphoreCount(), 0);
     CHECK_EQUAL(m_uut->m_data.size(), 0);
 
@@ -243,7 +243,7 @@ TEST(XBeeControllerTest, badChecksumTest) {
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 /////
@@ -274,7 +274,7 @@ TEST(XBeeControllerTest, incompleteMessageStartupState) {
     CHECK_EQUAL(m_uut->m_bytesProcessed[0], CTSNCommon::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
 }
 
 TEST(XBeeControllerTest, incompleteMessageGotLength1State) {
@@ -303,7 +303,7 @@ TEST(XBeeControllerTest, incompleteMessageGotLength1State) {
     CHECK_EQUAL(m_uut->m_bytesProcessed[0], CTSNCommon::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
 }
 
 TEST(XBeeControllerTest, incompleteMessageGotLength2State) {
@@ -333,7 +333,7 @@ TEST(XBeeControllerTest, incompleteMessageGotLength2State) {
     CHECK_EQUAL(m_uut->m_bytesProcessed[0], CTSNCommon::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
 }
 
 TEST(XBeeControllerTest, incompleteMessageIgnoreOptionsState) {
@@ -372,7 +372,7 @@ TEST(XBeeControllerTest, incompleteMessageIgnoreOptionsState) {
     CHECK_EQUAL(m_uut->m_bytesProcessed[0], CTSNCommon::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
 }
 
 TEST(XBeeControllerTest, incompleteMessageParsePayloadState) {
@@ -420,7 +420,7 @@ TEST(XBeeControllerTest, incompleteMessageParsePayloadState) {
     CHECK_EQUAL(m_uut->m_bytesProcessed[0], CTSNCommon::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
 }
 
 TEST(XBeeControllerTest, incompleteMessageCheckCheckSumState) {
@@ -467,7 +467,7 @@ TEST(XBeeControllerTest, incompleteMessageCheckCheckSumState) {
     CHECK_EQUAL(m_uut->m_bytesProcessed[0], CTSNCommon::XBeeConstants::START_CHARACTER);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0); // No checksum yet
     CHECK_EQUAL(m_uut->m_payload, ""); // No payload yet
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
 }
 
 
@@ -481,7 +481,7 @@ TEST(XBeeControllerTest, handleMessageStartStateMSBTest) {
     m_uut->handleMessageStartState();
 
     CHECK_EQUAL(m_uut->m_dataLength, 0xff00);
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::GOT_LENGTH1);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::GOT_LENGTH1);
 }
 
 /**
@@ -493,7 +493,7 @@ TEST(XBeeControllerTest, handleGotLength1StateLSBTest) {
     m_uut->handleGotLength1State();
 
     CHECK_EQUAL(m_uut->m_dataLength, 0x00ff);
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::GOT_LENGTH2);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::GOT_LENGTH2);
 }
 
 TEST(XBeeControllerTest, nonVerboseSuccessTest) {
@@ -535,10 +535,10 @@ TEST(XBeeControllerTest, nonVerboseSuccessTest) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 TEST(XBeeControllerTest, badStateTest) {
@@ -560,18 +560,18 @@ TEST(XBeeControllerTest, badStateTest) {
         0x02            // Recv Options
     };
     m_uut->m_bytesProcessed = data;
-    m_uut->m_currentState = static_cast<Gateway::XBeeController::State>(-1);
+    m_uut->m_currentState = static_cast<CTSNCommon::XBeeController::State>(-1);
 
     EXPECT_CALL(*m_callbacks, badState(data));
 
     m_uut->handleData();
-    
+
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 TEST(XBeeControllerTest, destructorSuccessTest) {
@@ -607,7 +607,7 @@ TEST(XBeeControllerTest, destructorSuccessTest) {
 
     m_uut->addData(data);
     delete m_uut;
-    m_uut = nullptr; 
+    m_uut = nullptr;
 }
 
 ///Escape characters test
@@ -654,13 +654,13 @@ TEST(XBeeControllerTest, escapeCharacterSuccessTest) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
     CHECK(!m_uut->m_escapedCharacter);
     CHECK_EQUAL(m_uut->m_nonEscapedBytesProcessed, 0);
     CHECK_EQUAL(m_uut->m_lengthCounter, 0);
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 ///Escape characters test
@@ -687,7 +687,7 @@ TEST(XBeeControllerTest, escapeCharacterMassiveLengthSuccessTest) {
     // Build string
     std::string expectedString;
 
-    // Size is length 1 - 12, the 
+    // Size is length 1 - 12, the
     // amount of chars betfore the payload
     // and after the length.
     // Remember to de-xor it.
@@ -720,13 +720,13 @@ TEST(XBeeControllerTest, escapeCharacterMassiveLengthSuccessTest) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
     CHECK(!m_uut->m_escapedCharacter);
     CHECK_EQUAL(m_uut->m_nonEscapedBytesProcessed, 0);
     CHECK_EQUAL(m_uut->m_lengthCounter, 0);
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 TEST(XBeeControllerTest, escapedCheckSumTest) {
@@ -763,10 +763,10 @@ TEST(XBeeControllerTest, escapedCheckSumTest) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 /////
@@ -793,10 +793,10 @@ TEST(XBeeControllerTest, modemStatusHardwareReset) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 TEST(XBeeControllerTest, modemWatchdogTimerReset) {
@@ -820,10 +820,10 @@ TEST(XBeeControllerTest, modemWatchdogTimerReset) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 TEST(XBeeControllerTest, modemNetworkWentToSleep) {
@@ -847,10 +847,10 @@ TEST(XBeeControllerTest, modemNetworkWentToSleep) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 TEST(XBeeControllerTest, modemNetworkWokeUp) {
@@ -874,10 +874,10 @@ TEST(XBeeControllerTest, modemNetworkWokeUp) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 TEST(XBeeControllerTest, invalidModemStatus) {
@@ -901,10 +901,10 @@ TEST(XBeeControllerTest, invalidModemStatus) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
 }
 
 
@@ -929,10 +929,10 @@ TEST(XBeeControllerTest, badModemStatusPacket) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
 }
@@ -975,7 +975,7 @@ TEST(XBeeControllerTest, TxStatusSuccess) {
 
     // When callback is called, kill the thread.
     auto killFunc = [&](){m_uut->kill(true);};
-    EXPECT_CALL(*m_callbacks, transmitSuccess(data[7], 
+    EXPECT_CALL(*m_callbacks, transmitSuccess(data[7],
                                               CTSNCommon::XBeeConstants::DiscoveryStatus::NO_OVERHEAD))
         .WillOnce(testing::InvokeWithoutArgs(killFunc));
 
@@ -985,10 +985,10 @@ TEST(XBeeControllerTest, TxStatusSuccess) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
     CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
@@ -1005,7 +1005,7 @@ TEST(XBeeControllerTest, TxStatusSuccessEscape) {
         CTSNCommon::XBeeConstants::ESCAPE_CHARACTER, // 0x7D
         static_cast<uint8_t>(CTSNCommon::XBeeConstants::START_CHARACTER ^ CTSNCommon::XBeeConstants::ESCAPE_XOR),  // Frame ID0x7E
         0xff,   // Reserved
-        0xfe,   // Reserved   
+        0xfe,   // Reserved
         CTSNCommon::XBeeConstants::ESCAPE_CHARACTER, // 0x7D
         static_cast<uint8_t>(CTSNCommon::XBeeConstants::START_CHARACTER ^ CTSNCommon::XBeeConstants::ESCAPE_XOR),  // 0x7E
         CTSNCommon::XBeeConstants::TxStatus::SUCCESS,  // Success - 0x00
@@ -1024,10 +1024,10 @@ TEST(XBeeControllerTest, TxStatusSuccessEscape) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
 }
@@ -1060,10 +1060,10 @@ TEST(XBeeControllerTest, TxStatusFailure) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
     CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
@@ -1077,7 +1077,7 @@ TEST(XBeeControllerTest, TxStatusPrematureMessageStart) {
         0x00,
         0x07,
         CTSNCommon::XBeeConstants::PacketFrame::TRANSMIT_STATUS, // Frame Type - 0x8B
-        CTSNCommon::XBeeConstants::START_CHARACTER 
+        CTSNCommon::XBeeConstants::START_CHARACTER
     };
 
     std::vector<std::uint8_t> expectedData = data;
@@ -1097,7 +1097,7 @@ TEST(XBeeControllerTest, TxStatusPrematureMessageStart) {
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // For the new start character
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
     CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
@@ -1114,7 +1114,7 @@ TEST(XBeeControllerTest, TxStatusPrematureMessageStartTxRetry) {
         0x47,   // Frame ID
         0xff,   // Reserved
         0xfe,   // Reserved
-        CTSNCommon::XBeeConstants::START_CHARACTER 
+        CTSNCommon::XBeeConstants::START_CHARACTER
     };
 
     std::vector<std::uint8_t> expectedData = data;
@@ -1134,7 +1134,7 @@ TEST(XBeeControllerTest, TxStatusPrematureMessageStartTxRetry) {
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // For the new start character
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
     CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
@@ -1152,7 +1152,7 @@ TEST(XBeeControllerTest, TxStatusPrematureMessageStartParseStatus) {
         0xff,   // Reserved
         0xfe,   // Reserved
         0x01,   // Attempts
-        CTSNCommon::XBeeConstants::START_CHARACTER 
+        CTSNCommon::XBeeConstants::START_CHARACTER
     };
 
     std::vector<std::uint8_t> expectedData = data;
@@ -1172,7 +1172,7 @@ TEST(XBeeControllerTest, TxStatusPrematureMessageStartParseStatus) {
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // For the new start character
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
     CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
@@ -1191,7 +1191,7 @@ TEST(XBeeControllerTest, TxStatusPrematureMessageStartParseDiscovery) {
         0xfe,   // Reserved
         0x01,   // Attempts
         CTSNCommon::XBeeConstants::TxStatus::ROUTE_NOT_FOUND,  // Status - 0x25
-        CTSNCommon::XBeeConstants::START_CHARACTER 
+        CTSNCommon::XBeeConstants::START_CHARACTER
     };
 
     std::vector<std::uint8_t> expectedData = data;
@@ -1211,7 +1211,7 @@ TEST(XBeeControllerTest, TxStatusPrematureMessageStartParseDiscovery) {
     CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 1); // For the new start character
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::MSG_START);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::MSG_START);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
     CHECK_EQUAL(m_uut->m_transmitRetryCount, 0);
@@ -1240,10 +1240,10 @@ TEST(XBeeControllerTest, TxStatusBadPacket) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
 
@@ -1272,10 +1272,10 @@ TEST(XBeeControllerTest, invalidPacketFrameTest) {
 
     // Everything should returm back to the startup state
     CHECK_EQUAL(m_uut->m_dataLength, 0);
-    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0); 
+    CHECK_EQUAL(m_uut->m_bytesProcessed.size(), 0);
     CHECK_EQUAL(m_uut->m_checkSumTotal, 0);
     CHECK_EQUAL(m_uut->m_payload, "");
-    CHECK_EQUAL(m_uut->m_currentState, Gateway::XBeeController::State::STARTUP);
+    CHECK_EQUAL(m_uut->m_currentState, CTSNCommon::XBeeController::State::STARTUP);
     CHECK_EQUAL(m_uut->m_packetFrame, CTSNCommon::XBeeConstants::PacketFrame::UNKNOWN);
     CHECK_EQUAL(m_uut->m_modemStatus, CTSNCommon::XBeeConstants::ModemStatus::UNKNOWN_STATUS);
 }

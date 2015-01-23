@@ -5,9 +5,9 @@
 #include <string>
 
 #include "ctsn_common/Node.h"
-#include "gateway/NodeContainerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class MockNodeContainer : public NodeContainerInterface {
     public:

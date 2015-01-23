@@ -12,7 +12,7 @@
 #include "gateway/HTTPRequestFactory.h"
 #include "gateway/MariaDBInterface.h"
 #include "gateway/LogMessageHTTPRequestHandler.h"
-#include "gateway/NodeContainerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "gateway/NodeCheckHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "ctsn_common/NotFoundHTTPRequestHandler.h"
@@ -20,7 +20,7 @@
 #include "gateway/RootHTTPRequestHandler.h"
 #include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
-#include "gateway/XBeeTxHTTPRequestHandler.h"
+#include "ctsn_common/XBeeTxHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
 #include "Secrets.py"
 
@@ -30,11 +30,11 @@ namespace Gateway {
 
 const std::string HTTPRequestFactory::INVALID_USER_AGENT = "Invalid user";
 
-HTTPRequestFactory::HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown, 
-                                       Common::EventExecutorInterface *eventExecutor, 
-                                       CTSNCommon::UartInterface *uart, 
+HTTPRequestFactory::HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown,
+                                       Common::EventExecutorInterface *eventExecutor,
+                                       CTSNCommon::UartInterface *uart,
                                        MariaDBInterface *mariadb,
-                                       NodeContainerInterface *nodes,
+                                       CTSNCommon::NodeContainerInterface *nodes,
                                        CTSNCommon::HTTPPosterInterface *httpPoster) :
     m_shutdown(shutdown),
     m_eventExecutor(eventExecutor),
@@ -75,7 +75,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
         return new NodeCheckHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);
     }
     else if (request.getURI() == XBEE_TX_URI) {
-        return new XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);
+        return new CTSNCommon::XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);
     }
     else if (request.getURI() == NODE_STATUS_UPDATE_URI) {
         return new NodeStatusUpdateHTTPRequestHandler(m_eventExecutor, m_nodes, m_mariadb);

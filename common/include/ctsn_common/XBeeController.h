@@ -7,13 +7,13 @@
 #include <string>
 #include <vector>
 
-#include "gateway/XBeeCallbackInterface.h"
+#include "ctsn_common/XBeeCallbackInterface.h"
 #include "ctsn_common/XBeeConstants.h"
-#include "gateway/UartRecvCallbackInterface.h"
+#include "ctsn_common/UartRecvCallbackInterface.h"
 #include "SSemaphore.h"
 #include "SThread.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 /**
  * \class XBeeController

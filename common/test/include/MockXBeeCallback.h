@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 
-#include "gateway/XBeeCallbackInterface.h"
+#include "ctsn_common/XBeeCallbackInterface.h"
 #include "ctsn_common/XBeeConstants.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class MockXBeeCallback : public XBeeCallbackInterface {
     public:

@@ -7,8 +7,8 @@
 
 #include "EventExecutorInterface.h"
 #include "ctsn_common/BaseHTTPRequestHandler.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/NodeContainerInterface.h"
 #include "gateway/NodeStatusUpdateEvent.h"
 
 namespace Gateway {
@@ -23,7 +23,7 @@ namespace Gateway {
 class NodeStatusUpdateHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
         NodeStatusUpdateHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
-                                           NodeContainerInterface *nodes,
+                                           CTSNCommon::NodeContainerInterface *nodes,
                                            MariaDBInterface *mariadb);
 
         ~NodeStatusUpdateHTTPRequestHandler();
@@ -43,7 +43,7 @@ class NodeStatusUpdateHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHan
         static const std::string STATUS_FORM_DATA;
 
         Common::EventExecutorInterface *m_eventExecutor;
-        NodeContainerInterface *m_nodes;
+        CTSNCommon::NodeContainerInterface *m_nodes;
         MariaDBInterface *m_mariadb;
 };
 

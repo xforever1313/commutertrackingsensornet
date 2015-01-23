@@ -21,7 +21,7 @@
 #include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
-#include "gateway/XBeeTxHTTPRequestHandler.h"
+#include "ctsn_common/XBeeTxHTTPRequestHandler.h"
 #include "MockHTTPServerRequest.h"
 #include "MockEventExecutor.h"
 #include "MockHTTPPoster.h"
@@ -38,9 +38,9 @@ TEST_GROUP(HTTPRequestFactoryTest) {
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_shutdown = new testing::StrictMock<CTSNCommon::MockShutdown> ();
-        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
         m_httpPoster = new testing::StrictMock<CTSNCommon::MockHTTPPoster>();
-        m_uut = new Gateway::HTTPRequestFactory(m_shutdown, m_eventExecutor, 
+        m_uut = new Gateway::HTTPRequestFactory(m_shutdown, m_eventExecutor,
                                                 m_uart, m_mariadb, m_nodes,
                                                 m_httpPoster);
 
@@ -68,7 +68,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<CTSNCommon::MockShutdown> *m_shutdown;
-    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
     testing::StrictMock<CTSNCommon::MockHTTPPoster> *m_httpPoster;
     Gateway::HTTPRequestFactory *m_uut;
 };
@@ -108,8 +108,8 @@ TEST(HTTPRequestFactoryTest, createXBeeTxTest) {
     m_request->setURI(XBEE_TX_URI);
     m_request->set("user-agent", USER_AGENT);
 
-    Gateway::XBeeTxHTTPRequestHandler* handler = 
-        dynamic_cast<Gateway::XBeeTxHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+    CTSNCommon::XBeeTxHTTPRequestHandler* handler =
+        dynamic_cast<CTSNCommon::XBeeTxHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
     CHECK(handler != nullptr);
     POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
@@ -132,7 +132,7 @@ TEST(HTTPRequestFactoryTest, createNodeStatusUpdateTest) {
     m_request->setURI(NODE_STATUS_UPDATE_URI);
     m_request->set("user-agent", USER_AGENT);
 
-    Gateway::NodeStatusUpdateHTTPRequestHandler* handler = 
+    Gateway::NodeStatusUpdateHTTPRequestHandler* handler =
         dynamic_cast<Gateway::NodeStatusUpdateHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
     CHECK(handler != nullptr);
@@ -147,7 +147,7 @@ TEST(HTTPRequestFactoryTest, createNodeCheckUpdateTest) {
     m_request->setURI(NODE_CHECK_URI);
     m_request->set("user-agent", USER_AGENT);
 
-    Gateway::NodeCheckHTTPRequestHandler* handler = 
+    Gateway::NodeCheckHTTPRequestHandler* handler =
         dynamic_cast<Gateway::NodeCheckHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
     CHECK(handler != nullptr);
@@ -162,7 +162,7 @@ TEST(HTTPRequestFactoryTest, createDataTest) {
     m_request->setURI(DATA_RESULT_URI);
     m_request->set("user-agent", PICTURE_PARSER_USER_AGENT);
 
-    Gateway::DataHTTPRequestHandler* handler = 
+    Gateway::DataHTTPRequestHandler* handler =
         dynamic_cast<Gateway::DataHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
     CHECK(handler != nullptr);

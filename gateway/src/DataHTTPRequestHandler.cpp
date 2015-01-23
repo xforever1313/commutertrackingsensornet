@@ -6,11 +6,11 @@
 #include <string>
 
 #include "ctsn_common/DataResultTypes.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "EventExecutor.h"
 #include "gateway/DataEvent.h"
 #include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/MariaDBInterface.h"
-#include "gateway/NodeContainerInterface.h"
 
 namespace Gateway {
 
@@ -25,7 +25,7 @@ const std::string DataHTTPRequestHandler::RESULT_TYPE_FORM_DATA = "type";
 
 DataHTTPRequestHandler::DataHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
                                                MariaDBInterface *mariadb,
-                                               NodeContainerInterface *nodes) :
+                                               CTSNCommon::NodeContainerInterface *nodes) :
     m_eventExecutor(eventExecutor),
     m_mariadb(mariadb),
     m_nodes(nodes)
@@ -37,7 +37,7 @@ DataHTTPRequestHandler::~DataHTTPRequestHandler() {
 
 }
 
-void DataHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &request, 
+void DataHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequest &request,
                                                Poco::Net::HTTPServerResponse &response) {
 
    try {

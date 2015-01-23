@@ -6,12 +6,13 @@
 
 #include "CTSNSharedGlobals.py"
 #include "ctsn_common/HTTPPoster.h"
-#include "gateway/XBeeCallbacks.h"
+#include "ctsn_common/XBeeCallbacks.h"
 #include "ctsn_common/XBeeConstants.h"
 #include "io/LoggerBase.h"
 #include "StringOps.h"
 
-namespace Gateway {
+namespace CTSNCommon {
+
 const char XBeeCallbacks::DATA_SEPARATOR = '\t';
 const char XBeeCallbacks::AMP_REPLACE = '|';
 const std::string XBeeCallbacks::BAD_PAYLOAD = "Bad payload.  Missing a tab or has too many - ";
@@ -54,7 +55,7 @@ XBeeCallbacks::~XBeeCallbacks() {
 
 void XBeeCallbacks::successfulParse(const std::string &payload) {
     try {
-        std::vector<std::string> data = 
+        std::vector<std::string> data =
             Common::StringOps::split(payload, DATA_SEPARATOR);
 
         // If there are no tabs or too many, bad payload.  Throw.
@@ -71,7 +72,7 @@ void XBeeCallbacks::successfulParse(const std::string &payload) {
         m_poster->post("localhost", data[0], data[1], GATEWAY_COMMAND_PORT);
     }
     catch (const std::runtime_error &e) {
-        m_errLogger.writeLineWithTimeStamp(std::string(e.what()) + 
+        m_errLogger.writeLineWithTimeStamp(std::string(e.what()) +
                                            "Payload:\n\t" + payload);
     }
 }
@@ -124,20 +125,20 @@ void XBeeCallbacks::invalidPacketFrame(uint8_t packetFrame) {
     m_errLogger.writeLineWithTimeStamp(ss.str());
 }
 
-void XBeeCallbacks::transmitSuccess(uint8_t numAttempts, 
+void XBeeCallbacks::transmitSuccess(uint8_t numAttempts,
                                     CTSNCommon::XBeeConstants::DiscoveryStatus discovery) {
     std::stringstream ss;
-    ss << TRANSMIT_SUCCESS_MESSAGE << "Attempts: " 
+    ss << TRANSMIT_SUCCESS_MESSAGE << "Attempts: "
        << static_cast<unsigned short>(numAttempts) << "\n\tDiscovery: "
        << getDiscoveryString(discovery);
     m_outLogger.writeLineWithTimeStamp(ss.str());
 }
 
-void XBeeCallbacks::transmitFailure(uint8_t numAttempts, 
+void XBeeCallbacks::transmitFailure(uint8_t numAttempts,
                                     CTSNCommon::XBeeConstants::TxStatus errorNumber,
                                     CTSNCommon::XBeeConstants::DiscoveryStatus discovery) {
     std::stringstream ss;
-    ss << TRANSMIT_FAILURE_MESSAGE << "Attempts: " 
+    ss << TRANSMIT_FAILURE_MESSAGE << "Attempts: "
        << static_cast<unsigned short>(numAttempts) << "\n\tDiscovery: "
        << getDiscoveryString(discovery) << "\n\tReason: "
        << getTxFailureReason(errorNumber);
@@ -183,7 +184,7 @@ const std::string XBeeCallbacks::getDiscoveryString(CTSNCommon::XBeeConstants::D
 
 const std::string XBeeCallbacks::getTxFailureReason(CTSNCommon::XBeeConstants::TxStatus txStatus) {
     std::string ret;
-    
+
     switch(txStatus) {
         case CTSNCommon::XBeeConstants::SUCCESS:
             ret = TX_STATUS_SUCCESS;

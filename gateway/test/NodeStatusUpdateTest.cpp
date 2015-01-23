@@ -14,11 +14,11 @@ TEST_GROUP(GetNodeStatusEventTest) {
 
     TEST_SETUP() {
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
-        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>();
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
         m_errLogger = new Common::IO::StringLogger();
-        m_uut = new Gateway::NodeStatusUpdateEvent(nodeStatus, nodeID, 
-                                                   m_nodes, 
+        m_uut = new Gateway::NodeStatusUpdateEvent(nodeStatus, nodeID,
+                                                   m_nodes,
                                                    m_eventExecutor,
                                                    m_mariadb,
                                                    *m_errLogger);
@@ -39,14 +39,14 @@ TEST_GROUP(GetNodeStatusEventTest) {
         delete m_node;
     }
 
-    static const CTSNCommon::Node::NodeStatus nodeStatus = 
+    static const CTSNCommon::Node::NodeStatus nodeStatus =
                     CTSNCommon::Node::NodeStatus::OKAY;
     static const unsigned int nodeID = 1;
 
     CTSNCommon::Node *m_node;
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
-    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
     Common::IO::StringLogger *m_errLogger;
     Gateway::NodeStatusUpdateEvent *m_uut;
@@ -65,7 +65,7 @@ TEST(GetNodeStatusEventTest, SuccessTestNoChange) {
 
 TEST(GetNodeStatusEventTest, SuccessTestOkayChange) {
 
-    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID,
                                         CTSNCommon::Node::NodeStatus::OKAY))
         .WillOnce(testing::Return(true));
 
@@ -78,8 +78,8 @@ TEST(GetNodeStatusEventTest, SuccessTestOkayChange) {
 
     m_uut->execute();
 
-    Gateway::ErrorEvent *errEvent = 
-        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+    Gateway::ErrorEvent *errEvent =
+        dynamic_cast<Gateway::ErrorEvent*>(event.get());
 
     CHECK(errEvent != nullptr);
 
@@ -96,7 +96,7 @@ TEST(GetNodeStatusEventTest, SuccessTestOkayChange) {
 TEST(GetNodeStatusEventTest, SuccessTestOfflineChange) {
     m_uut->m_status = CTSNCommon::Node::NodeStatus::OFFLINE;
 
-    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID,
                                         CTSNCommon::Node::NodeStatus::OFFLINE))
         .WillOnce(testing::Return(true));
 
@@ -109,8 +109,8 @@ TEST(GetNodeStatusEventTest, SuccessTestOfflineChange) {
 
     m_uut->execute();
 
-    Gateway::ErrorEvent *errEvent = 
-        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+    Gateway::ErrorEvent *errEvent =
+        dynamic_cast<Gateway::ErrorEvent*>(event.get());
 
     CHECK(errEvent != nullptr);
 
@@ -127,7 +127,7 @@ TEST(GetNodeStatusEventTest, SuccessTestOfflineChange) {
 TEST(GetNodeStatusEventTest, SuccessTestLowBatteryChange) {
     m_uut->m_status = CTSNCommon::Node::NodeStatus::LOW_BATTERY;
 
-    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID,
                                         CTSNCommon::Node::NodeStatus::LOW_BATTERY))
         .WillOnce(testing::Return(true));
 
@@ -140,8 +140,8 @@ TEST(GetNodeStatusEventTest, SuccessTestLowBatteryChange) {
 
     m_uut->execute();
 
-    Gateway::ErrorEvent *errEvent = 
-        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+    Gateway::ErrorEvent *errEvent =
+        dynamic_cast<Gateway::ErrorEvent*>(event.get());
 
     CHECK(errEvent != nullptr);
 
@@ -158,7 +158,7 @@ TEST(GetNodeStatusEventTest, SuccessTestLowBatteryChange) {
 TEST(GetNodeStatusEventTest, SuccessTestCriticalBatteryChange) {
     m_uut->m_status = CTSNCommon::Node::NodeStatus::BATTERY_CRITICAL;
 
-    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID,
                                         CTSNCommon::Node::NodeStatus::BATTERY_CRITICAL))
         .WillOnce(testing::Return(true));
 
@@ -171,8 +171,8 @@ TEST(GetNodeStatusEventTest, SuccessTestCriticalBatteryChange) {
 
     m_uut->execute();
 
-    Gateway::ErrorEvent *errEvent = 
-        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+    Gateway::ErrorEvent *errEvent =
+        dynamic_cast<Gateway::ErrorEvent*>(event.get());
 
     CHECK(errEvent != nullptr);
 
@@ -189,7 +189,7 @@ TEST(GetNodeStatusEventTest, SuccessTestCriticalBatteryChange) {
 TEST(GetNodeStatusEventTest, SuccessTestUnknownChange) {
     m_uut->m_status = CTSNCommon::Node::NodeStatus::UNKNOWN;
 
-    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID,
                                         CTSNCommon::Node::NodeStatus::UNKNOWN))
         .WillOnce(testing::Return(true));
 
@@ -202,8 +202,8 @@ TEST(GetNodeStatusEventTest, SuccessTestUnknownChange) {
 
     m_uut->execute();
 
-    Gateway::ErrorEvent *errEvent = 
-        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+    Gateway::ErrorEvent *errEvent =
+        dynamic_cast<Gateway::ErrorEvent*>(event.get());
 
     CHECK(errEvent != nullptr);
 
@@ -220,7 +220,7 @@ TEST(GetNodeStatusEventTest, SuccessTestUnknownChange) {
 TEST(GetNodeStatusEventTest, SuccessTestUncommonChange) {
     m_uut->m_status = CTSNCommon::Node::NodeStatus::DOWN;
 
-    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID, 
+    EXPECT_CALL(*m_nodes, setNodeStatus(nodeID,
                                         CTSNCommon::Node::NodeStatus::DOWN))
         .WillOnce(testing::Return(true));
 
@@ -233,8 +233,8 @@ TEST(GetNodeStatusEventTest, SuccessTestUncommonChange) {
 
     m_uut->execute();
 
-    Gateway::ErrorEvent *errEvent = 
-        dynamic_cast<Gateway::ErrorEvent*>(event.get()); 
+    Gateway::ErrorEvent *errEvent =
+        dynamic_cast<Gateway::ErrorEvent*>(event.get());
 
     CHECK(errEvent != nullptr);
 

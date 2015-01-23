@@ -5,7 +5,7 @@
 
 #include "ctsn_common/Node.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class NodeContainerInterface {
     public:

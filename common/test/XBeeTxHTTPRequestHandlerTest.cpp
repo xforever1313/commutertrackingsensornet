@@ -5,7 +5,7 @@
 
 #include "EventInterface.h"
 #include "ctsn_common/XBeeTxEvent.h"
-#include "gateway/XBeeTxHTTPRequestHandler.h"
+#include "ctsn_common/XBeeTxHTTPRequestHandler.h"
 #include "MockEventExecutor.h"
 #include "MockHTTPServerRequest.h"
 #include "MockHTTPServerResponse.h"
@@ -22,11 +22,11 @@ TEST_GROUP(XBeeTxHTTPRequestHandlerTest) {
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>;
         m_uart = new testing::StrictMock<CTSNCommon::MockUart>;
-        m_nodes = new testing::StrictMock<Gateway::MockNodeContainer>;
-        m_uut = new Gateway::XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>;
+        m_uut = new CTSNCommon::XBeeTxHTTPRequestHandler(m_eventExecutor, m_uart, m_nodes);
 
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
-        POINTERS_EQUAL(m_uut->m_uart, m_uart);    
+        POINTERS_EQUAL(m_uut->m_uart, m_uart);
         POINTERS_EQUAL(m_uut->m_nodes, m_nodes);
     }
 
@@ -48,8 +48,8 @@ TEST_GROUP(XBeeTxHTTPRequestHandlerTest) {
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<CTSNCommon::MockUart> *m_uart;
-    testing::StrictMock<Gateway::MockNodeContainer> *m_nodes;
-    Gateway::XBeeTxHTTPRequestHandler *m_uut;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
+    CTSNCommon::XBeeTxHTTPRequestHandler *m_uut;
 
 };
 
@@ -59,9 +59,9 @@ TEST(XBeeTxHTTPRequestHandlerTest, postSuccessTest) {
 
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
 
-    m_request->m_ss << Gateway::XBeeTxHTTPRequestHandler::MESSAGE_FORM_DATA 
+    m_request->m_ss << CTSNCommon::XBeeTxHTTPRequestHandler::MESSAGE_FORM_DATA
                     << "=" << m_message << "&";
-    m_request->m_ss << Gateway::XBeeTxHTTPRequestHandler::NODE_FORM_DATA
+    m_request->m_ss << CTSNCommon::XBeeTxHTTPRequestHandler::NODE_FORM_DATA
                     << "=" << m_nodeNumber;
 
     EXPECT_CALL(*m_nodes, convertStringToNode(std::to_string(m_nodeNumber)))
@@ -79,7 +79,7 @@ TEST(XBeeTxHTTPRequestHandlerTest, postSuccessTest) {
     CHECK_EQUAL(xbeeEvent->m_node.getID(), node.getID());
     CHECK_EQUAL(xbeeEvent->m_node.getAddress(), node.getAddress());
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::XBeeTxHTTPRequestHandler::POST_MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), CTSNCommon::XBeeTxHTTPRequestHandler::POST_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);
 }
 
@@ -88,30 +88,30 @@ TEST(XBeeTxHTTPRequestHandlerTest, postTestMissingFields) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::XBeeTxHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), CTSNCommon::XBeeTxHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
 TEST(XBeeTxHTTPRequestHandlerTest, postMissingNodeField) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
-    m_request->m_ss << Gateway::XBeeTxHTTPRequestHandler::MESSAGE_FORM_DATA 
+    m_request->m_ss << CTSNCommon::XBeeTxHTTPRequestHandler::MESSAGE_FORM_DATA
                     << "=" << m_message;
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::XBeeTxHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), CTSNCommon::XBeeTxHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
 TEST(XBeeTxHTTPRequestHandlerTest, postMissingMessageField) {
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
 
-    m_request->m_ss << Gateway::XBeeTxHTTPRequestHandler::NODE_FORM_DATA
+    m_request->m_ss << CTSNCommon::XBeeTxHTTPRequestHandler::NODE_FORM_DATA
                     << "=" << m_nodeNumber;
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::XBeeTxHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), CTSNCommon::XBeeTxHTTPRequestHandler::POST_MISSING_FIELD_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
 }
 
@@ -121,9 +121,9 @@ TEST(XBeeTxHTTPRequestHandlerTest, postBadNodeTest) {
 
     m_request->setMethod(Poco::Net::HTTPRequest::HTTP_POST);
 
-    m_request->m_ss << Gateway::XBeeTxHTTPRequestHandler::MESSAGE_FORM_DATA 
+    m_request->m_ss << CTSNCommon::XBeeTxHTTPRequestHandler::MESSAGE_FORM_DATA
                     << "=" << m_message << "&";
-    m_request->m_ss << Gateway::XBeeTxHTTPRequestHandler::NODE_FORM_DATA
+    m_request->m_ss << CTSNCommon::XBeeTxHTTPRequestHandler::NODE_FORM_DATA
                     << "=" << badNode;
 
     EXPECT_CALL(*m_nodes, convertStringToNode(badNode))
@@ -142,7 +142,7 @@ TEST(XBeeTxHTTPRequestHandlerTest, getTest) {
 
     m_uut->handleRequest(*m_request, *m_response);
 
-    CHECK_EQUAL(m_response->m_response.str(), Gateway::XBeeTxHTTPRequestHandler::GET_MESSAGE);
+    CHECK_EQUAL(m_response->m_response.str(), CTSNCommon::XBeeTxHTTPRequestHandler::GET_MESSAGE);
     CHECK_EQUAL(m_response->_status, Poco::Net::HTTPResponse::HTTP_OK);
 }
 

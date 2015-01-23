@@ -11,7 +11,7 @@
 #include "gateway/ErrorHTTPRequestHandler.h"
 #include "gateway/ErrorNumbers.h"
 #include "ctsn_common/Node.h"
-#include "gateway/NodeContainerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "gateway/MariaDBInterface.h"
 
 namespace Gateway {
@@ -24,7 +24,7 @@ const std::string ErrorHTTPRequestHandler::MESSAGE_FORM_DATA = "message";
 
 ErrorHTTPRequestHandler::ErrorHTTPRequestHandler(Common::EventExecutorInterface *eventExecutor,
                                                  MariaDBInterface *mariadb,
-                                                 NodeContainerInterface *nodes) :
+                                                 CTSNCommon::NodeContainerInterface *nodes) :
     m_eventExecutor(eventExecutor),
     m_mariadb(mariadb),
     m_nodes(nodes)

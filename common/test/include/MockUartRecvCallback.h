@@ -5,9 +5,9 @@
 #include <gmock/gmock.h>
 #include <vector>
 
-#include "gateway/UartRecvCallbackInterface.h"
+#include "ctsn_common/UartRecvCallbackInterface.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 class MockUartRecvCallback : public UartRecvCallbackInterface {
     public:

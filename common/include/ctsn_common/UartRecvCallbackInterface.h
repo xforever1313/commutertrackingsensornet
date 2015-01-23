@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace Gateway {
+namespace CTSNCommon {
 
 /**
  * \class UartRecvCallbackInterface

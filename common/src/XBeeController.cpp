@@ -4,11 +4,11 @@
 #include <vector>
 
 #include "io/ConsoleLogger.h"
-#include "gateway/XBeeCallbackInterface.h"
+#include "ctsn_common/XBeeCallbackInterface.h"
 #include "ctsn_common/XBeeConstants.h"
-#include "gateway/XBeeController.h"
+#include "ctsn_common/XBeeController.h"
 
-namespace Gateway {
+namespace CTSNCommon {
 
 // Include start char, length, address, and option bytes.
 const uint8_t XBeeController::BYTES_TO_IGNORE = 15;
@@ -409,14 +409,14 @@ void XBeeController::handleTxParseTxRetryState() {
         m_checkSumTotal += data;
 
         m_transmitRetryCount = data;
-    
+
         m_currentState = TX_PARSE_STATUS;
     }
 }
 
 void XBeeController::handleTxParseStatusState() {
     std::uint8_t data = getNextByte();
-    
+
     if (data == CTSNCommon::XBeeConstants::START_CHARACTER) {
          handleIncompleteMessage();
     }
@@ -427,7 +427,7 @@ void XBeeController::handleTxParseStatusState() {
         m_checkSumTotal += data;
 
         m_txStatus = static_cast<CTSNCommon::XBeeConstants::TxStatus>(data);
-    
+
         m_currentState = TX_PARSE_DISCOVERY;
     }
 }
@@ -445,7 +445,7 @@ void XBeeController::handleTxParseDiscoveryState() {
         m_checkSumTotal += data;
 
         m_discoveryStatus = static_cast<CTSNCommon::XBeeConstants::DiscoveryStatus>(data);
-    
+
         m_currentState = CHECK_CHECKSUM;
     }
 }
@@ -508,7 +508,7 @@ void XBeeController::handleSuccessfulParse() {
                 m_callbacks->transmitSuccess(m_transmitRetryCount, m_discoveryStatus);
             }
             else {
-                m_callbacks->transmitFailure(m_transmitRetryCount, 
+                m_callbacks->transmitFailure(m_transmitRetryCount,
                                              m_txStatus,
                                              m_discoveryStatus);
             }
