@@ -9,7 +9,6 @@
 #include "ctsn_common/UartInterface.h"
 #include "CTSNSharedGlobals.py"
 #include "pi_node/HTTPRequestFactory.h"
-#include "pi_node/PicSendHTTPRequestHandler.h"
 #include "Secrets.py"
 
 namespace PiNode {
@@ -41,9 +40,6 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (userAgent != PI_NODE_USER_AGENT) {
         return new CTSNCommon::BadClientHTTPRequestHandler();
-    }
-    else if (request.getURI() == PICTURE_SEND_URI) {
-        return new PicSendHTTPRequestHandler(m_eventExecutor, m_uart);
     }
     else if (request.getURI() == SHUTDOWN_URI) {
         return new CTSNCommon::ShutdownHTTPRequestHandler(m_shutdown);
