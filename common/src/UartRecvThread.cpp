@@ -56,13 +56,13 @@ UartRecvThread::UartRecvThread(CTSNCommon::UartInterface *uart,
 
 UartRecvThread::~UartRecvThread() {
     kill(); //Force thread to exit.
-    m_dataSemaphore.shutdown();
+    m_dataCV.shutdown();
     delete m_impl;
     join();
 }
 
 void UartRecvThread::dataReady() {
-    m_dataSemaphore.post();
+    m_dataCV.notifyOne();
 }
 
 void UartRecvThread::kill() {
@@ -84,9 +84,9 @@ void UartRecvThread::run() {
     m_impl = new UartRecvImpl();
     do {
         try {
-            m_dataSemaphore.wait();
+            m_dataCV.wait();
             // Only look for data if the semaphore is not shut down.
-            if (!m_dataSemaphore.isShutdown()) {
+            if (!m_dataCV.isShutdown()) {
                 std::vector<std::uint8_t> data = m_uart->recvBinary();
                 m_callback->addData(data);
             }

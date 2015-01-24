@@ -6,7 +6,7 @@
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
 #include "SMutex.h"
-#include "SSemaphore.h"
+#include "SConditionVariable.h"
 #include "SThread.h"
 
 namespace CTSNCommon {
@@ -48,7 +48,7 @@ class UartRecvThread : public OS::SThread {
         CTSNCommon::UartInterface *m_uart;
         UartRecvCallbackInterface *m_callback;
         Common::IO::LoggerBase &m_errorLogger;
-        OS::SSemaphore m_dataSemaphore;
+        OS::SConditionVariable m_dataCV;
         bool m_isAlive;
         OS::SMutex m_isAliveMutex;
 
