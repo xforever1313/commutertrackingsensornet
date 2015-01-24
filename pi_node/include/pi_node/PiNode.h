@@ -6,9 +6,11 @@
 #include "ctsn_common/HTTPPosterInterface.h"
 #include "ctsn_common/ShutdownInterface.h"
 #include "ctsn_common/UartInterface.h"
+#include "ctsn_common/UartRecvThread.h"
+#include "ctsn_common/XBeeCallbackInterface.h"
+#include "ctsn_common/XBeeController.h"
 #include "EventExecutorInterface.h"
-
-#include "SSemaphore.h"
+#include "SConditionVariable.h"
 
 namespace PiNode {
 
@@ -29,11 +31,14 @@ class PiNode : public CTSNCommon::ShutdownInterface {
 
         PiNode();
         Common::EventExecutorInterface *m_eventExecutor;
-        OS::SSemaphore m_shutdownSemaphore;
+        OS::SConditionVariable m_shutdownCV;
 
         Poco::Net::ServerSocket *m_socket;
         Poco::Net::HTTPServer *m_server;
         CTSNCommon::UartInterface *m_uart;
+        CTSNCommon::XBeeCallbackInterface *m_xbeeCallbacks;
+        CTSNCommon::XBeeController *m_xbeeController;
+        CTSNCommon::UartRecvThread *m_recvThread;
 };
 
 }
