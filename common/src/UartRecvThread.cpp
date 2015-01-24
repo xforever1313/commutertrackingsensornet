@@ -15,49 +15,19 @@
 
 namespace CTSNCommon {
 
-#ifdef LINUX
-/**
- * \brief sends sigio to the uart so it returns upon destruction.  This MUST be created
- *        in the run loop.
- * \todo If using windows, a new version of this must be created since this
- *       is strictly linux specific
- */
-struct UartRecvThread::UartRecvImpl {
-    UartRecvImpl() :
-        // Get the thread id.
-        m_tid(syscall(SYS_gettid))
-    {
-    }
-
-    ~UartRecvImpl() {
-        #ifndef UNIT_TEST
-        // Send a sigio to the thread so uart read() returns.
-        ::kill(m_tid, SIGIO);
-        #endif
-    }
-
-    const pid_t m_tid;
-};
-
-#else
-#error Platform not supported, implement a UartRecvImpl.
-#endif
-
 UartRecvThread::UartRecvThread(CTSNCommon::UartInterface *uart,
                                UartRecvCallbackInterface *callback,
                                Common::IO::LoggerBase &errorLogger /*= Common::IO::ConsoleLogger::err*/) :
     m_uart(uart),
     m_callback(callback),
     m_errorLogger(errorLogger),
-    m_isAlive(true),
-    m_impl(nullptr)
+    m_isAlive(true)
 {
 }
 
 UartRecvThread::~UartRecvThread() {
     kill(); //Force thread to exit.
     m_dataCV.shutdown();
-    delete m_impl;
     join();
 }
 
@@ -81,7 +51,6 @@ bool UartRecvThread::isAlive() {
 }
 
 void UartRecvThread::run() {
-    m_impl = new UartRecvImpl();
     do {
         try {
             m_dataCV.wait();

@@ -41,7 +41,6 @@ class UartRecvThread : public OS::SThread {
         bool isAlive();
 
     private:
-        struct UartRecvImpl;
         UartRecvThread() = delete;
         void run() override;
 
@@ -51,8 +50,6 @@ class UartRecvThread : public OS::SThread {
         OS::SConditionVariable m_dataCV;
         bool m_isAlive;
         OS::SMutex m_isAliveMutex;
-
-        UartRecvImpl *m_impl;
 };
 
 }
