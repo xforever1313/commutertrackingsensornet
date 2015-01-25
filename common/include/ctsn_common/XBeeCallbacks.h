@@ -55,8 +55,6 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         static const std::string getDiscoveryString(CTSNCommon::XBeeConstants::DiscoveryStatus discovery);
         static const std::string getTxFailureReason(CTSNCommon::XBeeConstants::TxStatus txStatus);
 
-        static const char DATA_SEPARATOR; ///< The character that separates the url with the data.
-        static const char AMP_REPLACE; ///< The character that is replaced with an &, since XBees cant transmit those >_>
 
         static const std::string BAD_PAYLOAD;
         static const std::string INCOMPLETE_MESSAGE;

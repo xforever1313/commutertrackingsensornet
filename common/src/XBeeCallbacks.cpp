@@ -13,8 +13,6 @@
 
 namespace CTSNCommon {
 
-const char XBeeCallbacks::DATA_SEPARATOR = '\t';
-const char XBeeCallbacks::AMP_REPLACE = '|';
 const std::string XBeeCallbacks::BAD_PAYLOAD = "Bad payload.  Missing a tab or has too many - ";
 const std::string XBeeCallbacks::INCOMPLETE_MESSAGE = "Incomplete XBee Message -\n\t";
 const std::string XBeeCallbacks::BAD_CHECKSUM_MESSAGE = "Bad XBee Checksum -\n\t";
@@ -58,7 +56,7 @@ XBeeCallbacks::~XBeeCallbacks() {
 void XBeeCallbacks::successfulParse(const std::string &payload) {
     try {
         std::vector<std::string> data =
-            Common::StringOps::split(payload, DATA_SEPARATOR);
+            Common::StringOps::split(payload, XBeeConstants::DATA_SEPARATOR);
 
         // If there are no tabs or too many, bad payload.  Throw.
         if (data.size() != 2) {
@@ -66,7 +64,7 @@ void XBeeCallbacks::successfulParse(const std::string &payload) {
         }
 
         for (size_t i = 0; i < data[1].size(); ++i) {
-            if (data[1][i] == AMP_REPLACE) {
+            if (data[1][i] == XBeeConstants::AMP_REPLACE) {
                 data[1][i] = '&';
             }
         }

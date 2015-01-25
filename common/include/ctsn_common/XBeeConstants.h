@@ -60,6 +60,8 @@ class XBeeConstants {
         static const uint8_t XON;
         static const uint8_t XOFF;
         static const uint8_t ESCAPE_XOR;
+        static const char DATA_SEPARATOR; ///< The character that separates the url with the data.
+        static const char AMP_REPLACE;    ///< The character that is replaced with an &, since XBees cant transmit those >_>
 
     private:
         XBeeConstants() = delete;
