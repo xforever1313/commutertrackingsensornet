@@ -27,7 +27,7 @@ PiNode::PiNode() :
     m_socket(nullptr),
     m_server(nullptr),
     m_uart(new CTSNCommon::Uart(&RxSignal)),
-    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks()),
+    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(PI_NODE_COMMAND_PORT)),
     m_xbeeController(new CTSNCommon::XBeeController(m_xbeeCallbacks)),
     m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController))
 {

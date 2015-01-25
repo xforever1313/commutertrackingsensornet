@@ -34,7 +34,7 @@ Gateway::Gateway() :
     m_input(&std::cin),
     m_output(&Common::IO::ConsoleLogger::out),
     m_uart(new CTSNCommon::Uart(RxSignal)),
-    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks()),
+    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(GATEWAY_COMMAND_PORT)),
     m_xbeeController(new CTSNCommon::XBeeController(m_xbeeCallbacks)),
     m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController)),
     m_socket(nullptr),

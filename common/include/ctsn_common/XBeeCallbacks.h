@@ -18,7 +18,11 @@ namespace CTSNCommon {
  */
 class XBeeCallbacks : public XBeeCallbackInterface {
     public:
-         XBeeCallbacks(Common::IO::LoggerBase &outLogger =
+        /**
+         * \param portNumber the port number to post the command to.
+         */
+         XBeeCallbacks(short portNumber,
+                       Common::IO::LoggerBase &outLogger =
                            Common::IO::ConsoleLogger::out,
                        Common::IO::LoggerBase &errLogger =
                           Common::IO::ConsoleLogger::err);
@@ -35,7 +39,7 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         void networkWentToSleep() override;
         void invalidModemStatus(uint8_t badStatus) override;
         void badModemStatusPacket(const std::vector<std::uint8_t> &badData) override;
-         void badTxStatusPacket(const std::vector<std::uint8_t> &badData) override;
+        void badTxStatusPacket(const std::vector<std::uint8_t> &badData) override;
         void invalidPacketFrame(uint8_t packetFrame) override;
         void transmitSuccess(uint8_t numAttempts, CTSNCommon::XBeeConstants::DiscoveryStatus discovery) override;
         void transmitFailure(uint8_t numAttempts, CTSNCommon::XBeeConstants::TxStatus errorNumber,
@@ -85,6 +89,8 @@ class XBeeCallbacks : public XBeeCallbackInterface {
         Common::IO::LoggerBase &m_errLogger;
 
         CTSNCommon::HTTPPosterInterface *m_poster;
+
+        short m_portNumber;
 };
 
 }

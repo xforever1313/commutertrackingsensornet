@@ -22,7 +22,7 @@ from SConstructGlobals import *
 
 #Make common environment
 projectName = "CTSNCommon"
-targetFlags = DOXYGEN_TARGET | CPP_CHECK_TARGET | TESTING_TARGET | PROJECT_TARGET
+targetFlags = DOXYGEN_TARGET | CPP_CHECK_TARGET | TESTING_TARGET | PROJECT_TARGET | CREATE_LIB_TARGET
 envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
 
 ###

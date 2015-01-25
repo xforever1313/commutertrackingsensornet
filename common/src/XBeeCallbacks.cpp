@@ -41,11 +41,13 @@ const std::string XBeeCallbacks::TX_STATUS_NETWORK_ACK_FAILURE = "Network Ack Fa
 const std::string XBeeCallbacks::TX_STATUS_ROUTE_NOT_FOUND = "Route Not Found";
 const std::string XBeeCallbacks::TX_STATUS_UNKNOWN = "Unknown Tx Error";
 
-XBeeCallbacks::XBeeCallbacks(Common::IO::LoggerBase &outLogger,/* = Common::IO::ConsoleLogger::out */
+XBeeCallbacks::XBeeCallbacks(short portNumber,
+                             Common::IO::LoggerBase &outLogger,/* = Common::IO::ConsoleLogger::out */
                              Common::IO::LoggerBase &errLogger/* = Common::IO::ConsoleLogger::err */) :
     m_outLogger(outLogger),
     m_errLogger(errLogger),
-    m_poster(new CTSNCommon::HTTPPoster())
+    m_poster(new CTSNCommon::HTTPPoster()),
+    m_portNumber(portNumber)
 {
 }
 
@@ -69,7 +71,7 @@ void XBeeCallbacks::successfulParse(const std::string &payload) {
             }
         }
 
-        m_poster->post("localhost", data[0], data[1], GATEWAY_COMMAND_PORT);
+        m_poster->post("localhost", data[0], data[1], m_portNumber);
     }
     catch (const std::runtime_error &e) {
         m_errLogger.writeLineWithTimeStamp(std::string(e.what()) +

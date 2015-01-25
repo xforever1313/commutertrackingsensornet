@@ -15,7 +15,9 @@ TEST_GROUP(XBeeCallbacksTest) {
         m_outLogger = new Common::IO::StringLogger();
         m_errLogger = new Common::IO::StringLogger();
         m_httpPoster = new testing::StrictMock<CTSNCommon::MockHTTPPoster>();
-        m_uut = new CTSNCommon::XBeeCallbacks(*m_outLogger,*m_errLogger);
+        m_uut = new CTSNCommon::XBeeCallbacks(m_portNumber, *m_outLogger,*m_errLogger);
+
+        CHECK_EQUAL(m_uut->m_portNumber, m_portNumber);
 
         // Replace real poster with mock one.
         delete m_uut->m_poster;
@@ -29,6 +31,8 @@ TEST_GROUP(XBeeCallbacksTest) {
 
         // http poster is deleted in uut
     }
+
+    const short m_portNumber = 1000;
 
     Common::IO::StringLogger *m_outLogger;
     Common::IO::StringLogger *m_errLogger;
@@ -60,7 +64,7 @@ TEST(XBeeCallbacksTest, successfulParseTest) {
     EXPECT_CALL(*m_httpPoster, post("localhost",
                                     "/shutdown",
                                     "shutdown=true&derp=herp",
-                                    GATEWAY_COMMAND_PORT));
+                                    m_portNumber));
 
     m_uut->successfulParse(s);
 
@@ -75,7 +79,7 @@ TEST(XBeeCallbacksTest, curlFailTest) {
     EXPECT_CALL(*m_httpPoster, post("localhost",
                                     "/shutdown",
                                     "shutdown=true&something=Something",
-                                    GATEWAY_COMMAND_PORT))
+                                    m_portNumber))
         .WillOnce(testing::Throw(std::runtime_error(error)));
 
     m_uut->successfulParse(s);
