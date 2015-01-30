@@ -12,12 +12,12 @@ class GPIOControllerInterface {
          * \param newOutput new value to set the GPIO to.
          * \param pinNumber The pin number to read
          */
-        void set(int newOuput, unsigned int pinNumber);
+        virtual void set(int newOuput, unsigned int pinNumber) = 0;
 
         /**
          * \brief Reads the value from the given GPIO pin.
          */
-        int get(unsigned int pinNumber);
+        virtual int get(unsigned int pinNumber) = 0;
 };
 
 }
