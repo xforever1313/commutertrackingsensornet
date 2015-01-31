@@ -1,5 +1,6 @@
 #include <Poco/Net/HTTPServer.h>
 
+#include "ctsn_common/PiGPIOController.h"
 #include "ctsn_common/Uart.h"
 #include "ctsn_common/UartRecvThread.h"
 #include "ctsn_common/XBeeCallbacks.h"
@@ -7,8 +8,10 @@
 #include "CTSNSharedGlobals.py"
 #include "EventExecutor.h"
 #include "io/ConsoleLogger.h"
+#include "pi_node/PinNumbers.h"
 #include "pi_node/HTTPRequestFactory.h"
 #include "pi_node/PiNode.h"
+#include "pi_node/StatusLed.h"
 
 namespace PiNode  {
 
@@ -29,7 +32,9 @@ PiNode::PiNode() :
     m_uart(new CTSNCommon::Uart(&RxSignal)),
     m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(PI_NODE_COMMAND_PORT)),
     m_xbeeController(new CTSNCommon::XBeeController(m_xbeeCallbacks)),
-    m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController))
+    m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController)),
+    m_gpio(CTSNCommon::PiGPIOController::getInstance()),
+    m_statusLed(new StatusLed(PinNumbers::STATUS_LED, 500, m_gpio))
 {
 
 }
@@ -67,6 +72,7 @@ void  PiNode::start() {
         m_uart->open(SERIAL_PORT);
         m_xbeeController->start();
         m_recvThread->start();
+        m_statusLed->start();
     }
     catch (const std::exception &e) {
         Common::IO::ConsoleLogger::err.writeLineWithTimeStamp(e.what());
@@ -80,6 +86,7 @@ void  PiNode::start() {
     m_recvThread->kill();
     m_xbeeController->kill();
     m_uart->close();
+    m_statusLed->kill();
 }
 
 void PiNode::shutdown() {

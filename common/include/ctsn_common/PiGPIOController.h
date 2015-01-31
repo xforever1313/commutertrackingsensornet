@@ -22,7 +22,7 @@ class PiGPIOController : public GPIOControllerInterface
          * \throw std::runtime_error if can not open file.
          * \throw std::out_of_range if pinNumber does not exist
          */
-        void set(int newOuput, unsigned int pinNumber);
+        void set(int newOuput, unsigned int pinNumber) override;
 
         /**
          * \brief Reads the value from the given GPIO pin.
@@ -30,7 +30,7 @@ class PiGPIOController : public GPIOControllerInterface
          * \throw std::runtime_error if can not convert file contents to uint.
          * \throw std::out_of_range if pinNumber does not exist
          */
-        int get(unsigned int pinNumber);
+        int get(unsigned int pinNumber) override;
 
     private:
         static const std::string FILE_IO_ERROR;

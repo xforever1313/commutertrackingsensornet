@@ -31,15 +31,13 @@ envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, A
 piBuild = ARGUMENTS.get('pi_build', '0') == '1'
 piNode = ARGUMENTS.get('pi_node', '0') == '1' #build for the pi as a node
 
-nodeNumber = ARGUMENTS.get('node_id', '2')
-
 additionalFlags = []
 
 if(piBuild):
-    additionalFlags += ['-DSERIAL_PORT=\\"/dev/ttyAMA0\\"', '-DNODE_ID=' + nodeNumber]
+    additionalFlags += ['-DSERIAL_PORT=\\"/dev/ttyAMA0\\"']
 
 else:
-    additionalFlags += ['-DSERIAL_PORT=\\"/dev/ttyUSB0\\"', '-DNODE_ID=' + nodeNumber]
+    additionalFlags += ['-DSERIAL_PORT=\\"/dev/ttyUSB0\\"']
 
 ###
 # Files to compile
@@ -148,12 +146,12 @@ doxygenFiles = [dateVersionFile] + sourceFiles + sourceTestFiles + glob.glob(os.
 # Targets
 ###
 
-(debugTarget, runDebugTarget) = createExe(debugEnvironment, "CTSNPiNode" + nodeNumber + "-d",
+(debugTarget, runDebugTarget) = createExe(debugEnvironment, "CTSNPiNode-d",
                                           getCompiledObjectsWithDateVersionObject(debugEnvironment,
                                                                                   sourceFiles + [piNodeMainFile],
                                                                                   dateVersionFile, ARGUMENTS))
 
-(releaseTarget, runReleaseTarget)  = createExe(releaseEnvironment, "CTSNPiNode" + nodeNumber,
+(releaseTarget, runReleaseTarget)  = createExe(releaseEnvironment, "CTSNPiNode",
                                                getCompiledObjectsWithDateVersionObject(releaseEnvironment,
                                                                                        sourceFiles + [piNodeMainFile],
                                                                                        dateVersionFile, ARGUMENTS))
