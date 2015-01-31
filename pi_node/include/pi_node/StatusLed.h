@@ -2,6 +2,8 @@
 #define STATUS_LED_H_
 
 #include "ctsn_common/GPIOControllerInterface.h"
+#include "io/ConsoleLogger.h"
+#include "io/LoggerBase.h"
 #include "SConditionVariable.h"
 #include "SThread.h"
 
@@ -15,7 +17,8 @@ class StatusLed : public OS::SThread {
          */
         StatusLed(unsigned int pinNumber,
                   unsigned int delay,
-                  CTSNCommon::GPIOControllerInterface &gpio);
+                  CTSNCommon::GPIOControllerInterface &gpio,
+                  Common::IO::LoggerBase &errLogger = Common::IO::ConsoleLogger::err);
 
         ~StatusLed();
 
@@ -31,6 +34,7 @@ class StatusLed : public OS::SThread {
         unsigned int m_pinNumber;
         unsigned int m_delay;
         CTSNCommon::GPIOControllerInterface &m_gpio;
+        Common::IO::LoggerBase &m_errLogger;
 };
 
 }
