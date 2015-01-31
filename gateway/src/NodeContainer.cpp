@@ -31,6 +31,10 @@ NodeContainer::~NodeContainer() {
     delete m_result;
 }
 
+const CTSNCommon::Node NodeContainer::getCurrentNode() {
+    return getNodeFromID(1);
+}
+
 void NodeContainer::refreshNodes() {
     // querty the database
     m_mariadb->mysql_real_query(DATABASE_QUERY);
@@ -126,7 +130,7 @@ const CTSNCommon::Node NodeContainer::convertStringToNode(const std::string &nod
         throw std::invalid_argument(INVALID_NODE_MESSAGE + nodeString);
     }
     catch (const std::out_of_range &e) {
-        throw std::out_of_range(INVALID_NODE_MESSAGE + nodeString);       
+        throw std::out_of_range(INVALID_NODE_MESSAGE + nodeString);
     }
     return node;
 }
@@ -138,7 +142,7 @@ void NodeContainer::clearNodes() {
                                                          CTSNCommon::Node::NodeStatus::OKAY)));
 }
 
-bool NodeContainer::setNodeStatus(unsigned int id, 
+bool NodeContainer::setNodeStatus(unsigned int id,
                                   CTSNCommon::Node::NodeStatus newStatus) {
 
     // No need to trouble the database if the passed in status

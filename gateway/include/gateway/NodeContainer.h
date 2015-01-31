@@ -21,6 +21,12 @@ class NodeContainer : public CTSNCommon::NodeContainerInterface {
         ~NodeContainer();
 
         /**
+         * \brief Always returns the a node with the id of 1, which
+         *        is the Gateway node's ID.
+         */
+         const CTSNCommon::Node getCurrentNode() override;
+
+        /**
          * \brief gets a node based on the passed in id
          * \param id the id of the node to get.  Pass in a zero to get the broadcast node
          *           (the address for the broadcast node is 0x00000000000000ff, which

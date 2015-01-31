@@ -11,6 +11,7 @@ class NodeContainerInterface {
     public:
         virtual ~NodeContainerInterface(){}
 
+        virtual const CTSNCommon::Node getCurrentNode() = 0;
         virtual const CTSNCommon::Node getNodeFromID(unsigned int id) = 0;
         virtual void refreshNodes() = 0;
         virtual const CTSNCommon::Node convertStringToNode(const std::string &nodeString) = 0;

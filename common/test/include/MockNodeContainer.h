@@ -13,6 +13,7 @@ class MockNodeContainer : public NodeContainerInterface {
     public:
         virtual ~MockNodeContainer(){}
 
+        MOCK_METHOD0(getCurrentNode, const CTSNCommon::Node(void));
         MOCK_METHOD1(getNodeFromID, const CTSNCommon::Node(unsigned int));
         MOCK_METHOD0(refreshNodes, void());
         MOCK_METHOD1(convertStringToNode, const CTSNCommon::Node(const std::string&));

@@ -37,6 +37,15 @@ TEST_GROUP(NodeContainerTest) {
     Gateway::NodeContainer *m_uut;
 };
 
+TEST(NodeContainerTest, getCurrentNodeTest) {
+    CTSNCommon::Node node (1, 0x01);
+    m_uut->m_nodes.insert(std::pair<unsigned int, CTSNCommon::Node>(1, node));
+
+    CTSNCommon::Node receivedNode = m_uut->getCurrentNode();
+
+    CHECK_EQUAL(node.getID(), receivedNode.getID());
+}
+
 TEST(NodeContainerTest, refreshNodesSuccess) {
     std::vector<std::string> ids = {"1", "2", "3"};
     std::vector<std::string> addresses = {"1", "2", "3"};
@@ -339,7 +348,7 @@ TEST(NodeContainerTest, setNodeStatusTestSuccess) {
     EXPECT_CALL(*m_result, freeResult());
 
 
-    bool changed = m_uut->setNodeStatus(nodeID, 
+    bool changed = m_uut->setNodeStatus(nodeID,
                                         CTSNCommon::Node::NodeStatus::OKAY);
 
     // okay is different than the default unknown, changed should be true.
@@ -353,7 +362,7 @@ TEST(NodeContainerTest, setNodeStatusTestSuccess) {
 TEST(NodeContainerTest, setNodeStatusTestNoChange) {
     const unsigned int nodeID = 1; // From test setup
 
-    bool changed = m_uut->setNodeStatus(nodeID, 
+    bool changed = m_uut->setNodeStatus(nodeID,
                                         CTSNCommon::Node::NodeStatus::UNKNOWN);
 
     // Unknown is the same as the default status.  No change should happen.
