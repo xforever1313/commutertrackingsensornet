@@ -57,7 +57,7 @@ PiGPIOController::~PiGPIOController() {
 void PiGPIOController::set(int newOutput, unsigned int pinNumber) {
     std::lock_guard<std::mutex> (m_fileLocks.at(pinNumber));
 
-    std::string file = "/sys/class/gpio/gpio" + std::to_string(pinNumber) + "/direction";
+    std::string file = "/sys/class/gpio/gpio" + std::to_string(pinNumber) + "/value";
 
     std::ofstream outFile(file);
 
@@ -74,7 +74,7 @@ int PiGPIOController::get(unsigned int pinNumber) {
     int ret = 0;
     std::lock_guard<std::mutex> (m_fileLocks.at(pinNumber));
 
-    std::string file = "/sys/class/gpio/gpio" + std::to_string(pinNumber) + "/direction";
+    std::string file = "/sys/class/gpio/gpio" + std::to_string(pinNumber) + "/value";
 
     std::ifstream inFile(file);
 
