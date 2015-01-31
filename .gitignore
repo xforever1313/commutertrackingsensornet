@@ -82,6 +82,7 @@ vsproject
 *.pdb
 *.idb
 *.target
+*.temp
 Doxyfile
 /Secrets.py
 
