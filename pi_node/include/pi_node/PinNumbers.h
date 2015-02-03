@@ -5,6 +5,7 @@ namespace PiNode {
 
 struct PinNumbers {
     static const unsigned int STATUS_LED = 21;
+    static const unsigned int BATTERY_OKAY = 24;
 };
 
 }
