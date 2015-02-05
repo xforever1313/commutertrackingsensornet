@@ -5,6 +5,8 @@
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
 #include <string>
 
+#include "ctsn_common/GPIOControllerInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "ctsn_common/ShutdownInterface.h"
 #include "EventExecutorInterface.h"
 #include "ctsn_common/UartInterface.h"
@@ -14,6 +16,8 @@ namespace PiNode {
 class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
     public:
         HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown,
+                           CTSNCommon::GPIOControllerInterface &gpio,
+                           CTSNCommon::NodeContainerInterface *nodes,
                            Common::EventExecutorInterface *eventExecutor,
                            CTSNCommon::UartInterface *uart);
 
@@ -27,6 +31,8 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
         HTTPRequestFactory() = delete;
 
         CTSNCommon::ShutdownInterface *m_shutdown;
+        CTSNCommon::GPIOControllerInterface &m_gpio;
+        CTSNCommon::NodeContainerInterface *m_nodes;
         Common::EventExecutorInterface *m_eventExecutor;
         CTSNCommon::UartInterface *m_uart;
 };

@@ -8,6 +8,7 @@
 #include "CTSNSharedGlobals.py"
 #include "EventExecutor.h"
 #include "io/ConsoleLogger.h"
+#include "pi_node/NodeContainer.h"
 #include "pi_node/PinNumbers.h"
 #include "pi_node/HTTPRequestFactory.h"
 #include "pi_node/PiNode.h"
@@ -34,7 +35,8 @@ PiNode::PiNode() :
     m_xbeeController(new CTSNCommon::XBeeController(m_xbeeCallbacks)),
     m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController)),
     m_gpio(CTSNCommon::PiGPIOController::getInstance()),
-    m_statusLed(new StatusLed(PinNumbers::STATUS_LED, 500, m_gpio))
+    m_statusLed(new StatusLed(PinNumbers::STATUS_LED, 500, m_gpio)),
+    m_nodes(new NodeContainer())
 {
 
 }
@@ -47,6 +49,8 @@ PiNode::~PiNode() {
     delete m_xbeeController;
     delete m_xbeeCallbacks;
     delete m_uart;
+    delete m_statusLed;
+    delete m_nodes;
 }
 
 void PiNode::initHTTPServer() {
@@ -56,6 +60,8 @@ void PiNode::initHTTPServer() {
 
     m_socket = new Poco::Net::ServerSocket(PI_NODE_COMMAND_PORT);
     m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this,
+                                                                m_gpio,
+                                                                m_nodes,
                                                                 m_eventExecutor,
                                                                 m_uart),
                                          *m_socket, params);
@@ -64,6 +70,7 @@ void PiNode::initHTTPServer() {
 void  PiNode::start() {
     bool serverStarted = false;
     try {
+        m_nodes->refreshNodes();
         initHTTPServer();
         m_server->start();
         serverStarted = true;

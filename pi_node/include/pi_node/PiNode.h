@@ -4,6 +4,7 @@
 #include <Poco/Net/HTTPServer.h>
 
 #include "ctsn_common/HTTPPosterInterface.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "ctsn_common/PiGPIOController.h"
 #include "ctsn_common/ShutdownInterface.h"
 #include "ctsn_common/UartInterface.h"
@@ -43,6 +44,7 @@ class PiNode : public CTSNCommon::ShutdownInterface {
         CTSNCommon::UartRecvThread *m_recvThread;
         CTSNCommon::PiGPIOController &m_gpio;
         StatusLed *m_statusLed;
+        CTSNCommon::NodeContainerInterface *m_nodes;
 };
 
 }

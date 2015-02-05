@@ -8,35 +8,53 @@
 #include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "ctsn_common/HTTPPosterInterface.h"
 #include "EventExecutorInterface.h"
+#include "pi_node/BatteryCheckHTTPRequestHandler.h"
 #include "pi_node/HTTPRequestFactory.h"
+#include "MockGPIOController.h"
 #include "MockHTTPServerRequest.h"
 #include "MockEventExecutor.h"
+#include "MockNodeContainer.h"
 #include "MockShutdown.h"
+#include "MockUart.h"
 #include "Secrets.py"
 
 TEST_GROUP(HTTPRequestFactoryTest) {
     TEST_SETUP() {
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
+        m_gpio = new testing::StrictMock<CTSNCommon::MockGPIOController>();
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
         m_shutdown = new testing::StrictMock<CTSNCommon::MockShutdown> ();
+        m_uart = new testing::StrictMock<CTSNCommon::MockUart>();
         m_uut = new PiNode::HTTPRequestFactory(m_shutdown,
+                                               *m_gpio,
+                                               m_nodes,
                                                m_eventExecutor,
-                                               nullptr);
+                                               m_uart);
 
         POINTERS_EQUAL(m_uut->m_shutdown, m_shutdown);
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
+        POINTERS_EQUAL(&m_uut->m_gpio, m_gpio);
+        POINTERS_EQUAL(m_uut->m_nodes, m_nodes);
+        POINTERS_EQUAL(m_uut->m_uart, m_uart);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
+        delete m_uart;
         delete m_shutdown;
+        delete m_nodes;
+        delete m_gpio;
         delete m_request;
         delete m_eventExecutor;
     }
 
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
+    testing::StrictMock<CTSNCommon::MockGPIOController> *m_gpio;
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
     testing::StrictMock<CTSNCommon::MockShutdown> *m_shutdown;
+    testing::StrictMock<CTSNCommon::MockUart> *m_uart;
     PiNode::HTTPRequestFactory *m_uut;
 };
 
@@ -46,6 +64,22 @@ TEST(HTTPRequestFactoryTest, createShutdownTest) {
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<CTSNCommon::ShutdownHTTPRequestHandler*>(handler) != nullptr);
+
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createBatteryCheckTest) {
+    m_request->setURI(BATTERY_CHECK_URI);
+    m_request->set("user-agent", PI_NODE_USER_AGENT);
+
+    Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
+    PiNode::BatteryCheckHTTPRequestHandler *batHandler = dynamic_cast<PiNode::BatteryCheckHTTPRequestHandler*>(handler);
+    CHECK(batHandler != nullptr);
+    POINTERS_EQUAL(batHandler->m_eventExecutor, m_eventExecutor);
+    POINTERS_EQUAL(&batHandler->m_gpio, m_gpio);
+    POINTERS_EQUAL(batHandler->m_nodes, m_nodes);
+    POINTERS_EQUAL(batHandler->m_uart, m_uart);
+
     delete handler;
 }
 

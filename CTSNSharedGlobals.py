@@ -181,5 +181,14 @@ const std::string
 #endif
 PICTURE_SEND_URI = "/picture_send";
 
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+BATTERY_CHECK_URI = "/battery_check";
+
 #endif
 
