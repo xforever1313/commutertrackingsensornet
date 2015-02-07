@@ -4,3 +4,4 @@ A wireless sensor network that will utilize computer vision and mesh networking 
 
 For more information, look in doc/CTSN_Final_report.pdf in this repo.
 
+You can also visit our website: http://http://ctsn.shendrick.net/
