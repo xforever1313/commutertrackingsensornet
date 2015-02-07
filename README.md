@@ -5,3 +5,5 @@ A wireless sensor network that will utilize computer vision and mesh networking 
 For more information, look in doc/CTSN_Final_report.pdf in this repo.
 
 You can also visit our website: http://ctsn.shendrick.net/
+
+If you are reading this from GitHub, please note that GitHub is only mirror that has the latest stable code that passed a nightly.  To view the working codebase, go to our BitBucket here: https://bitbucket.org/xforever1313/commutertrackingsensornet/ 
