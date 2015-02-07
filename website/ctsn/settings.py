@@ -13,23 +13,20 @@ import os
 import sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-sys.path.append('../')
-sys.path.append('../../')
-
 from Secrets import *
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = DJANGO_KEY
+SECRET_KEY = django_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', 'ctsn.student.rit.edu']
+ALLOWED_HOSTS = ['localhost', django_host]
 
 
 CSRF_COOKIE_HTTPONLY = True
@@ -85,11 +82,11 @@ WSGI_APPLICATION = 'ctsn.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME' : 'ctsn',
-        'USER' : DJANGO_ADMIN,
-        'PASSWORD' : DJANGO_ADMIN_PASSWORD,
-        'HOST' : 'localhost',
-        'PORT' : 3306
+        'NAME' : mariadb_name,
+        'USER' : mariadb_user,
+        'PASSWORD' : mariadb_pass,
+        'HOST' : mariadb_ip,
+        'PORT' : mariadb_port
     }
 }
 

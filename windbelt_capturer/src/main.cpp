@@ -23,7 +23,7 @@
 #include <Poco/Net/HTTPServer.h>
 
 #include "CTSNSharedGlobals.py"
-#include "Secrets.py"
+#include "WindbeltSettings.h"
 
 Poco::Net::ServerSocket *theSocket = nullptr;
 Poco::Net::HTTPServer *server = nullptr;
@@ -87,7 +87,7 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
     public:
         Poco::Net::HTTPRequestHandler *createRequestHandler(const Poco::Net::HTTPServerRequest &request) override {
             if (request.getMethod() == Poco::Net::HTTPRequest::HTTP_POST) {
-                if (request.get("user-agent", "") == WINDBELT_USER_AGENT) {
+                if (request.get("user-agent", "") == userAgent) {
                     if (request.getURI() == WINDBELT_URI) {
                         return new VoltageHTTPRequestHandler();
                     }
@@ -105,7 +105,7 @@ void initHTTPServer() {
     params->setMaxQueued(100);
     params->setMaxThreads(2);
 
-    theSocket = new Poco::Net::ServerSocket(WINDBELT_PORT);
+    theSocket = new Poco::Net::ServerSocket(port);
     server = new Poco::Net::HTTPServer(new HTTPRequestFactory(), *theSocket, params);
 }
 
@@ -114,9 +114,9 @@ void initMariaDB() {
     if (con == nullptr) {
         throw std::runtime_error("Could not initalize mariadb");
     }
-    if (mysql_real_connect(con, GATEWAY_IP, MARIADB_USER.c_str(),
-                           MARIADB_PASSWORD.c_str(), "ctsn",
-                           3306, nullptr, 0) == nullptr) {
+    if (mysql_real_connect(con, mariadbIP.c_str(), mariadbUser.c_str(),
+                           mariadbPass.c_str(), databaseName.c_str(),
+                           mariadbPort, nullptr, 0) == nullptr) {
         throw std::runtime_error(mysql_error(con));
     }
 }

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Fill in these settings based on your system setup.
+This file will be read in by both the gateway process
+and the trail node processes.  This means this file
+will need to live in your gateway node and each
+trail node.
+-->
+
+<ctsn_settings>
+<!-- Settings for the gateway node system-->
+<gateway_settings>
+<!--
+Mail gun settings
+Needed to send text messages and emails to the admins
+-key: Your mailgun key
+            -url: The url mailgun told you to post to.
+            -from: what you want the "from" email to be 
+                   from mailgun.
+    -->
+    <mailgun key="key"
+             url="url"
+             from="admin name &lt;postmaster@yourURL.com&gt;" />
+
+    <!--
+        Django settings
+            -key: Django key.  Get one here if you dont have one
+                  http://www.miniwebtool.com/django-secret-key-generator/
+            -host: Your host.  This will go in the "Allowed hosts" list in settings.py
+            -database_admin: The database admin's user name.  This user needs
+                             the ability to create tables
+            -database_password: The database admin's password.
+    -->
+    <django key="Your django key." 
+            host="localhost"
+            database_admin = "user name"
+            database_password = "password"/>
+
+    <!--
+        MariaDB settings
+            -User: The user with access to modify the CTSN tables.
+                   table creation not required.
+            -Pass: The password to the user with access to the CTSN tables.
+            -Port: Mariadb's port.  3306 is the default.
+            -ip: Ip address or url.  Put localhost if and only if
+                 the database is running
+                 on the same device as the gateway process.
+            -name: The database name, where all the CTSN tables live.
+        -->
+    <mariadb user="user name"
+             pass="pass"
+             port="3306"
+             ip="localhost"
+             name="ctsn"/> 
+    <!--
+        Gateway general settings
+            -Ip: The ip address of the gateway node on the network.
+                 Do not put localhost.
+                 Run ifconfig if you are not sure.
+            -Agent:  The user agent the gateway node will look for.
+                     something sends an http request to the gateway node
+                     without this set, a forbidden error will occur.
+            -Port:  The port to run the gateway process on.
+            -serial: The serial port to listen to.
+    -->
+    <gateway ip="ipaddress" agent="ctsn_user_agent" port="1514" serial="/dev/ttyAMA0" />
+
+</gateway_settings>
+
+<!--
+    Node settings.  Each individual node needs this.
+        -Agent:  The user agent the node will look for.
+                 something sends an http request to the gateway node
+                 without this set, a forbidden error will occur.
+
+        -port: The port to run the pi node process on.
+        -serial: The serial port to listen to
+-->
+<node_settings agent="node user agent" port="1515" serial="/dev/ttyAMA0">
+    <!--
+        information about the gateway node.  This must be the SAME
+        for every trail node.
+            -id: The gateway's node id.  1 is recommended
+            -address: The gateway's XBee 64 bit address.
+    -->
+    <gateway_node id="1" address="0x123456789"/>
+
+    <!--
+        Information about a single trail node.  This MUST differ
+        for every trail node.
+    -->
+    <this_node id="2" address="0x123456789"/>
+    
+</node_settings>
+
+<!-- 
+    Windbelt messurement system settings.
+        -Port: The port to run on.
+        -Agent:  The user agent the windbelt will look for.
+                 something sends an http request to the gateway node
+                 without this set, a forbidden error will occur.
+-->
+<windbelt_settings port="1516" agent="agent" />
+
+</ctsn_settings>
+

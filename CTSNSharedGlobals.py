@@ -190,5 +190,15 @@ const std::string
 #endif
 BATTERY_CHECK_URI = "/battery_check";
 
+
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+WINDBELT_URI = "/windbelt_voltage";
+
 #endif
 

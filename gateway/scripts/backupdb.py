@@ -3,7 +3,6 @@ import os
 import subprocess
 import sys
 
-sys.path.append("../../")
 from Secrets import *
 
 date = datetime.datetime.now()
@@ -14,7 +13,7 @@ backupDir = os.path.join(os.environ['HOME'], 'backups', 'ctsn')
 if (not os.path.exists(backupDir)):
     os.makedirs(backupDir)
 
-process = subprocess.Popen(['mysqldump', '-u', MARIADB_USER, '-p' + MARIADB_PASSWORD, '--host=' + GATEWAY_LOCAL_IP, 'ctsn'], stdout=subprocess.PIPE)
+process = subprocess.Popen(['mysqldump', '-u', mariadb_user, '-p' + mariadb_pass, '--host=' + mariadb_ip, mariadb_name], stdout=subprocess.PIPE)
 
 stdout = process.communicate()[0]
 

@@ -84,5 +84,7 @@ vsproject
 *.target
 *.temp
 Doxyfile
-/Secrets.py
+Secrets.py
+settings.xml
+WindbeltSettings.h
 

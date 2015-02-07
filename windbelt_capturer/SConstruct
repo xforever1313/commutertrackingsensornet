@@ -26,14 +26,6 @@ targetFlags = CPP_CHECK_TARGET | PROJECT_TARGET | EXE_TARGET
 envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
 
 ###
-# Additional Flags
-###
-if (ARGUMENTS.get('pi_build', '0') ==  '1'):
-    additionalFlags = ['-DGATEWAY_IP=\\"localhost\\"']
-else:
-    additionalFlags = ['-DGATEWAY_IP=\\"192.168.15.115\\"']
-
-###
 # Files to compile
 ###
 
@@ -78,7 +70,6 @@ Help(getHelpMessage(envBase))
 ###
 
 def addFlags(env):
-    env.Append(CCFLAGS = additionalFlags)
     for p in systemPaths:
         env.Append(CCFLAGS = ['-isystem', p])
 

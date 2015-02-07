@@ -3,15 +3,16 @@ import time
 import subprocess
 import sys
 
+from Secrets import *
+
 sys.path.append("../..")
 
 from CTSNSharedGlobals import *
-from Secrets import *
 
 gatewayUrl = ""
 
 def performPostRequest(data, page):
-    commandArgs = ['curl', '-X', 'POST', '-A', USER_AGENT, '--data']
+    commandArgs = ['curl', '-X', 'POST', '-A', gateway_user_agent, '--data']
 
     dataStr = ""
 
@@ -21,7 +22,7 @@ def performPostRequest(data, page):
     #Get rid of unneeded &
     dataStr = dataStr[:-1]
 
-    commandArgs += [dataStr, 'http://' + gatewayUrl + ":" + str(GATEWAY_COMMAND_PORT) + page]
+    commandArgs += [dataStr, 'http://' + gatewayUrl + ":" + str(gateway_port) + page]
 
     print ("\nCurl output:")
     subprocess.call(commandArgs) 
