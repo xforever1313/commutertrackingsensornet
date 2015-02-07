@@ -72,10 +72,13 @@ void Gateway::initHTTPServer() {
 void Gateway::initMariaDB() {
     m_mariadb = new MariaDBWrapper();
     m_mariadb->mysql_init();
-    // Gateway IP is defined with -D at compile time
-    m_mariadb->mysql_real_connect(GATEWAY_IP, MARIADB_USER.c_str(),
+    m_mariadb->mysql_real_connect(MARIADB_IP.c_str(),
+                                  MARIADB_USER.c_str(),
                                   MARIADB_PASSWORD.c_str(),
-                                  "ctsn", 3306, nullptr, 0);
+                                  MARIADB_CTSN_DATABASE_NAME.c_str(),
+                                  MARIADB_PORT,
+                                  nullptr,
+                                  0);
 }
 
 void Gateway::start() {
