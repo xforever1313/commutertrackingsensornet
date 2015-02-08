@@ -8,6 +8,7 @@
 #include "EventExecutorInterface.h"
 #include "gateway/MariaDBInterface.h"
 #include "ctsn_common/NodeContainerInterface.h"
+#include "ctsn_common/SettingsParser.h"
 #include "ctsn_common/ShutdownInterface.h"
 #include "ctsn_common/UartInterface.h"
 #include "ctsn_common/UartRecvThread.h"
@@ -41,6 +42,7 @@ class Gateway : public CTSNCommon::ShutdownInterface {
         void initMariaDB();
         void shutdown() override;
 
+        CTSNCommon::Settings &m_settings;
         Common::EventExecutorInterface *m_eventExecutor;
         std::istream *m_input;
         Common::IO::LoggerBase *m_output;

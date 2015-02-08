@@ -5,6 +5,7 @@
 #include "CTSNSharedGlobals.py"
 #include "ctsn_common/BadClientHTTPRequestHandler.h"
 #include "ctsn_common/HTTPPosterInterface.h"
+#include "ctsn_common/SettingsParser.h"
 #include "gateway/DatabasePokeHTTPRequestHandler.h"
 #include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
@@ -16,13 +17,11 @@
 #include "gateway/NodeCheckHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "ctsn_common/NotFoundHTTPRequestHandler.h"
-#include "gateway/PictureParseHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
 #include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
 #include "ctsn_common/XBeeTxHTTPRequestHandler.h"
 #include "gateway/UartTxHTTPRequestHandler.h"
-#include "Secrets.py"
 
 #include <iostream>
 
@@ -41,7 +40,8 @@ HTTPRequestFactory::HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown,
     m_uart(uart),
     m_mariadb(mariadb),
     m_nodes(nodes),
-    m_httpPoster(httpPoster)
+    m_httpPoster(httpPoster),
+    m_settings(CTSNCommon::Settings::getInstance())
 {
 }
 
@@ -56,7 +56,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     if (userAgent == INVALID_USER_AGENT) {
         return new CTSNCommon::BadClientHTTPRequestHandler();
     }
-    else if ((userAgent != USER_AGENT) && (userAgent != PICTURE_PARSER_USER_AGENT)) {
+    else if (userAgent != m_settings.getSetting("GATEWAY_AGENT")) {
         return new CTSNCommon::BadClientHTTPRequestHandler();
     }
     else if (request.getURI() == ROOT_URI) {
@@ -64,9 +64,6 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (request.getURI() == DATABASE_POKE_URI) {
         return new DatabasePokeHTTPRequestHandler(m_mariadb, m_eventExecutor);
-    }
-    else if (request.getURI() == DATA_URI) {
-        return new PictureParseHTTPRequestHandler(m_eventExecutor, m_httpPoster);
     }
     else if (request.getURI() == DATA_RESULT_URI) {
         return new DataHTTPRequestHandler(m_eventExecutor, m_mariadb, m_nodes);

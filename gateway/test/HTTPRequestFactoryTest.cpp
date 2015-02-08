@@ -7,6 +7,7 @@
 
 #include "CTSNSharedGlobals.py"
 #include "ctsn_common/BadClientHTTPRequestHandler.h"
+#include "ctsn_common/SettingsParser.h"
 #include "gateway/DatabasePokeHTTPRequestHandler.h"
 #include "gateway/DataHTTPRequestHandler.h"
 #include "gateway/EmailHTTPRequestHandler.h"
@@ -16,7 +17,6 @@
 #include "gateway/NodeCheckHTTPRequestHandler.h"
 #include "gateway/NodeStatusUpdateHTTPRequestHandler.h"
 #include "ctsn_common/NotFoundHTTPRequestHandler.h"
-#include "gateway/PictureParseHTTPRequestHandler.h"
 #include "gateway/RootHTTPRequestHandler.h"
 #include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "gateway/TextMessageHTTPRequestHandler.h"
@@ -29,10 +29,12 @@
 #include "MockNodeContainer.h"
 #include "MockShutdown.h"
 #include "MockUart.h"
-#include "Secrets.py"
 
 TEST_GROUP(HTTPRequestFactoryTest) {
     TEST_SETUP() {
+        m_settings = &CTSNCommon::Settings::getInstance();
+        m_settings->m_stringSettings["GATEWAY_AGENT"] = "someAgent";
+
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_uart = new testing::StrictMock<CTSNCommon::MockUart>();
         m_mariadb = new testing::StrictMock<Gateway::MockMariaDB>();
@@ -63,6 +65,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
         delete m_eventExecutor;
     }
 
+    CTSNCommon::Settings *m_settings;
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<CTSNCommon::MockUart> *m_uart;
     testing::StrictMock<Gateway::MockMariaDB> *m_mariadb;
@@ -75,7 +78,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
 
 TEST(HTTPRequestFactoryTest, createShutdownTest) {
     m_request->setURI(SHUTDOWN_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<CTSNCommon::ShutdownHTTPRequestHandler*>(handler) != nullptr);
@@ -84,16 +87,31 @@ TEST(HTTPRequestFactoryTest, createShutdownTest) {
 
 TEST(HTTPRequestFactoryTest, createRootTest) {
     m_request->setURI(ROOT_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<Gateway::RootHTTPRequestHandler*>(handler) != nullptr);
     delete handler;
 }
 
+TEST(HTTPRequestFactoryTest, createDataTest) {
+    m_request->setURI(DATA_RESULT_URI);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
+
+    Gateway::DataHTTPRequestHandler* handler =
+        dynamic_cast<Gateway::DataHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
+
+    CHECK(handler != nullptr);
+    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
+    POINTERS_EQUAL(handler->m_mariadb, m_mariadb);
+    POINTERS_EQUAL(handler->m_nodes, m_nodes);
+
+    delete handler;
+}
+
 TEST(HTTPRequestFactoryTest, createUartTxTest) {
     m_request->setURI(UART_TX_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Gateway::UartTxHTTPRequestHandler* handler = dynamic_cast<Gateway::UartTxHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
@@ -106,7 +124,7 @@ TEST(HTTPRequestFactoryTest, createUartTxTest) {
 
 TEST(HTTPRequestFactoryTest, createXBeeTxTest) {
     m_request->setURI(XBEE_TX_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     CTSNCommon::XBeeTxHTTPRequestHandler* handler =
         dynamic_cast<CTSNCommon::XBeeTxHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
@@ -119,18 +137,9 @@ TEST(HTTPRequestFactoryTest, createXBeeTxTest) {
     delete handler;
 }
 
-TEST(HTTPRequestFactoryTest, createPassthroughDataTest) {
-    m_request->setURI(DATA_URI);
-    m_request->set("user-agent", USER_AGENT);
-
-    Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
-    CHECK(dynamic_cast<Gateway::PictureParseHTTPRequestHandler*>(handler) != nullptr);
-    delete handler;
-}
-
 TEST(HTTPRequestFactoryTest, createNodeStatusUpdateTest) {
     m_request->setURI(NODE_STATUS_UPDATE_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Gateway::NodeStatusUpdateHTTPRequestHandler* handler =
         dynamic_cast<Gateway::NodeStatusUpdateHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
@@ -145,7 +154,7 @@ TEST(HTTPRequestFactoryTest, createNodeStatusUpdateTest) {
 
 TEST(HTTPRequestFactoryTest, createNodeCheckUpdateTest) {
     m_request->setURI(NODE_CHECK_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Gateway::NodeCheckHTTPRequestHandler* handler =
         dynamic_cast<Gateway::NodeCheckHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
@@ -158,24 +167,9 @@ TEST(HTTPRequestFactoryTest, createNodeCheckUpdateTest) {
     delete handler;
 }
 
-TEST(HTTPRequestFactoryTest, createDataTest) {
-    m_request->setURI(DATA_RESULT_URI);
-    m_request->set("user-agent", PICTURE_PARSER_USER_AGENT);
-
-    Gateway::DataHTTPRequestHandler* handler =
-        dynamic_cast<Gateway::DataHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
-
-    CHECK(handler != nullptr);
-    POINTERS_EQUAL(handler->m_eventExecutor, m_eventExecutor);
-    POINTERS_EQUAL(handler->m_mariadb, m_mariadb);
-    POINTERS_EQUAL(handler->m_nodes, m_nodes);
-
-    delete handler;
-}
-
 TEST(HTTPRequestFactoryTest, createTextMessageTest) {
     m_request->setURI(TEXT_MESSAGE_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Gateway::TextMessageHTTPRequestHandler* handler = dynamic_cast<Gateway::TextMessageHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
@@ -187,7 +181,7 @@ TEST(HTTPRequestFactoryTest, createTextMessageTest) {
 
 TEST(HTTPRequestFactoryTest, createEmailTest) {
     m_request->setURI(EMAIL_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Gateway::EmailHTTPRequestHandler* handler = dynamic_cast<Gateway::EmailHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
@@ -199,7 +193,7 @@ TEST(HTTPRequestFactoryTest, createEmailTest) {
 
 TEST(HTTPRequestFactoryTest, createLogMessageTest) {
     m_request->setURI(LOG_MESSAGE_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Gateway::LogMessageHTTPRequestHandler* handler = dynamic_cast<Gateway::LogMessageHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
@@ -212,7 +206,7 @@ TEST(HTTPRequestFactoryTest, createLogMessageTest) {
 
 TEST(HTTPRequestFactoryTest, createErrorMessageTest) {
     m_request->setURI(ERROR_MESSAGE_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Gateway::ErrorHTTPRequestHandler* handler = dynamic_cast<Gateway::ErrorHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
@@ -225,7 +219,7 @@ TEST(HTTPRequestFactoryTest, createErrorMessageTest) {
 
 TEST(HTTPRequestFactoryTest, createDatabasePokeTest) {
     m_request->setURI(DATABASE_POKE_URI);
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Gateway::DatabasePokeHTTPRequestHandler* handler = dynamic_cast<Gateway::DatabasePokeHTTPRequestHandler*>(m_uut->createRequestHandler(*m_request));
 
@@ -238,7 +232,7 @@ TEST(HTTPRequestFactoryTest, createDatabasePokeTest) {
 
 TEST(HTTPRequestFactoryTest, notFoundTest) {
     m_request->setURI("herpaderp");
-    m_request->set("user-agent", USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("GATEWAY_AGENT"));
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<CTSNCommon::NotFoundHTTPRequestHandler*>(handler) != nullptr);

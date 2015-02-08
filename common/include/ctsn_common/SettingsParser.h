@@ -50,6 +50,8 @@ class Settings {
         static const std::string XML_ERROR;
 
         Settings();
+        Settings(const Settings&) = delete;
+        Settings &operator=(const Settings&) = delete;
 
         std::map<std::string, std::string> m_stringSettings;
         std::map<std::string, short> m_shortSettings;

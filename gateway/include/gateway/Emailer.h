@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 
+#include "ctsn_common/SettingsParser.h"
 #include "gateway/EmailerInterface.h"
 
 namespace Gateway {
@@ -40,6 +41,7 @@ class Emailer : public EmailerInterface {
         std::map <std::string, std::string> m_addresses;
         std::string m_subject;
         std::string m_message;
+        CTSNCommon::Settings &m_settings;
 };
 
 }

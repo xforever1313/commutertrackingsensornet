@@ -71,6 +71,7 @@ Thumbs.db
 nbproject
 vsproject
 *.uvgui.*
+*.swo
 
 # Others #
 ##########

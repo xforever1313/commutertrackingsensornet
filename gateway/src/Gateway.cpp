@@ -14,7 +14,6 @@
 #include "ctsn_common/XBeeCallbacks.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "io/InputReader.h"
-#include "Secrets.py"
 #include "SMutex.h"
 
 namespace Gateway {
@@ -30,11 +29,12 @@ Gateway &Gateway::getInstance() {
 }
 
 Gateway::Gateway() :
+    m_settings(CTSNCommon::Settings::getInstance()),
     m_eventExecutor(new Common::EventExecutor),
     m_input(&std::cin),
     m_output(&Common::IO::ConsoleLogger::out),
     m_uart(new CTSNCommon::Uart(RxSignal)),
-    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(GATEWAY_COMMAND_PORT)),
+    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(m_settings.getShortSetting("GATEWAY_PORT"))),
     m_xbeeController(new CTSNCommon::XBeeController(m_xbeeCallbacks)),
     m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController)),
     m_socket(nullptr),
@@ -64,7 +64,7 @@ void Gateway::initHTTPServer() {
     params->setMaxQueued(500);
     params->setMaxThreads(1);
 
-    m_socket = new Poco::Net::ServerSocket(GATEWAY_COMMAND_PORT);
+    m_socket = new Poco::Net::ServerSocket(m_settings.getShortSetting("GATEWAY_PORT"));
     m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this, m_eventExecutor, m_uart, m_mariadb, m_nodes, m_httpPoster),
                                          *m_socket, params);
 }
@@ -72,11 +72,11 @@ void Gateway::initHTTPServer() {
 void Gateway::initMariaDB() {
     m_mariadb = new MariaDBWrapper();
     m_mariadb->mysql_init();
-    m_mariadb->mysql_real_connect(MARIADB_IP.c_str(),
-                                  MARIADB_USER.c_str(),
-                                  MARIADB_PASSWORD.c_str(),
-                                  MARIADB_CTSN_DATABASE_NAME.c_str(),
-                                  MARIADB_PORT,
+    m_mariadb->mysql_real_connect(m_settings.getSetting("MARIADB_IP").c_str(),
+                                  m_settings.getSetting("MARIADB_USER").c_str(),
+                                  m_settings.getSetting("MARIADB_PASS").c_str(),
+                                  m_settings.getSetting("MARIADB_NAME").c_str(),
+                                  m_settings.getShortSetting("MARIADB_PORT"),
                                   nullptr,
                                   0);
 }
@@ -97,8 +97,7 @@ void Gateway::start() {
         HTTPServerStarted = true;
 
         try {
-            // SERIAL_PORT is defined at compile time with the -D flag.
-            m_uart->open(SERIAL_PORT);
+            m_uart->open(m_settings.getSetting("GATEWAY_SERIAL"));
             m_xbeeController->start();
             m_recvThread->start();
         }
