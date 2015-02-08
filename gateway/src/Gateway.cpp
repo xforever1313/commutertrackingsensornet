@@ -34,14 +34,14 @@ Gateway::Gateway() :
     m_input(&std::cin),
     m_output(&Common::IO::ConsoleLogger::out),
     m_uart(new CTSNCommon::Uart(RxSignal)),
-    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(m_settings.getShortSetting("GATEWAY_PORT"))),
+    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(m_settings.getShortSetting("GATEWAY_PORT"), m_settings.getSetting("GATEWAY_AGENT"))),
     m_xbeeController(new CTSNCommon::XBeeController(m_xbeeCallbacks)),
     m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController)),
     m_socket(nullptr),
     m_server(nullptr),
     m_mariadb(nullptr),
     m_nodes(nullptr),
-    m_httpPoster(new CTSNCommon::HTTPPoster())
+    m_httpPoster(new CTSNCommon::HTTPPoster(m_settings.getSetting("GATEWAY_AGENT")))
 {
 }
 

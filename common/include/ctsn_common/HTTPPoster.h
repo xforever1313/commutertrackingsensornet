@@ -13,7 +13,7 @@ namespace CTSNCommon {
  */
 class HTTPPoster : public HTTPPosterInterface {
     public:
-        HTTPPoster();
+        HTTPPoster(const std::string &userAgent);
 
         ~HTTPPoster();
 
@@ -34,6 +34,10 @@ class HTTPPoster : public HTTPPosterInterface {
                    const std::string &uri,
                    const std::string &data,
                    short portNumber) override;
+
+    private:
+        std::string m_userAgent;
+
 };
 
 }

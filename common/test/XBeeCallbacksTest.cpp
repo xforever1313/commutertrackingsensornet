@@ -15,7 +15,7 @@ TEST_GROUP(XBeeCallbacksTest) {
         m_outLogger = new Common::IO::StringLogger();
         m_errLogger = new Common::IO::StringLogger();
         m_httpPoster = new testing::StrictMock<CTSNCommon::MockHTTPPoster>();
-        m_uut = new CTSNCommon::XBeeCallbacks(m_portNumber, *m_outLogger,*m_errLogger);
+        m_uut = new CTSNCommon::XBeeCallbacks(m_portNumber, "userAgent", *m_outLogger,*m_errLogger);
 
         CHECK_EQUAL(m_uut->m_portNumber, m_portNumber);
 

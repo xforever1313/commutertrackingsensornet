@@ -22,6 +22,7 @@ class XBeeCallbacks : public XBeeCallbackInterface {
          * \param portNumber the port number to post the command to.
          */
          XBeeCallbacks(short portNumber,
+                       const std::string &userAgent,
                        Common::IO::LoggerBase &outLogger =
                            Common::IO::ConsoleLogger::out,
                        Common::IO::LoggerBase &errLogger =

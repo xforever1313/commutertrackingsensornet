@@ -40,11 +40,12 @@ const std::string XBeeCallbacks::TX_STATUS_ROUTE_NOT_FOUND = "Route Not Found";
 const std::string XBeeCallbacks::TX_STATUS_UNKNOWN = "Unknown Tx Error";
 
 XBeeCallbacks::XBeeCallbacks(short portNumber,
+                             const std::string &userAgent,
                              Common::IO::LoggerBase &outLogger,/* = Common::IO::ConsoleLogger::out */
                              Common::IO::LoggerBase &errLogger/* = Common::IO::ConsoleLogger::err */) :
     m_outLogger(outLogger),
     m_errLogger(errLogger),
-    m_poster(new CTSNCommon::HTTPPoster()),
+    m_poster(new CTSNCommon::HTTPPoster(userAgent)),
     m_portNumber(portNumber)
 {
 }

@@ -4,11 +4,12 @@
 
 #include "CTSNSharedGlobals.py"
 #include "ctsn_common/HTTPPoster.h"
-#include "Secrets.py"
 
 namespace CTSNCommon {
 
-HTTPPoster::HTTPPoster() {
+HTTPPoster::HTTPPoster(const std::string &userAgent) :
+    m_userAgent(userAgent)
+{
 
 }
 
@@ -22,20 +23,20 @@ void HTTPPoster::post(const std::string &address,
                       short portNumber) {
 
     std::string curlCommand = "curl -X POST -A " +
-                              USER_AGENT + 
-                              " -sL -w %{http_code}" + 
+                              m_userAgent +
+                              " -sL -w %{http_code}" +
                               " --data \"" +
                               data +
                               "\" http://" + address + ":" +
                               std::to_string(portNumber) +
                               url;
-                                
+
 
     FILE *f = popen(curlCommand.c_str(), "r");
     if (f == nullptr) {
         throw std::runtime_error("Curl failed to open.\n\tCommand: " + curlCommand);
     }
-    
+
     std::string output;
     char buffer[255];
     while(fgets(buffer, sizeof(buffer), f) != nullptr) {

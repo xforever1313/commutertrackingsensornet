@@ -33,7 +33,7 @@ PiNode::PiNode() :
     m_socket(nullptr),
     m_server(nullptr),
     m_uart(new CTSNCommon::Uart(&RxSignal)),
-    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(m_settings.getShortSetting("NODE_PORT"))),
+    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(m_settings.getShortSetting("NODE_PORT"), m_settings.getSetting("NODE_AGENT"))),
     m_xbeeController(new CTSNCommon::XBeeController(m_xbeeCallbacks)),
     m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController)),
     m_gpio(CTSNCommon::PiGPIOController::getInstance()),
