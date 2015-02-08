@@ -28,21 +28,7 @@ envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, A
 ###
 # Additional Flags
 ###
-piBuild = ARGUMENTS.get('pi_build', '0') == '1'
-piNode = ARGUMENTS.get('pi_node', '0') == '1' #build for the pi as a node
-
 additionalFlags = []
-
-if(piBuild):
-    additionalFlags += ['-DSERIAL_PORT=\\"/dev/ttyAMA0\\"']
-
-    if (piNode):
-        additionalFlags += ['-DGATEWAY_IP=\\"192.168.15.115\\"']
-    else:
-        additionalFlags += ['-DGATEWAY_IP=\\"localhost\\"']
-else:
-    additionalFlags += ['-DGATEWAY_IP=\\"192.168.15.115\\"',
-                        '-DSERIAL_PORT=\\"/dev/ttyUSB0\\"']
 
 ###
 # Files to compile
@@ -150,13 +136,13 @@ doxygenFiles = [dateVersionFile] + sourceFiles + sourceTestFiles + glob.glob(os.
 ###
 
 (debugTarget, runDebugTarget) = createExe(debugEnvironment, "CTSNGateway-d",
-                                          getCompiledObjectsWithDateVersionObject(debugEnvironment, 
-                                                                                  sourceFiles + [gatewayMainFile], 
+                                          getCompiledObjectsWithDateVersionObject(debugEnvironment,
+                                                                                  sourceFiles + [gatewayMainFile],
                                                                                   dateVersionFile, ARGUMENTS))
 
 (releaseTarget, runReleaseTarget)  = createExe(releaseEnvironment, "CTSNGateway",
-                                               getCompiledObjectsWithDateVersionObject(releaseEnvironment, 
-                                                                                       sourceFiles + [gatewayMainFile], 
+                                               getCompiledObjectsWithDateVersionObject(releaseEnvironment,
+                                                                                       sourceFiles + [gatewayMainFile],
                                                                                        dateVersionFile, ARGUMENTS))
 
 (unitTestTarget, runTestTarget) = createUnitTestExe(testEnvironment,

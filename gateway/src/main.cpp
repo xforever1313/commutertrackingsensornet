@@ -53,8 +53,15 @@ int main(int argc, char** argv) {
 
     mysql_library_init(argc, argv, nullptr);
     Common::IO::ConsoleLogger::out.writeLine("Welcome to the CTSN Gateway Node!");
-    Common::IO::ConsoleLogger::out.writeLine(std::string("Build: ") + Gateway::DateVersion::getBuildTime());
+    Common::IO::ConsoleLogger::out.writeLine(std::string("Built: ") + Gateway::DateVersion::getBuildTime());
     Common::IO::ConsoleLogger::out.writeLine(std::string("Version: ") + Gateway::DateVersion::getVersionNumber());
+
+    // Print settings
+    Common::IO::ConsoleLogger::out.writeLine(std::string("\nRunning on port: ") + std::to_string(settings.getShortSetting("GATEWAY_PORT")));
+    Common::IO::ConsoleLogger::out.writeLine(std::string("MariaDB IP: ") + settings.getSetting("MARIADB_IP"));
+    Common::IO::ConsoleLogger::out.writeLine(std::string("Using database: ") + settings.getSetting("MARIADB_NAME"));
+    Common::IO::ConsoleLogger::out.writeLine(std::string("Using serial port: ") + settings.getSetting("GATEWAY_SERIAL"));
+
     Gateway::Gateway &gateway = Gateway::Gateway::getInstance();
     gateway.start();
     mysql_library_end();
