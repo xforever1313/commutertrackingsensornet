@@ -38,6 +38,9 @@ if (sys.platform == 'win32'):
 else:
     sconsCommand = 'scons'
 
+print ("Generating settings files...")
+subprocess.call(['python', 'GenerateSettings.py'], cwd=os.path.abspath(baseDir))
+
 for target in sorted(targets.keys()):
     location = targets[target]
     logFile = os.path.join(logDir, target[1:] + ".log")
