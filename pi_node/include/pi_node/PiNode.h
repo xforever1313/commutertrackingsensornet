@@ -6,6 +6,7 @@
 #include "ctsn_common/HTTPPosterInterface.h"
 #include "ctsn_common/NodeContainerInterface.h"
 #include "ctsn_common/PiGPIOController.h"
+#include "ctsn_common/SettingsParser.h"
 #include "ctsn_common/ShutdownInterface.h"
 #include "ctsn_common/UartInterface.h"
 #include "ctsn_common/UartRecvThread.h"
@@ -33,6 +34,10 @@ class PiNode : public CTSNCommon::ShutdownInterface {
         static void RxSignal(int status);
 
         PiNode();
+        PiNode(const PiNode&) = delete;
+        PiNode &operator=(const PiNode&) = delete;
+
+        CTSNCommon::Settings &m_settings;
         Common::EventExecutorInterface *m_eventExecutor;
         OS::SConditionVariable m_shutdownCV;
 

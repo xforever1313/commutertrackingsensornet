@@ -6,11 +6,18 @@
 
 #include "UnitTest.h"
 
+#include "ctsn_common/SettingsParser.h"
 #include "ctsn_common/Node.h"
 #include "pi_node/NodeContainer.h"
 
 TEST_GROUP(NodeContainerTest) {
     TEST_SETUP() {
+        m_settings = &CTSNCommon::Settings::getInstance();
+        m_settings->m_shortSettings["NODE_GATEWAY_ID"] = 1;
+        m_settings->m_shortSettings["NODE_ID"] = 2;
+        m_settings->m_stringSettings["NODE_GATEWAY_ADDRESS"] = "0x01";
+        m_settings->m_stringSettings["NODE_ADDRESS"] = "0x02";
+
         m_uut = new PiNode::NodeContainer();
 
         //Ensure clearing the nodes leaves 1 node left, the broadcast node.
@@ -20,15 +27,15 @@ TEST_GROUP(NodeContainerTest) {
         CHECK_EQUAL(m_uut->m_nodes.at(0).getAddress(),
                     PiNode::NodeContainer::BROADCAST_ADDRESS);
 
-        // Ensure the current ID does not equal the gateway or broadcast id.
+        // Ensure the current ID does not equal the broadcast id.
         CHECK(m_uut->m_currentID != 0);
-        CHECK(m_uut->m_currentID != 1);
     }
 
     TEST_TEARDOWN() {
         delete m_uut;
     }
 
+    CTSNCommon::Settings *m_settings;
     PiNode::NodeContainer *m_uut;
 };
 
@@ -65,23 +72,25 @@ TEST(NodeContainerTest, getCurrentNodeTest) {
     CHECK_EQUAL(receivedNode.getID(), node.getID());
 }
 
-TEST(NodeContainerTest, readDataSuccess) {
-    std::string fileContents = "1 0x01\n2 0x02";
-    std::stringstream ss(fileContents);
+TEST(NodeContainerTest, refreshTest) {
+    m_uut->refreshNodes();
 
-    m_uut->refreshNodes(ss);
+    // Three nodes, broadcast, current, and gateway.
+    CHECK_EQUAL(m_uut->m_nodes.size(), 3);
 
-    CHECK_EQUAL(m_uut->m_nodes.at(1).getAddress(), 1);
-    CHECK_EQUAL(m_uut->m_nodes.at(2).getAddress(), 2);
+    CHECK_EQUAL(m_uut->m_nodes.at(0).getID(), 0);
+    CHECK_EQUAL(m_uut->m_nodes.at(0).getAddress(), PiNode::NodeContainer::BROADCAST_ADDRESS);
+    CHECK_EQUAL(m_uut->m_nodes.at(m_settings->getShortSetting("NODE_GATEWAY_ID")).getID(), m_settings->getShortSetting("NODE_GATEWAY_ID"));
+    CHECK_EQUAL(m_uut->m_nodes.at(m_settings->getShortSetting("NODE_ID")).getID(), m_settings->getShortSetting("NODE_ID"));
+    CHECK_EQUAL(m_uut->m_currentID, m_settings->getShortSetting("NODE_ID"));
 }
 
-TEST(NodeContainerTest, readDataFailure) {
-    std::string fileContents = "1 0x01sdf\n2 0x02";
-    std::stringstream ss(fileContents);
+TEST(NodeContainerTest, refreshTestBad) {
+    m_settings->m_stringSettings["NODE_GATEWAY_ADDRESS"] = "0x123derp";
 
     try {
-        m_uut->refreshNodes(ss);
-        FAIL("Exception should have been thrown");
+        m_uut->refreshNodes();
+        FAIL("Expected exception");
     }
     catch (const std::runtime_error &e) {
         CHECK_EQUAL(e.what(), PiNode::NodeContainer::BAD_NODE_CONFIG);

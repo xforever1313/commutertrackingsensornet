@@ -5,12 +5,12 @@
 #include "ctsn_common/BadClientHTTPRequestHandler.h"
 #include "ctsn_common/HTTPPosterInterface.h"
 #include "ctsn_common/NotFoundHTTPRequestHandler.h"
+#include "ctsn_common/SettingsParser.h"
 #include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "ctsn_common/UartInterface.h"
 #include "CTSNSharedGlobals.py"
 #include "pi_node/BatteryCheckHTTPRequestHandler.h"
 #include "pi_node/HTTPRequestFactory.h"
-#include "Secrets.py"
 
 namespace PiNode {
 
@@ -21,6 +21,7 @@ HTTPRequestFactory::HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown,
                                        CTSNCommon::NodeContainerInterface *nodes,
                                        Common::EventExecutorInterface *eventExecutor,
                                        CTSNCommon::UartInterface *uart) :
+    m_settings(CTSNCommon::Settings::getInstance()),
     m_shutdown(shutdown),
     m_gpio(gpio),
     m_nodes(nodes),
@@ -43,7 +44,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     if (userAgent == INVALID_USER_AGENT) {
         return new CTSNCommon::BadClientHTTPRequestHandler();
     }
-    else if (userAgent != PI_NODE_USER_AGENT) {
+    else if (userAgent != m_settings.getSetting("NODE_AGENT")) {
         return new CTSNCommon::BadClientHTTPRequestHandler();
     }
     else if (request.getURI() == BATTERY_CHECK_URI) {

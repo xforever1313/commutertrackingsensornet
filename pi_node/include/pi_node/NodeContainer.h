@@ -8,6 +8,7 @@
 
 #include "ctsn_common/Node.h"
 #include "ctsn_common/NodeContainerInterface.h"
+#include "ctsn_common/SettingsParser.h"
 
 namespace PiNode {
 
@@ -43,7 +44,6 @@ class NodeContainer : public CTSNCommon::NodeContainerInterface {
     private:
         static const uint64_t BROADCAST_ADDRESS;
         static const std::string INVALID_NODE_MESSAGE;
-        static const std::string NODE_CONFIG_FILE;
         static const std::string BAD_NODE_CONFIG;
 
         /**
@@ -61,6 +61,7 @@ class NodeContainer : public CTSNCommon::NodeContainerInterface {
         void refreshNodes(std::istream &in);
         void clearNodes();
 
+        CTSNCommon::Settings &m_settings;
         unsigned int m_currentID; ///  <The ID of the pi node this software is running on.
         std::map<unsigned int, CTSNCommon::Node> m_nodes;
         std::mutex m_nodesMutex;

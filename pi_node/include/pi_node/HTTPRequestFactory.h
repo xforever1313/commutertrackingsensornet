@@ -7,6 +7,7 @@
 
 #include "ctsn_common/GPIOControllerInterface.h"
 #include "ctsn_common/NodeContainerInterface.h"
+#include "ctsn_common/SettingsParser.h"
 #include "ctsn_common/ShutdownInterface.h"
 #include "EventExecutorInterface.h"
 #include "ctsn_common/UartInterface.h"
@@ -30,6 +31,7 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
 
         HTTPRequestFactory() = delete;
 
+        CTSNCommon::Settings &m_settings;
         CTSNCommon::ShutdownInterface *m_shutdown;
         CTSNCommon::GPIOControllerInterface &m_gpio;
         CTSNCommon::NodeContainerInterface *m_nodes;

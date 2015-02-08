@@ -1,5 +1,6 @@
 #include <Poco/Net/HTTPServer.h>
 
+#include "ctsn_common/SettingsParser.h"
 #include "ctsn_common/PiGPIOController.h"
 #include "ctsn_common/Uart.h"
 #include "ctsn_common/UartRecvThread.h"
@@ -27,11 +28,12 @@ PiNode &PiNode::getInstance() {
 }
 
 PiNode::PiNode() :
+    m_settings(CTSNCommon::Settings::getInstance()),
     m_eventExecutor(new Common::EventExecutor()),
     m_socket(nullptr),
     m_server(nullptr),
     m_uart(new CTSNCommon::Uart(&RxSignal)),
-    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(PI_NODE_COMMAND_PORT)),
+    m_xbeeCallbacks(new CTSNCommon::XBeeCallbacks(m_settings.getShortSetting("NODE_PORT"))),
     m_xbeeController(new CTSNCommon::XBeeController(m_xbeeCallbacks)),
     m_recvThread(new CTSNCommon::UartRecvThread(m_uart, m_xbeeController)),
     m_gpio(CTSNCommon::PiGPIOController::getInstance()),
@@ -58,7 +60,7 @@ void PiNode::initHTTPServer() {
     params->setMaxQueued(100);
     params->setMaxThreads(1);
 
-    m_socket = new Poco::Net::ServerSocket(PI_NODE_COMMAND_PORT);
+    m_socket = new Poco::Net::ServerSocket(m_settings.getShortSetting("NODE_PORT"));
     m_server = new Poco::Net::HTTPServer(new HTTPRequestFactory(this,
                                                                 m_gpio,
                                                                 m_nodes,
@@ -75,8 +77,7 @@ void  PiNode::start() {
         m_server->start();
         serverStarted = true;
 
-        // SERIAL_PORT is defined at compile time with the -D flag.
-        m_uart->open(SERIAL_PORT);
+        m_uart->open(m_settings.getSetting("NODE_SERIAL"));
         m_xbeeController->start();
         m_recvThread->start();
         m_statusLed->start();

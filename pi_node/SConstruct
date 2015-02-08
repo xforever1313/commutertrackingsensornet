@@ -28,16 +28,8 @@ envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, A
 ###
 # Additional Flags
 ###
-piBuild = ARGUMENTS.get('pi_build', '0') == '1'
-piNode = ARGUMENTS.get('pi_node', '0') == '1' #build for the pi as a node
-
 additionalFlags = []
 
-if(piBuild):
-    additionalFlags += ['-DSERIAL_PORT=\\"/dev/ttyAMA0\\"']
-
-else:
-    additionalFlags += ['-DSERIAL_PORT=\\"/dev/ttyUSB0\\"']
 
 ###
 # Files to compile

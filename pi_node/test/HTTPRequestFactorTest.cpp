@@ -5,6 +5,7 @@
 #include "CTSNSharedGlobals.py"
 #include "ctsn_common/BadClientHTTPRequestHandler.h"
 #include "ctsn_common/NotFoundHTTPRequestHandler.h"
+#include "ctsn_common/SettingsParser.h"
 #include "ctsn_common/ShutdownHTTPRequestHandler.h"
 #include "ctsn_common/HTTPPosterInterface.h"
 #include "EventExecutorInterface.h"
@@ -16,10 +17,12 @@
 #include "MockNodeContainer.h"
 #include "MockShutdown.h"
 #include "MockUart.h"
-#include "Secrets.py"
 
 TEST_GROUP(HTTPRequestFactoryTest) {
     TEST_SETUP() {
+        m_settings = &CTSNCommon::Settings::getInstance();
+        m_settings->m_stringSettings["NODE_AGENT"] = "Node Agent";
+
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_gpio = new testing::StrictMock<CTSNCommon::MockGPIOController>();
@@ -49,6 +52,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
         delete m_eventExecutor;
     }
 
+    CTSNCommon::Settings *m_settings;
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<CTSNCommon::MockGPIOController> *m_gpio;
@@ -60,7 +64,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
 
 TEST(HTTPRequestFactoryTest, createShutdownTest) {
     m_request->setURI(SHUTDOWN_URI);
-    m_request->set("user-agent", PI_NODE_USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("NODE_AGENT"));
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<CTSNCommon::ShutdownHTTPRequestHandler*>(handler) != nullptr);
@@ -70,7 +74,7 @@ TEST(HTTPRequestFactoryTest, createShutdownTest) {
 
 TEST(HTTPRequestFactoryTest, createBatteryCheckTest) {
     m_request->setURI(BATTERY_CHECK_URI);
-    m_request->set("user-agent", PI_NODE_USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("NODE_AGENT"));
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     PiNode::BatteryCheckHTTPRequestHandler *batHandler = dynamic_cast<PiNode::BatteryCheckHTTPRequestHandler*>(handler);
@@ -85,7 +89,7 @@ TEST(HTTPRequestFactoryTest, createBatteryCheckTest) {
 
 TEST(HTTPRequestFactoryTest, notFoundTest) {
     m_request->setURI("herpaderp");
-    m_request->set("user-agent", PI_NODE_USER_AGENT);
+    m_request->set("user-agent", m_settings->getSetting("NODE_AGENT"));
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<CTSNCommon::NotFoundHTTPRequestHandler*>(handler) != nullptr);
