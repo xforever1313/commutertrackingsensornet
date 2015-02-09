@@ -45,10 +45,10 @@ void NodeContainer::refreshNodes() {
     clearNodes();
 
     size_t gatewayLength;
-    uint64_t gatewayAddress = std::stoul(m_settings.getSetting("NODE_GATEWAY_ADDRESS"), &gatewayLength, 16);
+    uint64_t gatewayAddress = std::stoull(m_settings.getSetting("NODE_GATEWAY_ADDRESS"), &gatewayLength, 16);
 
     size_t nodeLength;
-    uint64_t nodeAddress = std::stoul(m_settings.getSetting("NODE_ADDRESS"), &nodeLength, 16);
+    uint64_t nodeAddress = std::stoull(m_settings.getSetting("NODE_ADDRESS"), &nodeLength, 16);
 
     if ((gatewayLength != m_settings.getSetting("NODE_GATEWAY_ADDRESS").size()) ||
         (nodeLength != m_settings.getSetting("NODE_ADDRESS").size())) {
