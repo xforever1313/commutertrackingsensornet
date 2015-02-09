@@ -1,4 +1,5 @@
 #include <Poco/Net/HTTPServer.h>
+#include <stdexcept>
 
 #include "ctsn_common/SettingsParser.h"
 #include "ctsn_common/PiGPIOController.h"
@@ -81,11 +82,15 @@ void  PiNode::start() {
         m_xbeeController->start();
         m_recvThread->start();
         m_statusLed->start();
+
+        m_shutdownCV.wait();
+    }
+    catch (const std::out_of_range &e) {
+        Common::IO::ConsoleLogger::err.writeLineWithTimeStamp("Address out of range");
     }
     catch (const std::exception &e) {
         Common::IO::ConsoleLogger::err.writeLineWithTimeStamp(e.what());
     }
-    m_shutdownCV.wait();
 
     if (serverStarted) {
         m_server->stop();
