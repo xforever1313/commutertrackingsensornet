@@ -33,6 +33,8 @@ def exportDjangoSettings():
     outFile.close()
 
 def exportWindbeltSettings():
+    if (not os.path.isdir('windbelt_capturer/include')):
+        os.mkdir('windbelt_capturer/include')
     outFile = open('windbelt_capturer/include/WindbeltSettings.h', 'w')
     outFile.write(getWarningStringCpp())
     outFile.write('\n#include <string>')
