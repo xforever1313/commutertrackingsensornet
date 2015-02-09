@@ -28,7 +28,6 @@ envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, A
 ###
 # Additional Flags
 ###
-piBuild = ARGUMENTS.get('pi_build', '0') == '1'
 
 additionalFlags = []
 
@@ -37,13 +36,12 @@ additionalFlags = []
 ###
 
 ###include paths:
-systemPaths = []
+systemPaths = [getRapidXMLPath(commonPath)]
 
 #Put any additional include paths you need here.
 includePaths = [includeDir, getDateVersionPath(commonPath),
                 os.path.join(getOSPath(commonPath), includeDir),
                 os.path.join(getCommonClassesPath(commonPath), includeDir),
-                getRapidXMLPath(commonPath),
 		        baseDir]
 
 testIncludePaths = [os.path.join(testDir, includeDir),
@@ -146,7 +144,6 @@ doxygenTarget = createDoxygenTarget(envBase, testEnvironment['CPPPATH'] + otherI
                                     'CTSN Common - Files that are common for multiple projects in the CTSN.')
 
 cppCheckEnvironment = releaseEnvironment.Clone()
-cppCheckEnvironment['CPPPATH'].remove(getRapidXMLPath(commonPath))
 cppCheckTarget = createCppCheckTarget(cppCheckEnvironment, coverageFiles)
 
 (netBeansTarget, vsTarget, CodeBlocksTarget) = createProjectTargets(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, "CTSNCommon")
