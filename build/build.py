@@ -24,9 +24,6 @@ if ('expand_logs=1' in sys.argv):
 else:
     expandLogs = False
 
-if ('pi_build=1' in sys.argv):
-    del(targets['4picture_parser'])
-
 args = ""
 
 for arg in sys.argv[1:]:
@@ -38,7 +35,7 @@ if (sys.platform == 'win32'):
 else:
     sconsCommand = 'scons'
 
-print ("Generating settings files...")
+print ("Generating settings files (This WILL fail on Jenkins)")
 subprocess.call(['python', 'GenerateSettings.py'], cwd=os.path.abspath(baseDir))
 
 for target in sorted(targets.keys()):
