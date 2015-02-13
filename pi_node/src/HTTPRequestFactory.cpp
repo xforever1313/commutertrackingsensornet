@@ -11,6 +11,7 @@
 #include "CTSNSharedGlobals.py"
 #include "pi_node/BatteryCheckHTTPRequestHandler.h"
 #include "pi_node/HTTPRequestFactory.h"
+#include "pi_node/PictureParseHTTPRequestHandler.h"
 
 namespace PiNode {
 
@@ -20,12 +21,14 @@ HTTPRequestFactory::HTTPRequestFactory(CTSNCommon::ShutdownInterface *shutdown,
                                        CTSNCommon::GPIOControllerInterface &gpio,
                                        CTSNCommon::NodeContainerInterface *nodes,
                                        Common::EventExecutorInterface *eventExecutor,
+                                       Common::EventExecutorInterface *cvExecutor,
                                        CTSNCommon::UartInterface *uart) :
     m_settings(CTSNCommon::Settings::getInstance()),
     m_shutdown(shutdown),
     m_gpio(gpio),
     m_nodes(nodes),
     m_eventExecutor(eventExecutor),
+    m_cvExecutor(cvExecutor),
     m_uart(uart)
 {
 
@@ -46,6 +49,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (userAgent != m_settings.getSetting("NODE_AGENT")) {
         return new CTSNCommon::BadClientHTTPRequestHandler();
+    }
+    else if (request.getURI() == PICTURE_PARSE_URI) {
+        return new PictureParseHTTPRequestHandler(m_cvExecutor);
     }
     else if (request.getURI() == BATTERY_CHECK_URI) {
         return new BatteryCheckHTTPRequestHandler(m_nodes, m_eventExecutor, m_gpio, m_uart);

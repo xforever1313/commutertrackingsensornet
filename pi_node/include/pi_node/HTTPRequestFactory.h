@@ -20,6 +20,7 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
                            CTSNCommon::GPIOControllerInterface &gpio,
                            CTSNCommon::NodeContainerInterface *nodes,
                            Common::EventExecutorInterface *eventExecutor,
+                           Common::EventExecutorInterface *cvExecutor,
                            CTSNCommon::UartInterface *uart);
 
         ~HTTPRequestFactory();
@@ -36,6 +37,7 @@ class HTTPRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
         CTSNCommon::GPIOControllerInterface &m_gpio;
         CTSNCommon::NodeContainerInterface *m_nodes;
         Common::EventExecutorInterface *m_eventExecutor;
+        Common::EventExecutorInterface *m_cvExecutor;
         CTSNCommon::UartInterface *m_uart;
 };
 

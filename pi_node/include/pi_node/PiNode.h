@@ -39,6 +39,7 @@ class PiNode : public CTSNCommon::ShutdownInterface {
 
         CTSNCommon::Settings &m_settings;
         Common::EventExecutorInterface *m_eventExecutor;
+        Common::EventExecutorInterface *m_cvExecutor;
         OS::SConditionVariable m_shutdownCV;
 
         Poco::Net::ServerSocket *m_socket;

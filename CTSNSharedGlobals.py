@@ -36,7 +36,7 @@ PI_NODE_COMMAND_PORT = 9011;
 #ifdef PYTHON
 ''''
 #endif
-const std::string 
+const std::string
 #ifdef PYTHON
 \''''
 #endif
@@ -200,5 +200,14 @@ const std::string
 #endif
 WINDBELT_URI = "/windbelt_voltage";
 
-#endif
 
+#ifdef PYTHON
+''''
+#endif
+const std::string
+#ifdef PYTHON
+\''''
+#endif
+PICTURE_PARSE_URI = "/picture_parse";
+
+#endif

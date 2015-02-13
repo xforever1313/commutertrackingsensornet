@@ -11,6 +11,7 @@
 #include "EventExecutorInterface.h"
 #include "pi_node/BatteryCheckHTTPRequestHandler.h"
 #include "pi_node/HTTPRequestFactory.h"
+#include "pi_node/PictureParseHTTPRequestHandler.h"
 #include "MockGPIOController.h"
 #include "MockHTTPServerRequest.h"
 #include "MockEventExecutor.h"
@@ -24,6 +25,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
         m_settings->m_stringSettings["NODE_AGENT"] = "Node Agent";
 
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
+        m_cvExecutor = new testing::StrictMock<MockEventExecutor>();
         m_request = new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_gpio = new testing::StrictMock<CTSNCommon::MockGPIOController>();
         m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
@@ -33,6 +35,7 @@ TEST_GROUP(HTTPRequestFactoryTest) {
                                                *m_gpio,
                                                m_nodes,
                                                m_eventExecutor,
+                                               m_cvExecutor,
                                                m_uart);
 
         POINTERS_EQUAL(m_uut->m_shutdown, m_shutdown);
@@ -49,11 +52,13 @@ TEST_GROUP(HTTPRequestFactoryTest) {
         delete m_nodes;
         delete m_gpio;
         delete m_request;
+        delete m_cvExecutor;
         delete m_eventExecutor;
     }
 
     CTSNCommon::Settings *m_settings;
     testing::StrictMock<MockEventExecutor> *m_eventExecutor;
+    testing::StrictMock<MockEventExecutor> *m_cvExecutor;
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<CTSNCommon::MockGPIOController> *m_gpio;
     testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
@@ -83,6 +88,18 @@ TEST(HTTPRequestFactoryTest, createBatteryCheckTest) {
     POINTERS_EQUAL(&batHandler->m_gpio, m_gpio);
     POINTERS_EQUAL(batHandler->m_nodes, m_nodes);
     POINTERS_EQUAL(batHandler->m_uart, m_uart);
+
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createPictureParseTest) {
+    m_request->setURI(PICTURE_PARSE_URI);
+    m_request->set("user-agent", m_settings->getSetting("NODE_AGENT"));
+
+    Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
+    PiNode::PictureParseHTTPRequestHandler *ppHandler = dynamic_cast<PiNode::PictureParseHTTPRequestHandler*>(handler);
+    CHECK(ppHandler != nullptr);
+    POINTERS_EQUAL(ppHandler->m_cvExecutor, m_cvExecutor);
 
     delete handler;
 }

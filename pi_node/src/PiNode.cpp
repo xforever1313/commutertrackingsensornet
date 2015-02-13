@@ -31,6 +31,7 @@ PiNode &PiNode::getInstance() {
 PiNode::PiNode() :
     m_settings(CTSNCommon::Settings::getInstance()),
     m_eventExecutor(new Common::EventExecutor()),
+    m_cvExecutor(new Common::EventExecutor()),
     m_socket(nullptr),
     m_server(nullptr),
     m_uart(new CTSNCommon::Uart(&RxSignal)),
@@ -47,6 +48,7 @@ PiNode::PiNode() :
 PiNode::~PiNode() {
     delete m_server;
     delete m_socket;
+    delete m_cvExecutor;
     delete m_eventExecutor;
     delete m_recvThread;
     delete m_xbeeController;
@@ -66,6 +68,7 @@ void PiNode::initHTTPServer() {
                                                                 m_gpio,
                                                                 m_nodes,
                                                                 m_eventExecutor,
+                                                                m_cvExecutor,
                                                                 m_uart),
                                          *m_socket, params);
 }
