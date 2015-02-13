@@ -100,6 +100,7 @@ TEST(HTTPRequestFactoryTest, createPictureParseTest) {
     PiNode::PictureParseHTTPRequestHandler *ppHandler = dynamic_cast<PiNode::PictureParseHTTPRequestHandler*>(handler);
     CHECK(ppHandler != nullptr);
     POINTERS_EQUAL(ppHandler->m_cvExecutor, m_cvExecutor);
+    POINTERS_EQUAL(ppHandler->m_eventExecutor, m_eventExecutor);
 
     delete handler;
 }

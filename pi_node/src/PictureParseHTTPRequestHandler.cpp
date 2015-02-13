@@ -9,8 +9,13 @@
 
 namespace PiNode {
 
-PictureParseHTTPRequestHandler::PictureParseHTTPRequestHandler(Common::EventExecutorInterface *cvExecutor) :
-    m_cvExecutor(cvExecutor)
+const std::string PictureParseHTTPRequestHandler::GET_MESSAGE = "usage: picture=/picture/location&deletePicture=true";
+const std::string PictureParseHTTPRequestHandler::POST_SUCCESS = "Parsing Picture";
+
+PictureParseHTTPRequestHandler::PictureParseHTTPRequestHandler(Common::EventExecutorInterface *cvExecutor,
+                                                               Common::EventExecutorInterface *eventExecutor) :
+    m_cvExecutor(cvExecutor),
+    m_eventExecutor(eventExecutor)
 {
 }
 
@@ -25,8 +30,7 @@ void PictureParseHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequ
 
 void PictureParseHTTPRequestHandler::handleGetRequest(Poco::Net::HTTPServerRequest &request,
                                                       Poco::Net::HTTPServerResponse &response) {
-
-
+    sendSuccessResponse(response, GET_MESSAGE);
 }
 
 }

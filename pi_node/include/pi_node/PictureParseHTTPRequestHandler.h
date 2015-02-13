@@ -12,7 +12,8 @@ namespace PiNode {
 
 class PictureParseHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
-        PictureParseHTTPRequestHandler(Common::EventExecutorInterface *cvExecutor);
+        PictureParseHTTPRequestHandler(Common::EventExecutorInterface *cvExecutor,
+                                       Common::EventExecutorInterface *eventExecutor);
         ~PictureParseHTTPRequestHandler();
 
         void handlePostRequest(Poco::Net::HTTPServerRequest &request,
@@ -22,11 +23,15 @@ class PictureParseHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler
                               Poco::Net::HTTPServerResponse &response) override;
 
     private:
+        static const std::string GET_MESSAGE;
+        static const std::string POST_SUCCESS;
+
         PictureParseHTTPRequestHandler() = delete;
 
         Common::EventExecutorInterface *m_cvExecutor;
+        Common::EventExecutorInterface *m_eventExecutor;
 };
 
 }
 
-#endif // PICTURE_PARSE_HTTP_REQUEST_HANDLER_H_
+#endif
