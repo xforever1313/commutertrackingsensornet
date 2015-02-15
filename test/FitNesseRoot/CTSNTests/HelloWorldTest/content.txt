@@ -1,6 +1,0 @@
-<Hello World>
-
-This test ensure that FitNesse and CSlim are up and running correctly.
-
-!|script|HelloWorld   |
-|check  |try things|ok|

@@ -3,11 +3,12 @@
   <AddChild/>
   <Edit/>
   <Files/>
+  <Help>The CTSN Tests</Help>
   <Properties/>
   <Prune/>
   <RecentChanges/>
   <Search/>
-  <Suite/>
+  <Static/>
   <Versions/>
   <WhereUsed/>
 </properties>
