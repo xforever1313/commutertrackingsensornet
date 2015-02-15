@@ -1,0 +1,8 @@
+!1 cslim Tests
+The purpose of these tests are to give examples on how to use cslim.
+
+!contents -R2 -g -p -f -h
+
+!define TEST_SYSTEM {slim}
+!include SkyvoConstants
+!define COMMAND_PATTERN {%m}

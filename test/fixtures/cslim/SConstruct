@@ -1,0 +1,91 @@
+import SCons.Defaults
+import SCons
+from SCons.Util import unique
+import stat
+import os
+import sys
+import subprocess
+import glob
+import shutil
+from copy import deepcopy
+
+baseDir = os.path.abspath("../../../")
+sys.path.append(baseDir)
+
+from CTSNGlobals import *
+commonPath = getCommonPath(baseDir)
+sys.path.append(commonPath)
+
+from Globals import *
+from SethCommonGlobals import *
+from SConstructGlobals import *
+
+#Make common environment
+projectName = "cslim"
+targetFlags = CREATE_LIB_TARGET
+envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
+
+cppUTestPath = getCppUTestPath(commonPath)
+
+additionalFlags = []
+
+###
+# Include Paths
+###
+systemPaths = [os.path.join(includeDir, "Com"),
+               os.path.join(includeDir, "CSlim"),
+               os.path.join(includeDir, "ExecutorC"),
+               os.path.join(testDir, "CSlim"),
+               os.path.join(cppUTestPath, includeDir)
+              ]
+
+includePaths = []
+
+###
+# Source Files
+###
+sourceFiles = glob.glob(os.path.join(srcDir, "CSlim/*.c")) + \
+              glob.glob(os.path.join(srcDir, "ExecutorC/*.c"))
+
+if (sys.platform == "win32"):
+    sourceFiles += glob.glob(os.path.join(srcDir, "ComWin32/*.c"))
+else:
+    sourceFiles += glob.glob(os.path.join(srcDir, "Com/*.c"))
+
+testSourceFiles = glob.glob("tests") + \
+                  glob.glob("tests/Com") + \
+                  glob.glob("tests/CSlim")
+
+###
+# Libs
+###
+debugLibs = []
+debugLibPath = []
+
+Help(getHelpMessage(envBase))
+
+###
+# Environment Creation
+###
+def addFlags(env):
+    env.Append(CCFLAGS = additionalFlags)
+    env['CCFLAGS'].remove('-Werror')
+    env['CCFLAGS'].remove('-pedantic-errors')
+    for p in systemPaths:
+        env.Append(CCFLAGS = ['-isystem', p])
+
+debugEnvironment = createDebugEnvironment(envBase, includePaths, debugLibs, debugLibPath)
+addFlags(debugEnvironment)
+
+###
+# Targets
+###
+debugLib = createStaticLib(debugEnvironment, "cslim", sourceFiles)
+
+Alias(DEBUG_LIB_ALIAS, debugLib)
+Alias(CREATE_LIB_ALIAS, [debugLib])
+
+Alias (NIGHTLY_ALIAS, [debugLib])
+Alias (DELTA_ALIAS, [debugLib])
+
+Default(debugLib)

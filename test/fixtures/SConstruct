@@ -1,0 +1,89 @@
+import SCons.Defaults
+import SCons
+from SCons.Util import unique
+import stat
+import os
+import sys
+import subprocess
+import glob
+import shutil
+from copy import deepcopy
+
+baseDir = os.path.abspath("../../")
+sys.path.append(baseDir)
+
+from CTSNGlobals import *
+commonPath = getCommonPath(baseDir)
+sys.path.append(commonPath)
+
+from Globals import *
+from SethCommonGlobals import *
+from SConstructGlobals import *
+
+#Make common environment
+projectName = "ctsn_autotest"
+targetFlags = EXE_TARGET | PROJECT_TARGET
+envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
+
+cppUTestPath = getCppUTestPath(commonPath)
+cslimPath = "cslim"
+
+additionalFlags = []
+
+###
+# Include Paths
+###
+systemPaths = [os.path.join(cslimPath, includeDir, "Com"),
+               os.path.join(cslimPath, includeDir, "CSlim"),
+               os.path.join(cslimPath, includeDir, "ExecutorC"),
+               os.path.join(cslimPath, testDir, "CSlim"),
+               os.path.join(cppUTestPath, includeDir)
+              ]
+
+includePaths = [includeDir]
+
+###
+# Source Files
+###
+
+sourceFiles = glob.glob(os.path.join(srcDir, "*.cpp")) + \
+              [os.path.join(cslimPath, "fixtures/Main.c")] #Main file.
+
+###
+# Libs
+###
+debugLibs = ['CppUTest', 'cslim']
+debugLibPath = [os.path.join(cppUTestPath, libDir, envBase['SYSTEM'], envBase['LIB_TYPE']),
+                os.path.join(cslimPath, libDir, envBase['SYSTEM'], debugDir, envBase['LIB_TYPE']),
+               ]
+
+Help(getHelpMessage(envBase))
+
+###
+# Environment Creation
+###
+def addFlags(env):
+    env.Append(CCFLAGS = additionalFlags)
+    env.Append(CFLAGS = ['-std=c11'])
+    for p in systemPaths:
+        env.Append(CCFLAGS = ['-isystem', p])
+
+debugEnvironment = createDebugEnvironment(envBase, includePaths, debugLibs, debugLibPath)
+addFlags(debugEnvironment)
+
+###
+# Targets
+###
+(debugTarget, runDebugTarget) = createExe(debugEnvironment, projectName, sourceFiles)
+
+(netBeansTarget, vsTarget, CodeBlocksTarget) = createProjectTargets(envBase,
+                                                                    debugEnvironment['CPPPATH'] + systemPaths,
+                                                                    "CTSNAutoTest")
+
+Alias(DEBUG_ALIAS, debugTarget)
+Alias(CREATE_LIB_ALIAS, [debugTarget])
+
+Alias (NIGHTLY_ALIAS, [debugTarget])
+Alias (DELTA_ALIAS, [debugTarget])
+
+Default(debugTarget)
