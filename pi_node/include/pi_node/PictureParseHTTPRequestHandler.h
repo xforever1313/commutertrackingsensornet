@@ -25,6 +25,9 @@ class PictureParseHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler
     private:
         static const std::string GET_MESSAGE;
         static const std::string POST_SUCCESS;
+        static const std::string POST_FAILURE;
+        static const std::string REMOVE_FORM_DATA;
+        static const std::string PICTURE_FORM_DATA;
 
         PictureParseHTTPRequestHandler() = delete;
 

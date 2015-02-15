@@ -11,6 +11,7 @@ namespace PiNode {
 class PictureParseEvent : public Common::EventInterface {
     public:
         PictureParseEvent(const std::string &pictureLocation,
+                          bool removePicture,
                           Common::EventExecutorInterface *eventExecutor);
 
         ~PictureParseEvent();
@@ -19,6 +20,7 @@ class PictureParseEvent : public Common::EventInterface {
 
     private:
         const std::string m_pictureLocation;
+        bool m_removePicture;
         Common::EventExecutorInterface *m_eventExecutor;
 };
 
