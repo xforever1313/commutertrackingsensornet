@@ -15,3 +15,6 @@ targets["3gateway"] = os.path.join(rootDir,"gateway")
 
 targets["4pi_node"] = os.path.join(rootDir, "pi_node")
 
+targets["5cslim"] = os.path.join(rootDir, "test/fixtures/cslim")
+
+targets["6test_fixtures"] = os.path.join(rootDir, "test/fixtures")

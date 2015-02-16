@@ -59,4 +59,8 @@ Depends(runFitnesse, constants)
 Alias('constants', constants)
 Alias('run_fitnesse', runFitnesse)
 
+Alias(NIGHTLY_ALIAS, constants)
+Alias(DELTA_ALIAS, constants)
+
 Default(runFitnesse)
+
