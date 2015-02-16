@@ -1,6 +1,0 @@
-!1 Welcome to the CTSN Automated Tests Suite!
-!define TEST_SYSTEM {slim}
-!define SLIM_VERSION {0.0}
-!define TEST_RUNNER {fixtures/bin/gccx86/debug/static/ctsn_autotest}
-!define COMMAND_PATTERN { %m }
-!contents -g -p

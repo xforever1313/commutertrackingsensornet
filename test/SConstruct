@@ -1,0 +1,61 @@
+import os
+import subprocess
+import sys
+
+baseDir = os.path.abspath("../")
+sys.path.append(baseDir)
+
+from CTSNGlobals import *
+commonPath = getCommonPath(baseDir)
+sys.path.append(commonPath)
+
+from Globals import *
+from SethCommonGlobals import *
+from SConstructGlobals import *
+
+def createConstantsBuilder(target, source, env):
+    outFile = open(str(target[0]), 'w')
+    outFile.write('!1 Welcome to the CTSN Automated Tests Suite!\n\n')
+    outFile.write('!define TEST_SYSTEM {slim}\n')
+    outFile.write('!define SLIM_VERSION {0.0}\n')
+    outFile.write('!define TEST_RUNNER {' + \
+                   os.path.join(os.getcwd(),
+                                'fixtures',
+                                binDir,
+                                env['SYSTEM'],
+                                debugDir,
+                                env['LIB_TYPE'],
+                                'ctsn_autotest') + \
+                  '}\n')
+
+    outFile.write('!define COMMAND_PATTERN {%m}\n')
+    outFile.write('!contents -g -p\n')
+
+constantsBuilder = Builder(action = createConstantsBuilder,
+                           suffix='.txt')
+
+def runFitnesseBuilder(target, source, env):
+    subprocess.call(['java', '-jar', 'fitnesse-standalone.jar', '-p', '9000'])
+
+runBuilder = Builder(action = runFitnesseBuilder)
+
+projectName = "Fitnesse"
+envBase = createBaseEnvironment(baseDir,
+                                commonPath,
+                                projectName,
+                                0,
+                                ARGUMENTS)
+
+fitnesseEnvironment = envBase.Clone()
+fitnesseEnvironment.Append(BUILDERS = {'constants' : constantsBuilder})
+fitnesseEnvironment.Append(BUILDERS = {'runFitnesse' : runBuilder})
+
+constants = fitnesseEnvironment.constants(target = "FitNesseRoot/CTSNTests/content.txt", source=['SConstruct'])
+runFitnesse = fitnesseEnvironment.runFitnesse(target = ['phony'], source = [])
+
+Depends(runFitnesse, constants)
+
+Alias('constants', constants)
+Alias('run_fitnesse', runFitnesse)
+
+Default(runFitnesse)
