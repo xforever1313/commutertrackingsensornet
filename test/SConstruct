@@ -15,6 +15,7 @@ from SConstructGlobals import *
 
 def createConstantsBuilder(target, source, env):
     outFile = open(str(target[0]), 'w')
+    outFile.write('!1 DO NOT COMMIT THIS FILE!!! THIS IS AUTO GENERATED!\n\n')
     outFile.write('!1 Welcome to the CTSN Automated Tests Suite!\n\n')
     outFile.write('!define TEST_SYSTEM {slim}\n')
     outFile.write('!define SLIM_VERSION {0.0}\n')
