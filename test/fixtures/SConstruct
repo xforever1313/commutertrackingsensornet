@@ -82,6 +82,7 @@ addFlags(debugEnvironment)
 
 Alias(DEBUG_ALIAS, debugTarget)
 Alias(CREATE_LIB_ALIAS, [debugTarget])
+Alias(DOXYGEN_ALIAS, [])
 
 Alias (NIGHTLY_ALIAS, [debugTarget])
 Alias (DELTA_ALIAS, [debugTarget])

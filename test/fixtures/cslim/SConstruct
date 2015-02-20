@@ -84,6 +84,7 @@ debugLib = createStaticLib(debugEnvironment, "cslim", sourceFiles)
 
 Alias(DEBUG_LIB_ALIAS, debugLib)
 Alias(CREATE_LIB_ALIAS, [debugLib])
+Alias(DOXYGEN_ALIAS, [])
 
 Alias (NIGHTLY_ALIAS, [debugLib])
 Alias (DELTA_ALIAS, [debugLib])
