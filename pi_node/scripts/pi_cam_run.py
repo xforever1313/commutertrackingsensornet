@@ -15,6 +15,9 @@ port = "80"
 uri = "/picture_parse"
 
 def gpio_callback(channel):
+    global userAgent
+    global port
+    global uri
     with picamera.PiCamera() as camera:
         camera.resolution = (320, 240)
         time.sleep(2)
@@ -22,7 +25,8 @@ def gpio_callback(channel):
         camera.capture(pic, 'jpeg', True)
 
         subprocess.call(['curl', '-X', 'POST', '-A', userAgent,
-                         '--data', 'picture_file=' + os.path.abspath('./' + pic),
+                         '--data',
+                         'picture=' + os.path.abspath('./' + pic) + '&remove=true',
                          'http://localhost:' + port + uri])
 
 def signal_handler(signal, frame):
