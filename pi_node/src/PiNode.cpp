@@ -1,5 +1,7 @@
 #include <Poco/Net/HTTPServer.h>
 #include <stdexcept>
+#include <sys/signal.h>
+#include <unistd.h>
 
 #include "ctsn_common/SettingsParser.h"
 #include "ctsn_common/PiGPIOController.h"
@@ -86,7 +88,35 @@ void  PiNode::start() {
         m_recvThread->start();
         m_statusLed->start();
 
-        m_shutdownCV.wait();
+        // Start the picture process
+        pid_t pid = fork();
+
+        // Child process
+        if (pid == 0) {
+            std::string userAgentArg = "--user_agent=" + m_settings.getSetting("NODE_AGENT");
+            std::string uriArg = "--uri=" + PICTURE_PARSE_URI;
+            std::string portArg = "--port=" + std::to_string(m_settings.getShortSetting("NODE_PORT"));
+
+            // This assumes that the .py file is executable,
+            // and the first line has #!/usr/bin/python in it.
+            execl("./pi_cam_run.py",
+                  "",                   // For some stupid reason, this is needed or the first argument is ignored :|
+                  userAgentArg.c_str(),
+                  uriArg.c_str(),
+                  portArg.c_str(),
+                  nullptr);
+            _exit(0);
+        }
+        // Parent Process
+        else if (pid > 0) {
+            m_shutdownCV.wait();
+            // SIGINT will gracefully terminate the python process.
+            ::kill(pid, SIGINT);
+            wait();
+        }
+        else {
+            throw std::runtime_error("Error creating picam process.");
+        }
     }
     catch (const std::out_of_range &e) {
         Common::IO::ConsoleLogger::err.writeLineWithTimeStamp("Address out of range");

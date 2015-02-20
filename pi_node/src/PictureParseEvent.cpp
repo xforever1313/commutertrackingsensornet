@@ -1,6 +1,8 @@
+#include <cstdio>
 #include <string>
 
 #include "EventExecutorInterface.h"
+#include "io/ConsoleLogger.h"
 #include "pi_node/PictureParseEvent.h"
 
 namespace PiNode {
@@ -21,7 +23,11 @@ PictureParseEvent::~PictureParseEvent()
 }
 
 void PictureParseEvent::execute() {
-
+    Common::IO::ConsoleLogger::out.writeLineWithTimeStamp("Got picture: " + m_pictureLocation);
+    if (m_removePicture) {
+        Common::IO::ConsoleLogger::out.writeLineWithTimeStamp("Removing picture: " + m_pictureLocation);
+        remove(m_pictureLocation.c_str());
+    }
 }
 
 }
