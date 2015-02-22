@@ -9,3 +9,9 @@ def getCTSNCommonPath(baseDir):
 def getCommonPath(baseDir):
     return os.path.join(baseDir, 'sethcommon')
 
+def getPiNodePath(baseDir):
+    return os.path.join(baseDir, 'pi_node')
+
+def getGatewayPath(baseDir):
+    return os.path.join(baseDir, 'gateway')
+
