@@ -89,3 +89,7 @@ Secrets.py
 settings.xml
 WindbeltSettings.h
 test/FitNesseRoot/CTSNTests/content.txt
+
+PKGBUILD*
+*.xz
+pkg

@@ -22,7 +22,7 @@ from SConstructGlobals import *
 
 #Make common environment
 projectName = "CTSN_PI_NODE"
-targetFlags = DOXYGEN_TARGET | CPP_CHECK_TARGET | TESTING_TARGET | PROJECT_TARGET | EXE_TARGET
+targetFlags = DOXYGEN_TARGET | CPP_CHECK_TARGET | TESTING_TARGET | PROJECT_TARGET | EXE_TARGET | PACKAGE_TARGET
 envBase = createBaseEnvironment(baseDir, commonPath, projectName, targetFlags, ARGUMENTS)
 
 ###
@@ -162,6 +162,47 @@ cppCheckTarget = createCppCheckTarget(releaseEnvironment, coverageFiles)
 
 (netBeansTarget, vsTarget, CodeBlocksTarget) = createProjectTargets(envBase, testEnvironment['CPPPATH'] + otherIncludeFiles, "CTSNPiNode")
 
+
+###
+# Package Build
+###
+packageFunc = 'cd ' + os.getcwd() + '\n'
+packageFunc +=  'mkdir -p $pkgdir/usr\n'
+packageFunc += 'mkdir -p $pkgdir/usr/bin\n'
+packageFunc += 'mkdir -p $pkgdir/etc\n'
+packageFunc += 'cp ' + str(releaseTarget[0]) + ' $pkgdir/usr/bin/' + os.path.basename(str(releaseTarget[0])) + '\n'
+packageFunc += 'cp ' + 'scripts/enableGPIO.sh $pkgdir/usr/bin/ctsn_enable_gpio\n'
+packageFunc += 'cp ' + 'scripts/enableUart.sh $pkgdir/usr/bin/ctsn_enable_uart\n'
+packageFunc += 'cp ' + 'scripts/pi_cam_run.py $pkgdir/usr/bin/ctsn_pi_cam\n'
+
+if (os.path.exists(os.path.join(baseDir, 'settings.xml'))):
+    packageFunc += 'cp ' + os.path.join(baseDir, 'settings.xml') + ' $pkgdir/etc/ctsn_settings.xml\n'
+else:
+    packageFunc += 'cp ' + os.path.join(baseDir, 'settings.xml.to_configure') + ' $pkgdir/etc/ctsn_settings.xml\n'
+
+if (envBase['SYSTEM'] == 'arm-linux-gnuabihf'):
+    arch = "any"
+else:
+    arch = "x86_64"
+
+archPackage = createArchPackageTarget(releaseEnvironment,
+                                      releaseTarget,
+                                      maintainer = "Seth Hendrick",
+                                      maintainer_email = "seth@shendrick.net",
+                                      pkgname = "ctsn_pi_node",
+                                      pkgver = getVersion(baseDir),
+                                      pkgrel = "1",
+                                      pkgdesc = "The CTSN trail node for the raspberry pi.",
+                                      arch = arch,
+                                      url = "http://ctsn.shendrick.net",
+                                      license = "unknown",
+                                      backup = 'etc/ctsn_settings.xml',
+                                      package_func = packageFunc)
+
+
+###
+# Aliases
+###
 Alias(DEBUG_ALIAS, debugTarget)
 Alias(RUN_DEBUG_ALIAS, runDebugTarget)
 Alias(RELEASE_ALIAS, releaseTarget)
@@ -170,6 +211,7 @@ Alias(CREATE_LIB_ALIAS, [debugTarget, releaseTarget])
 Alias(DOXYGEN_ALIAS, doxygenTarget)
 Alias(CPP_CHECK_ALIAS, cppCheckTarget)
 Alias(UNIT_TEST_ALIAS, unitTestTarget)
+Alias(ARCH_PACKAGE_ALIAS, archPackage)
 Alias(RUN_TEST_ALIAS, [unitTestTarget, runTestTarget, cppCheckTarget])
 
 Alias (NIGHTLY_ALIAS, [debugTarget, releaseTarget, doxygenTarget, cppCheckTarget, runTestTarget, netBeansTarget, vsTarget, CodeBlocksTarget])
