@@ -1,0 +1,12 @@
+[Unit]
+Description=CTSN_Node
+After=network.target
+
+[Service]
+ExecStart/usr/bin/ctsn_node
+Restart=always
+
+[Install]
+Alias=ctsn.service
+WantedBy=multi-user.target
+
