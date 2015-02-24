@@ -76,8 +76,19 @@ Needed to send text messages and emails to the admins
 
         -port: The port to run the pi node process on.
         -serial: The serial port to listen to
+        -ip: The ip address.  This is only used for testing purposes, and does not
+             get read in by the node process.
+        -picture_output: Where to put the captured pictures
+        -pi_cam_script: Where the Pi Cam script lives.
 -->
-<node_settings agent="node user agent" port="1515" serial="/dev/ttyAMA0">
+<node_settings
+    agent="node user agent"
+    port="1515"
+    serial="/dev/ttyAMA0"
+    ip="192.168.1.3"
+    picture_output="/tmp/ctsn"
+    pi_cam_script="/usr/bin/ctsn_pi_cam"
+    >
     <!--
         information about the gateway node.  This must be the SAME
         for every trail node.

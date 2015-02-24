@@ -96,14 +96,16 @@ void  PiNode::start() {
             std::string userAgentArg = "--user_agent=" + m_settings.getSetting("NODE_AGENT");
             std::string uriArg = "--uri=" + PICTURE_PARSE_URI;
             std::string portArg = "--port=" + std::to_string(m_settings.getShortSetting("NODE_PORT"));
+            std::string pictureOutputArg = "--pic_output=" + m_settings.getSetting("NODE_PIC_OUTPUT");
 
             // This assumes that the .py file is executable,
             // and the first line has #!/usr/bin/python in it.
-            execl("./pi_cam_run.py",
+            execl(m_settings.getSetting("NODE_PI_CAM_LOCATION").c_str(),
                   "",                   // For some stupid reason, this is needed or the first argument is ignored :|
                   userAgentArg.c_str(),
                   uriArg.c_str(),
                   portArg.c_str(),
+                  pictureOutputArg.c_str(),
                   nullptr);
             _exit(0);
         }

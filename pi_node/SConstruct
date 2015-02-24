@@ -169,12 +169,14 @@ cppCheckTarget = createCppCheckTarget(releaseEnvironment, coverageFiles)
 packageFunc = 'cd ' + os.getcwd() + '\n'
 packageFunc +=  'mkdir -p $pkgdir/usr\n'
 packageFunc += 'mkdir -p $pkgdir/usr/bin\n'
+packageFunc += 'mkdir -p $pkgdir/usr/lib/systemd/system\n'
 packageFunc += 'mkdir -p $pkgdir/etc\n'
 packageFunc += 'cp ' + str(releaseTarget[0]) + ' $pkgdir/usr/bin/' + os.path.basename(str(releaseTarget[0])) + '\n'
-packageFunc += 'cp ' + 'scripts/enableGPIO.sh $pkgdir/usr/bin/ctsn_enable_gpio\n'
-packageFunc += 'cp ' + 'scripts/enableUart.sh $pkgdir/usr/bin/ctsn_enable_uart\n'
-packageFunc += 'cp ' + 'scripts/pi_cam_run.py $pkgdir/usr/bin/ctsn_pi_cam\n'
-packageFunc += 'cp ' + 'scripts/ctsn_node.sh $pkgdir/usr/bin/ctsn_node\n'
+packageFunc += 'cp scripts/enableGPIO.sh $pkgdir/usr/bin/ctsn_enable_gpio\n'
+packageFunc += 'cp scripts/enableUart.sh $pkgdir/usr/bin/ctsn_enable_uart\n'
+packageFunc += 'cp scripts/pi_cam_run.py $pkgdir/usr/bin/ctsn_pi_cam\n'
+packageFunc += 'cp scripts/ctsn_node.sh $pkgdir/usr/bin/ctsn_node\n'
+packageFunc += 'cp lib/systemd/system/ctsn_node.service $pkgdir/usr/lib/systemd/system/ctsn_node.service\n'
 
 if (os.path.exists(os.path.join(baseDir, 'settings.xml'))):
     packageFunc += 'cp ' + os.path.join(baseDir, 'settings.xml') + ' $pkgdir/etc/ctsn_settings.xml\n'
@@ -187,7 +189,7 @@ else:
     arch = "x86_64"
 
 archPackage = createArchPackageTarget(releaseEnvironment,
-                                      releaseTarget + Glob('scripts/*'),
+                                      releaseTarget + Glob('scripts/*') + Glob('lib/systemd/system/*'),
                                       maintainer = "Seth Hendrick",
                                       maintainer_email = "seth@shendrick.net",
                                       pkgname = "ctsn_pi_node",

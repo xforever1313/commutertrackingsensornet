@@ -13,6 +13,7 @@ GPIO.setmode(GPIO.BCM)
 userAgent = ""
 port = "80"
 uri = "/picture_parse"
+picOutput = "/tmp"
 
 def gpio_callback(channel):
     global userAgent
@@ -22,11 +23,12 @@ def gpio_callback(channel):
         camera.resolution = (320, 240)
         time.sleep(2)
         pic = 'pic' + time.strftime("%m_%d_%Y_%H_%M_%S") + '.jpg'
+        pic = os.path.join(picOutput, pic)
         camera.capture(pic, 'jpeg', True)
 
         subprocess.call(['curl', '-X', 'POST', '-A', userAgent,
                          '--data',
-                         'picture=' + os.path.abspath('./' + pic) + '&remove=true',
+                         'picture=' + pic + '&remove=true',
                          'http://localhost:' + port + uri])
 
 def signal_handler(signal, frame):
@@ -51,11 +53,20 @@ if __name__ == "__main__":
                         dest = "port",
                         help="The port to post to.")
 
+    parser.add_argument("--pic_output",
+                        type=str,
+                        dest="picOutput",
+                        help="Where to dump the pictures.")
+
     args = parser.parse_args()
 
     userAgent = args.user_agent
     uri = args.uri
     port = args.port
+    picOutput = args.picOutput
+
+    if (not os.path.exists(picOutput)):
+        os.mkdir(picOutput)
 
     #GPIO 23 set up as input. It is pulled up to stop false signals
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)

@@ -3,7 +3,7 @@ Description=CTSN_Node
 After=network.target
 
 [Service]
-ExecStart/usr/bin/ctsn_node
+ExecStart=/usr/bin/ctsn_node
 Restart=always
 
 [Install]

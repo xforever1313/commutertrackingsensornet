@@ -23,13 +23,15 @@ Settings::Settings() :
                       {"MARIADB_PASS", ""},
                       {"MARIADB_IP", ""},
                       {"MARIADB_NAME", ""},
-                      {"GATEWAY_IP", ""},     
-                      {"GATEWAY_AGENT", ""}, 
+                      {"GATEWAY_IP", ""},
+                      {"GATEWAY_AGENT", ""},
                       {"GATEWAY_SERIAL", ""},
-                      {"NODE_AGENT", ""}, 
+                      {"NODE_AGENT", ""},
                       {"NODE_SERIAL", ""},
                       {"NODE_GATEWAY_ADDRESS", ""},
-                      {"NODE_ADDRESS", ""}
+                      {"NODE_ADDRESS", ""},
+                      {"NODE_PIC_OUTPUT", ""},
+                      {"NODE_PI_CAM_LOCATION", ""}
                      }),
 
     m_shortSettings({{"MARIADB_PORT", -1},
@@ -159,6 +161,12 @@ void Settings::parse(const std::string &xmlData) {
                 }
                 else if (a->name() == std::string("port")) {
                     m_shortSettings["NODE_PORT"] = std::stoi(a->value());
+                }
+                else if (a->name() == std::string("picture_output")) {
+                    m_stringSettings["NODE_PIC_OUTPUT"] = a->value();
+                }
+                else if (a->name() == std::string("pi_cam_script")) {
+                    m_stringSettings["NODE_PI_CAM_LOCATION"] = a->value();
                 }
             }
 
