@@ -174,6 +174,7 @@ packageFunc += 'cp ' + str(releaseTarget[0]) + ' $pkgdir/usr/bin/' + os.path.bas
 packageFunc += 'cp ' + 'scripts/enableGPIO.sh $pkgdir/usr/bin/ctsn_enable_gpio\n'
 packageFunc += 'cp ' + 'scripts/enableUart.sh $pkgdir/usr/bin/ctsn_enable_uart\n'
 packageFunc += 'cp ' + 'scripts/pi_cam_run.py $pkgdir/usr/bin/ctsn_pi_cam\n'
+packageFunc += 'cp ' + 'scripts/ctsn_node.sh $pkgdir/usr/bin/ctsn_node\n'
 
 if (os.path.exists(os.path.join(baseDir, 'settings.xml'))):
     packageFunc += 'cp ' + os.path.join(baseDir, 'settings.xml') + ' $pkgdir/etc/ctsn_settings.xml\n'
@@ -186,7 +187,7 @@ else:
     arch = "x86_64"
 
 archPackage = createArchPackageTarget(releaseEnvironment,
-                                      releaseTarget,
+                                      releaseTarget + Glob('scripts/*'),
                                       maintainer = "Seth Hendrick",
                                       maintainer_email = "seth@shendrick.net",
                                       pkgname = "ctsn_pi_node",
