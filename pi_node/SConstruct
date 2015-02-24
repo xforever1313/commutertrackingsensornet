@@ -214,8 +214,8 @@ Alias(UNIT_TEST_ALIAS, unitTestTarget)
 Alias(ARCH_PACKAGE_ALIAS, archPackage)
 Alias(RUN_TEST_ALIAS, [unitTestTarget, runTestTarget, cppCheckTarget])
 
-Alias (NIGHTLY_ALIAS, [debugTarget, releaseTarget, doxygenTarget, cppCheckTarget, runTestTarget, netBeansTarget, vsTarget, CodeBlocksTarget])
-Alias (DELTA_ALIAS, [debugTarget, releaseTarget, cppCheckTarget, runTestTarget])
+Alias (NIGHTLY_ALIAS, [debugTarget, releaseTarget, doxygenTarget, cppCheckTarget, runTestTarget, netBeansTarget, vsTarget, CodeBlocksTarget, archPackage])
+Alias (DELTA_ALIAS, [debugTarget, releaseTarget, cppCheckTarget, runTestTarget, archPackage])
 
 Default([RUN_TEST_ALIAS])
 
