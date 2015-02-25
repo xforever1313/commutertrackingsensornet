@@ -67,6 +67,40 @@ def exportScriptSettings():
 
     outFile.close()
 
+def exportTestSettings():
+    outFile = open('test/Secrets.py', 'w')
+    outFile.write(getWarningStringPy())
+
+    # Database stuff
+    outFile.write('\nmariadbUser = "' + \
+                   settings['mariadb_user'] + '";')
+    outFile.write('\nmariadbPass = "' + \
+                   settings['mariadb_pass'] + '";')
+    outFile.write('\nmariadbPort = ' + \
+                   settings['mariadb_port'] + ';')
+    outFile.write('\nmariadbIP = "' + \
+                   settings['mariadb_ip'] + '";')
+    outFile.write('\ndatabaseName = "' + \
+                   settings['mariadb_name'] + '";')
+
+    # Gateway Stuff
+    outFile.write('\ngatewayIP = "' + \
+                   settings['gateway_ip'] + '";')
+    outFile.write('\ngatewayPort = ' + \
+                   settings['gateway_port'] + ';')
+    outFile.write('\ngatewayAgent ="' + \
+                   settings['gateway_agent'] + '";')
+
+    # Node Stuff
+    outFile.write('\nnodeIP = "' + \
+                   settings['node_ip'] + '";')
+    outFile.write('\nnodePort = ' + \
+                   settings['node_port'] + ';')
+    outFile.write('\nnodeAgent ="' + \
+                   settings['node_agent'] + '";')
+
+
+    outFile.close()
 
 def parseXML(fileName):
     xmldoc = minidom.parse(fileName)
@@ -97,6 +131,12 @@ def parseXML(fileName):
     settings['windbelt_port'] = winbeltSettings[0].attributes['port'].value
     settings['windbelt_agent'] = winbeltSettings[0].attributes['agent'].value
 
+    #Parse Node settings
+    nodeSettings = xmldoc.getElementsByTagName('node_settings')
+    settings['node_ip'] = nodeSettings[0].attributes['ip'].value
+    settings['node_agent'] = nodeSettings[0].attributes['agent'].value
+    settings['node_port'] = nodeSettings[0].attributes['port'].value
+
 if __name__ == "__main__":
     argParser = argparse.ArgumentParser(description = "Generates the settings files based on the passed in xml file")
     argParser.add_argument("--file",
@@ -111,4 +151,5 @@ if __name__ == "__main__":
     exportDjangoSettings()
     exportWindbeltSettings()
     exportScriptSettings()
+    exportTestSettings()
 

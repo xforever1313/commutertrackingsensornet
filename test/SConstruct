@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import time
 
 baseDir = os.path.abspath("../")
 sys.path.append(baseDir)
@@ -13,6 +14,37 @@ from Globals import *
 from SethCommonGlobals import *
 from SConstructGlobals import *
 
+from Secrets import *
+
+###
+# Constants
+###
+fitnesseCSSLocation = "http://files.shendrick.net/fitnesse/css/"
+fitnesseCSSFiles = ['fitnesse_pages.css', 'fitnesse_straight.css', 'fitnesse_wiki.css']
+
+###
+# Functions
+###
+def checkForJavaExceptions(fitnesseLogContents):
+    if ("java.lang.RuntimeException" in fitnesseLogContents):
+        raise Exception("Fitnesse error: java.lang.RuntimeException")
+    elif ("java.io.IOException" in fitnesseLogContents):
+        raise Exception("Fitnesse error: java.io.IOException")
+    elif ("java.net.SocketException" in fitnesseLogContents):
+        raise Exception("Fitnesse error: java.net.SocketException")
+
+def addCSSToLog(fitnesseLogContents):
+    i = fitnesseLogContents.find('<link rel="stylesheet"')
+    newLog = fitnesseLogContents[:i]
+    for f in fitnesseCSSFiles:
+        newLog += '<link rel="stylesheet" type="text/css" href="' + fitnesseCSSLocation + f + '"/>\n'
+    newLog += fitnesseLogContents[i:]
+
+    return newLog
+
+###
+# Builders
+###
 def createConstantsBuilder(target, source, env):
     outFile = open(str(target[0]), 'w')
     outFile.write('!1 DO NOT COMMIT THIS FILE!!! THIS IS AUTO GENERATED!\n\n')
@@ -30,6 +62,19 @@ def createConstantsBuilder(target, source, env):
                   '}\n')
 
     outFile.write('!define COMMAND_PATTERN {%m}\n')
+
+    outFile.write('!define MARIADB_USER {' + mariadbUser + '}\n')
+    outFile.write('!define MARIADB_PASS {' + mariadbPass + '}\n')
+    outFile.write('!define MARIADB_PORT {' + str(mariadbPort) + '}\n')
+    outFile.write('!define MARIADB_IP {' + mariadbIP + '}\n')
+    outFile.write('!define DATABASE_NAME {' + databaseName + '}\n')
+    outFile.write('!define GATEWAY_IP {' + gatewayIP + '}\n')
+    outFile.write('!define GATEWAY_PORT {' + str(gatewayPort) + '}\n')
+    outFile.write('!define GATEWAY_AGENT {' + str(gatewayAgent) + '}\n')
+    outFile.write('!define NODE_IP {' + str(nodeIP) + '}\n')
+    outFile.write('!define NODE_PORT {' + str(nodePort) + '}\n')
+    outFile.write('!define NODE_AGENT {' + str(nodeAgent) + '}\n')
+
     outFile.write('!contents -g -p\n')
 
 constantsBuilder = Builder(action = createConstantsBuilder,
@@ -40,6 +85,43 @@ def runFitnesseBuilder(target, source, env):
 
 runBuilder = Builder(action = runFitnesseBuilder)
 
+def runFitnesseTest(target, source, env):
+    print ("Launching FitNesse...")
+    fitnesseArgs = ['java', '-jar', 'fitnesse-standalone.jar', '-e', '1'] +\
+                   ['-p', '5000', '-c', env['TESTTARGET'] + '?suite']
+
+    fitnesseProc = subprocess.Popen(fitnesseArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    fitnesseLog = fitnesseProc.communicate()[0]
+
+    status = fitnesseProc.wait()
+
+    fitnesseLog = addCSSToLog(fitnesseLog)
+
+    log = open(str(target[0]), 'w')
+    log.write(fitnesseLog)
+    log.close()
+
+    checkForJavaExceptions(fitnesseLog)
+
+    return status
+
+runTestBuilder = Builder(action = runFitnesseTest)
+
+def runRegressionTest(logFile, env):
+    testEnv = env.Clone(
+        TESTTARGET = 'CTSNTests.RegressionTests'
+    )
+    return testEnv.runTest(target = [logFile], source=[])
+
+def runSmokeTest(logFile, env):
+    testEnv = env.Clone(
+        TESTTARGET = 'CTSNTests.SmokeTests'
+    )
+    return testEnv.runTest(target = [logFile], source=[])
+
+###
+# Environment Creation
+###
 projectName = "Fitnesse"
 envBase = createBaseEnvironment(baseDir,
                                 commonPath,
@@ -50,17 +132,36 @@ envBase = createBaseEnvironment(baseDir,
 fitnesseEnvironment = envBase.Clone()
 fitnesseEnvironment.Append(BUILDERS = {'constants' : constantsBuilder})
 fitnesseEnvironment.Append(BUILDERS = {'runFitnesse' : runBuilder})
+fitnesseEnvironment.Append(BUILDERS = {'runTest' : runTestBuilder})
 
-constants = fitnesseEnvironment.constants(target = "FitNesseRoot/CTSNTests/content.txt", source=['SConstruct'])
+###
+# Log Creation
+###
+currentTime = time.strftime("%m_%d_%Y_%H_%M_%S")
+logDir = os.path.join(os.getcwd(), 'logs')
+regresstionTestLog = os.path.join(logDir, 'regressionTest-' + currentTime + '.html')
+smokeTestLog = os.path.join(logDir, 'smokeTest-' + currentTime + '.html')
+
+###
+# Target Creation
+###
+constants = fitnesseEnvironment.constants(target = "FitNesseRoot/CTSNTests/content.txt", source=['SConstruct', 'Secrets.py'])
 runFitnesse = fitnesseEnvironment.runFitnesse(target = ['phony'], source = [])
 
+smokeTest = runSmokeTest(smokeTestLog, fitnesseEnvironment)
+regressionTest = runRegressionTest(regresstionTestLog, fitnesseEnvironment)
+
+Depends(smokeTest, constants)
+Depends(regressionTest, constants)
 Depends(runFitnesse, constants)
 
 Alias('constants', constants)
+Alias('smoke_test', smokeTest)
+Alias('regression_test', regressionTest)
 Alias('run_fitnesse', runFitnesse)
 
-Alias(NIGHTLY_ALIAS, constants)
-Alias(DELTA_ALIAS, constants)
+Alias(NIGHTLY_ALIAS, regressionTest)
+Alias(DELTA_ALIAS, smokeTest)
 
 Default(runFitnesse)
 
