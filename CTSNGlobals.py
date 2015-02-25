@@ -1,7 +1,3 @@
-from SCons.Script import *
-from SCons.Environment import *
-from SCons.Builder import *
-
 import os
 
 def getLibb64Path(baseDir):
