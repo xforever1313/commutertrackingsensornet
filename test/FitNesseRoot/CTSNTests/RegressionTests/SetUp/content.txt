@@ -1,0 +1,15 @@
+<Test Set Up>
+
+Set up all the settings based on what was passed into FitNesse.
+|script|ctsn auto test                                             |
+|check |set mariadb user         |${MARIADB_USER} |${MARIADB_USER} |
+|check |set mariadb password     |${MARIADB_PASS} |${MARIADB_PASS} |
+|check |set mariadb port         |${MARIADB_PORT} |${MARIADB_PORT} |
+|check |set mariadb ip           |${MARIADB_IP}   |${MARIADB_IP}   |
+|check |set mariadb database name|${DATABASE_NAME}|${DATABASE_NAME}|
+|check |set gateway agent        |${GATEWAY_AGENT}|${GATEWAY_AGENT}|
+|check |set gateway port         |${GATEWAY_PORT} |${GATEWAY_PORT} |
+|check |set gateway ip           |${GATEWAY_IP}   |${GATEWAY_IP}   |
+|check |set node agent           |${NODE_AGENT}   |${NODE_AGENT}   |
+|check |set node port            |${NODE_PORT}    |${NODE_PORT}    |
+|check |set node ip              |${NODE_IP}      |${NODE_IP}      |

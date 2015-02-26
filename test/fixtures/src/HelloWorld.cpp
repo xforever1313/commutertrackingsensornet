@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-#include "ctsn_autotest/CTSNFixtures.h"
+#include "Fixtures.h"
 #include "SlimList.h"
 
 class HelloWorldFixture {
