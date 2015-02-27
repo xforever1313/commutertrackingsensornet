@@ -8,7 +8,6 @@
 extern "C" {
 #endif
 
-#include "ctsn_autotest/CTSNFixtures.h"
 #include "SlimList.h"
 
 class CtsnAutoTest {

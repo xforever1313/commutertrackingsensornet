@@ -2,18 +2,12 @@
 <properties>
   <Edit>true</Edit>
   <Files>true</Files>
-  <Help>Tests that run for every delta</Help>
+  <Help>Sends post request to the gateway and node to ensure they respond correctly</Help>
   <Properties>true</Properties>
   <RecentChanges>true</RecentChanges>
   <Refactor>true</Refactor>
   <Search>true</Search>
-  <Suite>true</Suite>
-  <Suites/>
-  <SymbolicLinks>
-    <HelloWorldTest>RegressionTests.HelloWorldTest</HelloWorldTest>
-    <PostTest>RegressionTests.PostTest</PostTest>
-    <SetUp>RegressionTests.SetUp</SetUp>
-  </SymbolicLinks>
+  <Test>true</Test>
   <Versions>true</Versions>
   <WhereUsed>true</WhereUsed>
 </properties>

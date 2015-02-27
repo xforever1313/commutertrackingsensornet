@@ -1,0 +1,8 @@
+<Post Tests>
+
+This test posts to both the gateway and the node and makes sure they respond accordingly.
+This includes making sure that they forbid certain user agents, and are successful when they get a good agent
+
+|script|http poster                                                                                                   |
+|check |post to ip            |${GATEWAY_IP}|on port  |${GATEWAY_PORT}|to url|/|with agent|DERP|and data|herp=derp|403|
+|check |post to gateway to url|/            |with data|derp=herp      |200                                            |

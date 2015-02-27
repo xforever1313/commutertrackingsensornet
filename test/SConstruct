@@ -62,6 +62,8 @@ def createConstantsBuilder(target, source, env):
                   '}\n')
 
     outFile.write('!define COMMAND_PATTERN {%m}\n')
+    outFile.write('!define COLLAPSE_SETUP {false}\n')
+    outFile.write('!define COLLAPSE_TEARDOWN {false}\n')
 
     outFile.write('!define MARIADB_USER {' + mariadbUser + '}\n')
     outFile.write('!define MARIADB_PASS {' + mariadbPass + '}\n')

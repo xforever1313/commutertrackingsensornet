@@ -7,6 +7,7 @@ extern "C" {
 #endif
 
 #include "ctsn_autotest/CTSNAutoTest.h"
+#include "ctsn_autotest/CTSNFixtures.h"
 
 short CtsnAutoTest::convertStringToShort(const std::string &s) {
     size_t length;
