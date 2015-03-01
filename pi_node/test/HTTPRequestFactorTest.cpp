@@ -12,6 +12,7 @@
 #include "pi_node/BatteryCheckHTTPRequestHandler.h"
 #include "pi_node/HTTPRequestFactory.h"
 #include "pi_node/PictureParseHTTPRequestHandler.h"
+#include "pi_node/RootHTTPRequestHandler.h"
 #include "MockGPIOController.h"
 #include "MockHTTPServerRequest.h"
 #include "MockEventExecutor.h"
@@ -73,6 +74,16 @@ TEST(HTTPRequestFactoryTest, createShutdownTest) {
 
     Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
     CHECK(dynamic_cast<CTSNCommon::ShutdownHTTPRequestHandler*>(handler) != nullptr);
+
+    delete handler;
+}
+
+TEST(HTTPRequestFactoryTest, createRootTest) {
+    m_request->setURI(ROOT_URI);
+    m_request->set("user-agent", m_settings->getSetting("NODE_AGENT"));
+
+    Poco::Net::HTTPRequestHandler *handler = m_uut->createRequestHandler(*m_request);
+    CHECK(dynamic_cast<PiNode::RootHTTPRequestHandler*>(handler) != nullptr);
 
     delete handler;
 }

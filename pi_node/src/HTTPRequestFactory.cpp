@@ -12,6 +12,7 @@
 #include "pi_node/BatteryCheckHTTPRequestHandler.h"
 #include "pi_node/HTTPRequestFactory.h"
 #include "pi_node/PictureParseHTTPRequestHandler.h"
+#include "pi_node/RootHTTPRequestHandler.h"
 
 namespace PiNode {
 
@@ -58,6 +59,9 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
     }
     else if (request.getURI() == SHUTDOWN_URI) {
         return new CTSNCommon::ShutdownHTTPRequestHandler(m_shutdown);
+    }
+    else if (request.getURI() == ROOT_URI) {
+        return new RootHTTPRequestHandler();
     }
     else {
         return new CTSNCommon::NotFoundHTTPRequestHandler();

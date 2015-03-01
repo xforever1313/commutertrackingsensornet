@@ -109,9 +109,24 @@ static char *postToGatewayToUrlWithData(void *voidSUT, SlimList *args) {
     return &poster->lastOutput[0];
 }
 
+/**
+ * \brief | check |post to node to url | URL | with data | derp=true&herp=false | 200 |
+ */
+static char *postToNodeToUrlWithData(void *voidSUT, SlimList *args) {
+    HttpPoster *poster = reinterpret_cast<HttpPoster*>(voidSUT);
+    CtsnAutoTest &cat = CtsnAutoTest::getInstance();
+
+    std::string uri = SlimList_GetStringAt(args, 0);
+    std::string data = SlimList_GetStringAt(args, 1);
+
+    poster->post(cat.NODE_IP, uri, data, cat.NODE_PORT, cat.NODE_AGENT);
+    return &poster->lastOutput[0];
+}
+
 SLIM_CREATE_FIXTURE(HttpPoster)
     SLIM_FUNCTION(postToIpOnPortToUrlWithAgentAndData)
     SLIM_FUNCTION(postToGatewayToUrlWithData)
+    SLIM_FUNCTION(postToNodeToUrlWithData)
 SLIM_END
 
 #ifdef __cplusplus
