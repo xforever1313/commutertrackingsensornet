@@ -1,0 +1,5 @@
+<Fixture Setup>
+
+
+!|script|HelloWorld   |
+|check  |try things|ok|

@@ -16,11 +16,16 @@ from SConstructGlobals import *
 
 from Secrets import *
 
+# Only run one job at a time!
+SetOption('num_jobs', 1)
+
 ###
 # Constants
 ###
 fitnesseCSSLocation = "http://files.shendrick.net/fitnesse/css/"
 fitnesseCSSFiles = ['fitnesse_pages.css', 'fitnesse_straight.css', 'fitnesse_wiki.css']
+
+testLocation = 'FitNesseRoot/CTSNTests/RegressionTests'
 
 ###
 # Functions
@@ -41,6 +46,29 @@ def addCSSToLog(fitnesseLogContents):
     newLog += fitnesseLogContents[i:]
 
     return newLog
+
+def runFitnesseProcess(testTarget, logFile):
+    print ("Running " + testTarget.split('?')[0] + "...")
+    fitnesseArgs = ['java', '-jar', 'fitnesse-standalone.jar', '-e', '1'] +\
+                   ['-p', '5000', '-c', testTarget]
+
+    fitnesseProc = subprocess.Popen(fitnesseArgs,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+    fitnesseLog = fitnesseProc.communicate()[0]
+
+    status = fitnesseProc.wait()
+
+    fitnesseLog = addCSSToLog(fitnesseLog)
+
+    log = open(logFile, 'w')
+    log.write(fitnesseLog)
+    log.close()
+
+    checkForJavaExceptions(fitnesseLog)
+    print("")
+
+    return status
 
 ###
 # Builders
@@ -88,38 +116,86 @@ def runFitnesseBuilder(target, source, env):
 runBuilder = Builder(action = runFitnesseBuilder)
 
 def runFitnesseTest(target, source, env):
-    print ("Launching FitNesse...")
-    fitnesseArgs = ['java', '-jar', 'fitnesse-standalone.jar', '-e', '1'] +\
-                   ['-p', '5000', '-c', env['TESTTARGET'] + '?suite']
-
-    fitnesseProc = subprocess.Popen(fitnesseArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    fitnesseLog = fitnesseProc.communicate()[0]
-
-    status = fitnesseProc.wait()
-
-    fitnesseLog = addCSSToLog(fitnesseLog)
-
-    log = open(str(target[0]), 'w')
-    log.write(fitnesseLog)
-    log.close()
-
-    checkForJavaExceptions(fitnesseLog)
-
-    return status
+    return runFitnesseProcess(env['TESTTARGET'], str(target[0]))
 
 runTestBuilder = Builder(action = runFitnesseTest)
 
-def runRegressionTest(logFile, env):
-    testEnv = env.Clone(
-        TESTTARGET = 'CTSNTests.RegressionTests'
-    )
-    return testEnv.runTest(target = [logFile], source=[])
+def runRegressionTest(logDir, env):
+    createDir(logDir)
 
-def runSmokeTest(logFile, env):
-    testEnv = env.Clone(
-        TESTTARGET = 'CTSNTests.SmokeTests'
+    testDirectories = os.listdir(testLocation)
+    testsToRun = []
+
+    # Remove setup, teardown, and other things we don't want to run
+    # yet.
+    testDirectories.remove('SetUp')
+    testDirectories.remove('FixtureSetup')
+    testDirectories.remove('FixtureTeardown')
+
+    for possibleTest in testDirectories:
+        if (os.path.isdir(os.path.join(testLocation, possibleTest))):
+            testsToRun += [possibleTest]
+
+    targets = []
+
+    setupEnv = env.Clone(
+        TESTTARGET = 'CTSNTests.RegressionTests.FixtureSetup?test'
     )
-    return testEnv.runTest(target = [logFile], source=[])
+
+    setupTarget = setupEnv.runTest(target = [os.path.join(logDir, 'FixtureSetup.html')],
+                                   source=[])
+
+    for test in testsToRun:
+        testEnv = env.Clone(
+            TESTTARGET = 'CTSNTests.RegressionTests.' + test
+        )
+        testTarget = testEnv.runTest(target = [os.path.join(logDir, test + '.html')],
+                                     source = [])
+
+        # Ensure setup is run first
+        Depends(testTarget, setupTarget)
+        targets += testTarget
+
+    teardownEnv = env.Clone(
+        TESTTARGET = 'CTSNTests.RegressionTests.FixtureTeardown?test'
+    )
+
+    teardownTarget = teardownEnv.runTest(target = [os.path.join(logDir, 'FixtureTeardown.html')],
+                                      source = [])
+
+    # Ensure teardown is run last.
+    Depends(teardownTarget, targets)
+
+    return setupTarget + targets + teardownTarget
+
+def runSmokeTest(logDir, env):
+    createDir(logDir)
+
+    setupEnv = env.Clone(
+        TESTTARGET = 'CTSNTests.RegressionTests.FixtureSetup?test'
+    )
+    setupTarget = setupEnv.runTest(target = [os.path.join(logDir, 'FixtureSetup.html')],
+                                   source=[])
+
+    testEnv = env.Clone(
+        TESTTARGET = 'CTSNTests.SmokeTests?suite'
+    )
+    testTarget = testEnv.runTest(target = [os.path.join(logDir, 'smoketest.html')],
+                                 source = [])
+
+    # Ensure test target runs after setup.
+    Depends(testTarget, setupTarget)
+
+    teardownEnv = env.Clone(
+        TESTTARGET = 'CTSNTests.RegressionTests.FixtureTeardown?test'
+    )
+    teardownTarget = teardownEnv.runTest(target = [os.path.join(logDir, 'FixtureTeardown.html')],
+                                          source = [])
+
+    # Ensure teardown is run last.
+    Depends(teardownTarget, testTarget)
+
+    return setupTarget + testTarget + teardownTarget
 
 ###
 # Environment Creation
@@ -141,8 +217,9 @@ fitnesseEnvironment.Append(BUILDERS = {'runTest' : runTestBuilder})
 ###
 currentTime = time.strftime("%m_%d_%Y_%H_%M_%S")
 logDir = os.path.join(os.getcwd(), 'logs')
-regresstionTestLog = os.path.join(logDir, 'regressionTest-' + currentTime + '.html')
-smokeTestLog = os.path.join(logDir, 'smokeTest-' + currentTime + '.html')
+createDir(logDir)
+regresstionTestLog = os.path.join(logDir, 'regressionTest-' + currentTime)
+smokeTestLog = os.path.join(logDir, 'smokeTest-' + currentTime)
 
 ###
 # Target Creation
