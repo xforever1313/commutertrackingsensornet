@@ -1,14 +1,16 @@
 #ifndef CTSN_AUTOTEST_SETTINGS_H_
 #define CTSN_AUTOTEST_SETTINGS_H_
 
+#include <memory>
 #include <stdexcept>
 #include <string>
+#include <thread>
+
+#include "SlimList.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "SlimList.h"
 
 class CtsnAutoTest {
     public:
@@ -17,6 +19,15 @@ class CtsnAutoTest {
         static short convertStringToShort(const std::string &s);
 
         static CtsnAutoTest &getInstance();
+
+        // static void runGateway();
+        static void runNode();
+
+        // static void killGateway();
+        static void killNode();
+
+        void startProc();
+        bool waitForProcToEnd();
 
         std::string MARIADB_USER;
         std::string MARIADB_PASSWORD;
@@ -32,8 +43,14 @@ class CtsnAutoTest {
         short NODE_PORT;
         std::string NODE_IP;
 
+        static std::string OK;
+        static std::string FAIL;
+
     private:
         CtsnAutoTest();
+
+        std::thread *m_gatewayThread;
+        std::thread *m_nodeThread;
 };
 
 #ifdef __cplusplus

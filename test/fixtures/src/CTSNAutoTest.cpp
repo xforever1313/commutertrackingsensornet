@@ -1,13 +1,16 @@
+#include <cstdio>
 #include <iostream>
 #include <stdexcept>
 #include <string>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <thread>
 
 #include "ctsn_autotest/CTSNAutoTest.h"
 #include "ctsn_autotest/CTSNFixtures.h"
+#include "ctsn_autotest/HTTPPoster.h"
+
+std::string CtsnAutoTest::OK = "ok";
+std::string CtsnAutoTest::FAIL = "fail";
+
 
 short CtsnAutoTest::convertStringToShort(const std::string &s) {
     size_t length;
@@ -27,19 +30,78 @@ CtsnAutoTest &CtsnAutoTest::getInstance() {
 CtsnAutoTest::CtsnAutoTest() :
     MARIADB_PORT(0),
     GATEWAY_PORT(0),
-    NODE_PORT(0)
+    NODE_PORT(0),
+    m_gatewayThread(nullptr),
+    m_nodeThread(nullptr)
 {
 }
 
 CtsnAutoTest::~CtsnAutoTest(){
+    m_nodeThread->join();
+    delete m_nodeThread;
+    delete m_gatewayThread;
 }
 
+void CtsnAutoTest::startProc() {
+    m_nodeThread = new std::thread(runNode);
+}
+
+bool CtsnAutoTest::waitForProcToEnd() {
+    m_nodeThread->join();
+
+    return true;
+}
+
+void CtsnAutoTest::runNode() {
+    std::string commandStr = std::string("ssh ") +
+                             getInstance().NODE_IP +
+                             " exec \"/home/seth/CTSN/CTSNPiNode /etc/ctsn_settings.xml\" &";
+    FILE *f = popen(commandStr.c_str(), "r");
+    pclose(f);
+}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void *CtsnAutoTest_Create(StatementExecutor *errorHandler, SlimList *args) {
     return &CtsnAutoTest::getInstance();
 }
 
 void CtsnAutoTest_Destroy(void *voidSUT) {
+}
+
+static char *performFixtureSetup(void *voidSUT, SlimList *args) {
+    CtsnAutoTest *cat = reinterpret_cast<CtsnAutoTest*>(voidSUT);
+    cat->startProc();
+
+    bool success = false;
+    for (int i = 0; (i < 10) && !success; ++i) {
+        // Try to see if the node came up by posting to it
+        HttpPoster poster;
+        try {
+            poster.post(cat->NODE_IP, "/", "herp=derp", cat->NODE_PORT, cat->NODE_AGENT);
+        }
+        catch(...){}
+
+        success = (poster.lastOutput == "200");
+
+        if (!success) {
+            std::this_thread::sleep_for(std::chrono::seconds(3));
+        }
+    }
+
+    if (success == false) {
+        throw new std::runtime_error("Did not see node come up in time");
+    }
+
+    return &CtsnAutoTest::OK[0];
+}
+
+static char *performFixtureTeardown(void *voidSUT, SlimList *args) {
+    CtsnAutoTest *cat = reinterpret_cast<CtsnAutoTest*>(voidSUT);
+    bool success = cat->waitForProcToEnd();
+    return success ? &CtsnAutoTest::OK[0] : &CtsnAutoTest::FAIL[0];
 }
 
 static char *setMariadbUser(void *voidSUT, SlimList *args) {
@@ -109,6 +171,8 @@ static char *setNodeIp(void *voidSUT, SlimList *args) {
 }
 
 SLIM_CREATE_FIXTURE(CtsnAutoTest)
+    SLIM_FUNCTION(performFixtureSetup)
+    SLIM_FUNCTION(performFixtureTeardown)
     SLIM_FUNCTION(setMariadbUser)
     SLIM_FUNCTION(setMariadbPassword)
     SLIM_FUNCTION(setMariadbPort)

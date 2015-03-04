@@ -1,5 +1,5 @@
 <Fixture Setup>
 
 
-!|script|HelloWorld   |
-|check  |try things|ok|
+!|script|ctsn auto test          |
+|check  |perform fixture setup|ok|

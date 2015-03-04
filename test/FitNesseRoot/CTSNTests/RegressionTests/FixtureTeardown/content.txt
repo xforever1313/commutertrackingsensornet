@@ -1,4 +1,6 @@
 <Fixture Teardown>
 
-!|script|HelloWorld   |
-|check  |try things|ok|
+'''Kill the processes'''
+
+| script | http poster |
+| check | post to node to url | /shutdown | with data | shutdown=true | 200 |
