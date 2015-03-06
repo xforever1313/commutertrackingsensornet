@@ -8,6 +8,6 @@ You can also visit our website: http://ctsn.shendrick.net/
 
 Wiki with more information about how to build and configure things: https://bitbucket.org/xforever1313/commutertrackingsensornet/wiki/Home
 
-You can also clone the wiki: git clone https://xforever1313@bitbucket.org/xforever1313/commutertrackingsensornet.git/wiki
+You can also clone the wiki: git clone https://bitbucket.org/xforever1313/commutertrackingsensornet.git/wiki
 
 If you are reading this from GitHub, please note that GitHub is only mirror that has the latest stable code that passed a nightly.  To view the working codebase, go to our BitBucket here: https://bitbucket.org/xforever1313/commutertrackingsensornet/ 
