@@ -21,6 +21,7 @@ clang_build = (ARGUMENTS.get('clang_build', '0') == '1')
 mingw_build = (ARGUMENTS.get('mingw', '0') == '1')
 shared_build = (ARGUMENTS.get('shared', '0') == '1')
 pi_build = (ARGUMENTS.get('pi_build', '0') == '1')
+bbone_build = (ARGUMENTS.get('bbone_build', '0') == '1')
 
 def buildDependenciesBuilder(target, source, env):
     additionalArgs = []
@@ -36,6 +37,8 @@ def buildDependenciesBuilder(target, source, env):
         additionalArgs += ['shared=1']
     if (pi_build):
         additionalArgs += ['pi_build=1']
+    if (bbone_build):
+        additionalArgs += ['bbone_build=1']
 
     print "Building Seth Common"
     status = subprocess.call(['python', 'buildRelease.py'] + additionalArgs, cwd=os.path.join(getCommonPath(baseDir), 'build'))
@@ -46,7 +49,7 @@ def buildDependenciesBuilder(target, source, env):
     return status
 
 buildDependencies = Builder(action = buildDependenciesBuilder)
-    
+
 Help(
 '''
 SConstruct file for dependencies
@@ -67,7 +70,7 @@ if (mingw_build):
     phonyTarget += "Mingw"
 else:
     phonyTarget += "NotMingw"
-    
+
 if (shared_build):
     phonyTarget += "Shared"
 else:
@@ -82,6 +85,11 @@ if (pi_build):
     phonyTarget += "Pi"
 else:
     phonyTarget += "NotPi"
+
+if (bbone_build):
+    phonyTarget += "bbone"
+else:
+    phonyTarget += "NotBbone"
 
 phonyTarget += "Target.target"
 

@@ -73,15 +73,16 @@ coverageFiles = deepcopy(sourceFiles + [dateVersionFile])
 ###Libs
 
 #Libs needed for the pi
-piLibs = ['mariadbclient', 'z', 'm', 'ssl', 'crypto' ,'dl', 'rt']
+piLibs = ['mariadbclient', 'm', 'ssl', 'crypto' ,'dl', 'rt', 'pthread', 'z']
 
 #Libs needed on arch
-archLibs = ['mysqlclient', 'z', 'm', 'ssl', 'crypto', 'dl', 'rt']
+archLibs = ['mysqlclient', 'm', 'ssl', 'crypto', 'dl', 'rt', 'pthread', 'z']
 
 debugLibs = ['ctsn_common-d', 'CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 releaseLibs = ['ctsn_common', 'CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 
-if (ARGUMENTS.get('pi_build', '0') ==  '1'):
+if ((ARGUMENTS.get('pi_build', '0') ==  '1') or
+    (ARGUMENTS.get('bbone_build', '0') == '1')):
     debugLibs += piLibs
     releaseLibs += piLibs
 else:

@@ -83,9 +83,7 @@ void Gateway::initMariaDB() {
 void Gateway::start() {
 
     // start event executor
-    std::cout << "Starting executor..." << std::endl;
     m_eventExecutor->startExecutor();
-    std::cout << "Executor Started" << std::endl;
 
     bool HTTPServerStarted = false;
     try {
