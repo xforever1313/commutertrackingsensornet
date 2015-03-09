@@ -9,7 +9,7 @@
 
 namespace PiNode {
 
-class StatusLed : public OS::SThread {
+class StatusLed : public OS::Runnable<StatusLed> {
     public:
         /**
          * \param pinNumber the pin number to turn on and off
@@ -26,9 +26,9 @@ class StatusLed : public OS::SThread {
 
         void kill();
 
-    private:
-        void run() override;
+        void run();
 
+    private:
         OS::SConditionVariable m_delayCV;
 
         unsigned int m_pinNumber;

@@ -10,6 +10,7 @@ StatusLed::StatusLed(unsigned int pinNumber,
                      unsigned int delay,
                      CTSNCommon::GPIOControllerInterface &gpio,
                      Common::IO::LoggerBase &errLogger/* = Common::IO::ConsoleLogger::err*/) :
+    OS::Runnable<StatusLed>(this),
     m_pinNumber(pinNumber),
     m_delay(delay),
     m_gpio(gpio),

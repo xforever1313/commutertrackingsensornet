@@ -1,11 +1,12 @@
 #ifndef UARTRECVTHREAD_H
 #define UARTRECVTHREAD_H
 
+#include <mutex>
+
 #include "ctsn_common/UartInterface.h"
 #include "ctsn_common/UartRecvCallbackInterface.h"
 #include "io/ConsoleLogger.h"
 #include "io/LoggerBase.h"
-#include "SMutex.h"
 #include "SConditionVariable.h"
 #include "SThread.h"
 
@@ -16,7 +17,7 @@ namespace CTSNCommon {
  * \brief This class has one job, read stuff from uart,
  *        and call the callback with the data and go back to reading.
  */
-class UartRecvThread : public OS::SThread {
+class UartRecvThread : public OS::Runnable<UartRecvThread> {
     public:
         /**
          * \note Constructor only constructs object, start() must be called before the thread begins.
@@ -40,16 +41,17 @@ class UartRecvThread : public OS::SThread {
 
         bool isAlive();
 
+        void run();
+
     private:
         UartRecvThread() = delete;
-        void run() override;
 
         CTSNCommon::UartInterface *m_uart;
         UartRecvCallbackInterface *m_callback;
         Common::IO::LoggerBase &m_errorLogger;
         OS::SConditionVariable m_dataCV;
         bool m_isAlive;
-        OS::SMutex m_isAliveMutex;
+        std::mutex m_isAliveMutex;
 };
 
 }

@@ -7,6 +7,7 @@
 #include "ctsn_common/XBeeCallbackInterface.h"
 #include "ctsn_common/XBeeConstants.h"
 #include "ctsn_common/XBeeController.h"
+#include "SThread.h"
 
 namespace CTSNCommon {
 
@@ -15,6 +16,7 @@ const uint8_t XBeeController::BYTES_TO_IGNORE = 15;
 const uint8_t XBeeController::TX_BYTES_TO_IGNORE = 7;
 
 XBeeController::XBeeController(XBeeCallbackInterface *callbacks) :
+    OS::Runnable<XBeeController>(this),
     m_dataLength(0),  // Put in bad state until everything begins
     m_checkSumTotal(0),
     m_bytesProcessed(0),
@@ -45,14 +47,14 @@ XBeeController::~XBeeController() {
 
 void XBeeController::addData(const std::vector<std::uint8_t> &data) {
     for (size_t i = 0; i < data.size(); ++i) {
-        std::lock_guard<OS::SMutex> lock(m_queueMutex);
+        std::lock_guard<std::mutex> lock(m_queueMutex);
         m_data.push(data[i]);
         m_dataSemaphore.post();
     }
 }
 
 void XBeeController::kill(bool shutdownSemaphore /* = true */) {
-    std::lock_guard<OS::SMutex> lock(m_isAliveMutex);
+    std::lock_guard<std::mutex> lock(m_isAliveMutex);
     m_isAlive = false;
     if (shutdownSemaphore) {
         m_dataSemaphore.shutdown();
@@ -60,7 +62,7 @@ void XBeeController::kill(bool shutdownSemaphore /* = true */) {
 }
 
 bool XBeeController::isAlive() {
-    std::lock_guard<OS::SMutex> lock(m_isAliveMutex);
+    std::lock_guard<std::mutex> lock(m_isAliveMutex);
     return m_isAlive;
 }
 
@@ -545,7 +547,7 @@ void XBeeController::reset() {
 }
 
 uint8_t XBeeController::getNextByte() {
-    std::lock_guard<OS::SMutex> lock(m_queueMutex);
+    std::lock_guard<std::mutex> lock(m_queueMutex);
     if (m_data.empty()) {
         throw std::runtime_error("Empty Queue!");
     }

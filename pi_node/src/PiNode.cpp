@@ -21,7 +21,6 @@
 namespace PiNode  {
 
 void PiNode::RxSignal(int status) {
-    getInstance().m_xbeeController->yield();
     getInstance().m_recvThread->dataReady();
 }
 
@@ -78,6 +77,9 @@ void PiNode::initHTTPServer() {
 void  PiNode::start() {
     bool serverStarted = false;
     try {
+        m_cvExecutor->startExecutor();
+        m_eventExecutor->startExecutor();
+
         m_nodes->refreshNodes();
         initHTTPServer();
         m_server->start();

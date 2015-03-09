@@ -8,7 +8,6 @@
 #include "gateway/MariaDBWrapper.h"
 #include "ctsn_common/Node.h"
 #include "gateway/NodeContainer.h"
-#include "SMutex.h"
 
 namespace Gateway {
 
@@ -101,13 +100,13 @@ void NodeContainer::refreshNodes() {
     }
 
     //remember to lock the mutex!
-    std::lock_guard<OS::SMutex> lock(m_nodeMutex);
+    std::lock_guard<std::mutex> lock(m_nodeMutex);
     clearNodes();
     m_nodes.insert(newNodes.begin(), newNodes.end());
 }
 
 const CTSNCommon::Node NodeContainer::getNodeFromID(unsigned int id) {
-    std::lock_guard<OS::SMutex> lock(m_nodeMutex);
+    std::lock_guard<std::mutex> lock(m_nodeMutex);
     return m_nodes.at(id);
 }
 

@@ -1,5 +1,6 @@
 #include <functional>
 #include <iostream>
+#include <mutex>
 
 #include "ctsn_common/HTTPPoster.h"
 #include "CTSNSharedGlobals.py"
@@ -14,12 +15,10 @@
 #include "ctsn_common/XBeeCallbacks.h"
 #include "gateway/HTTPRequestFactory.h"
 #include "io/InputReader.h"
-#include "SMutex.h"
 
 namespace Gateway {
 
 void Gateway::RxSignal(int status) {
-    getInstance().m_xbeeController->yield();
     getInstance().m_recvThread->dataReady();
 }
 
@@ -82,6 +81,11 @@ void Gateway::initMariaDB() {
 }
 
 void Gateway::start() {
+
+    // start event executor
+    std::cout << "Starting executor..." << std::endl;
+    m_eventExecutor->startExecutor();
+    std::cout << "Executor Started" << std::endl;
 
     bool HTTPServerStarted = false;
     try {

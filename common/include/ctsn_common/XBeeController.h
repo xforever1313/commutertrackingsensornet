@@ -2,6 +2,7 @@
 #define XBEE_CONTROLLER_H_
 
 #include <cstdint>
+#include <mutex>
 #include <queue>
 #include <stdexcept>
 #include <string>
@@ -19,7 +20,7 @@ namespace CTSNCommon {
  * \class XBeeController
  * \brief Parses the xbee packet and calls the correct callback.
  */
-class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
+class XBeeController : public UartRecvCallbackInterface, public OS::Runnable<XBeeController> {
     public:
         /**
          * \note thread will not start until start() is called.
@@ -43,6 +44,11 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         void kill(bool shutdownSemaphore = true);
         bool isAlive();
 
+        /**
+         * \brief Thread loop
+         */
+        void run();
+
     private:
         enum State {
             STARTUP,
@@ -62,11 +68,6 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
 
         static const uint8_t BYTES_TO_IGNORE; /// <Bytes to ignore during the ignore state
         static const uint8_t TX_BYTES_TO_IGNORE;
-
-        /**
-         * \brief Thread loop
-         */
-        void run() override;
 
         /**
          * \brief Reads and handles one piece of data from the queue.
@@ -92,7 +93,7 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         uint8_t getNextByte();
 
         std::queue<std::uint8_t> m_data;
-        OS::SMutex m_queueMutex;
+        std::mutex m_queueMutex;
         OS::SSemaphore m_dataSemaphore;
 
         std::uint16_t m_dataLength;
@@ -104,7 +105,7 @@ class XBeeController : public UartRecvCallbackInterface, public OS::SThread {
         std::string m_payload;
 
         bool m_isAlive;
-        OS::SMutex m_isAliveMutex;
+        std::mutex m_isAliveMutex;
 
         State m_currentState;
 

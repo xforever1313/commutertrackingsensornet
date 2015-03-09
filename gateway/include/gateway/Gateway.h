@@ -5,7 +5,7 @@
 #include <Poco/Net/HTTPServer.h>
 
 #include "ctsn_common/HTTPPosterInterface.h"
-#include "EventExecutorInterface.h"
+#include "EventExecutor.h"
 #include "gateway/MariaDBInterface.h"
 #include "ctsn_common/NodeContainerInterface.h"
 #include "ctsn_common/SettingsParser.h"
@@ -15,7 +15,6 @@
 #include "ctsn_common/XBeeCallbackInterface.h"
 #include "ctsn_common/XBeeController.h"
 #include "io/LoggerBase.h"
-#include "SMutex.h"
 #include "SSemaphore.h"
 
 namespace Gateway {
@@ -43,7 +42,7 @@ class Gateway : public CTSNCommon::ShutdownInterface {
         void shutdown() override;
 
         CTSNCommon::Settings &m_settings;
-        Common::EventExecutorInterface *m_eventExecutor;
+        Common::EventExecutor *m_eventExecutor;
         std::istream *m_input;
         Common::IO::LoggerBase *m_output;
 
@@ -52,7 +51,7 @@ class Gateway : public CTSNCommon::ShutdownInterface {
         CTSNCommon::XBeeController *m_xbeeController;
         CTSNCommon::UartRecvThread *m_recvThread;
 
-        OS::SMutex m_shutdownMutex;
+        std::mutex m_shutdownMutex;
         bool m_isShutdown;
 
         OS::SSemaphore m_shutdownSemaphore;

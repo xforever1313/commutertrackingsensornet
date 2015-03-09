@@ -3,11 +3,11 @@
 
 #include <cstdint>
 #include <map>
+#include <mutex>
 
 #include "gateway/MariaDBInterface.h"
 #include "ctsn_common/Node.h"
 #include "ctsn_common/NodeContainerInterface.h"
-#include "SMutex.h"
 
 namespace Gateway {
 
@@ -93,7 +93,7 @@ class NodeContainer : public CTSNCommon::NodeContainerInterface {
         NodeContainer &operator=(const NodeContainer&) = delete;
 
         std::map<unsigned int, CTSNCommon::Node> m_nodes;
-        OS::SMutex m_nodeMutex;
+        std::mutex m_nodeMutex;
         MariaDBInterface *const m_mariadb;
         MariaDBResultInterface *m_result;
 };

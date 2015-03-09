@@ -1,3 +1,4 @@
+#include <mutex>
 #include <stdexcept>
 
 #ifdef LINUX
@@ -18,6 +19,7 @@ namespace CTSNCommon {
 UartRecvThread::UartRecvThread(CTSNCommon::UartInterface *uart,
                                UartRecvCallbackInterface *callback,
                                Common::IO::LoggerBase &errorLogger /*= Common::IO::ConsoleLogger::err*/) :
+    OS::Runnable<UartRecvThread>(this),
     m_uart(uart),
     m_callback(callback),
     m_errorLogger(errorLogger),
@@ -36,18 +38,13 @@ void UartRecvThread::dataReady() {
 }
 
 void UartRecvThread::kill() {
-    m_isAliveMutex.lock();
+    std::lock_guard<std::mutex> lock(m_isAliveMutex);
     m_isAlive = false;
-    m_isAliveMutex.unlock();
 }
 
 bool UartRecvThread::isAlive() {
-    bool ret;
-    m_isAliveMutex.lock();
-    ret = m_isAlive;
-    m_isAliveMutex.unlock();
-
-    return ret;
+    std::lock_guard<std::mutex> lock(m_isAliveMutex);
+    return m_isAlive;
 }
 
 void UartRecvThread::run() {
