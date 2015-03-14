@@ -52,7 +52,7 @@ Poco::Net::HTTPRequestHandler *HTTPRequestFactory::createRequestHandler(const Po
         return new CTSNCommon::BadClientHTTPRequestHandler();
     }
     else if (request.getURI() == PICTURE_PARSE_URI) {
-        return new PictureParseHTTPRequestHandler(m_cvExecutor, m_eventExecutor);
+        return new PictureParseHTTPRequestHandler(m_nodes, m_uart, m_cvExecutor, m_eventExecutor);
     }
     else if (request.getURI() == BATTERY_CHECK_URI) {
         return new BatteryCheckHTTPRequestHandler(m_nodes, m_eventExecutor, m_gpio, m_uart);

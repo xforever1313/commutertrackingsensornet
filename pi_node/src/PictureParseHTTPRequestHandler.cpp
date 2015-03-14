@@ -16,8 +16,12 @@ const std::string PictureParseHTTPRequestHandler::POST_FAILURE = "Missing field.
 const std::string PictureParseHTTPRequestHandler::REMOVE_FORM_DATA = "remove";
 const std::string PictureParseHTTPRequestHandler::PICTURE_FORM_DATA = "picture";
 
-PictureParseHTTPRequestHandler::PictureParseHTTPRequestHandler(Common::EventExecutorInterface *cvExecutor,
+PictureParseHTTPRequestHandler::PictureParseHTTPRequestHandler(CTSNCommon::NodeContainerInterface *nodes,
+                                                               CTSNCommon::UartInterface *uart,
+                                                               Common::EventExecutorInterface *cvExecutor,
                                                                Common::EventExecutorInterface *eventExecutor) :
+    m_nodes(nodes),
+    m_uart(uart),
     m_cvExecutor(cvExecutor),
     m_eventExecutor(eventExecutor)
 {
@@ -35,7 +39,7 @@ void PictureParseHTTPRequestHandler::handlePostRequest(Poco::Net::HTTPServerRequ
 
         bool deletePicture = ((removePicture == "true") ? true : false );
 
-        std::shared_ptr<PictureParseEvent> event (new PictureParseEvent(pictureLocation, deletePicture, m_eventExecutor));
+        std::shared_ptr<PictureParseEvent> event (new PictureParseEvent(m_nodes, m_uart, pictureLocation, deletePicture, m_eventExecutor));
         m_cvExecutor->addEvent(event);
 
         sendSuccessResponse(response, POST_SUCCESS);

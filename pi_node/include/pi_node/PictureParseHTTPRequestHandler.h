@@ -6,13 +6,17 @@
 #include <Poco/Net/HTTPServerResponse.h>
 
 #include "ctsn_common/BaseHTTPRequestHandler.h"
+#include "ctsn_common/NodeContainerInterface.h"
 #include "EventExecutorInterface.h"
+#include "ctsn_common/UartInterface.h"
 
 namespace PiNode {
 
 class PictureParseHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler {
     public:
-        PictureParseHTTPRequestHandler(Common::EventExecutorInterface *cvExecutor,
+        PictureParseHTTPRequestHandler(CTSNCommon::NodeContainerInterface *nodes,
+                                       CTSNCommon::UartInterface *uart,
+                                       Common::EventExecutorInterface *cvExecutor,
                                        Common::EventExecutorInterface *eventExecutor);
         ~PictureParseHTTPRequestHandler();
 
@@ -31,6 +35,8 @@ class PictureParseHTTPRequestHandler : public CTSNCommon::BaseHTTPRequestHandler
 
         PictureParseHTTPRequestHandler() = delete;
 
+        CTSNCommon::NodeContainerInterface *m_nodes;
+        CTSNCommon::UartInterface *m_uart;
         Common::EventExecutorInterface *m_cvExecutor;
         Common::EventExecutorInterface *m_eventExecutor;
 };

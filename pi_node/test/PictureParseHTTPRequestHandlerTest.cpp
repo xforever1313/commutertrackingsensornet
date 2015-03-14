@@ -3,18 +3,22 @@
 #include "UnitTest.h"
 
 #include "MockEventExecutor.h"
+#include "MockNodeContainer.h"
 #include "MockHTTPServerRequest.h"
 #include "MockHTTPServerResponse.h"
+#include "MockUart.h"
 #include "pi_node/PictureParseEvent.h"
 #include "pi_node/PictureParseHTTPRequestHandler.h"
 
 TEST_GROUP(PictureParserHTTPRequestHandlerTest) {
     TEST_SETUP() {
+        m_nodes = new testing::StrictMock<CTSNCommon::MockNodeContainer>();
+        m_uart = new testing::StrictMock<CTSNCommon::MockUart>();
         m_request =  new testing::StrictMock<MockPoco::Net::MockHTTPServerRequest>();
         m_response = new testing::StrictMock<MockPoco::Net::MockHTTPServerResponse>();
         m_cvExeuctor = new testing::StrictMock<MockEventExecutor>();
         m_eventExecutor = new testing::StrictMock<MockEventExecutor>();
-        m_uut = new PiNode::PictureParseHTTPRequestHandler(m_cvExeuctor, m_eventExecutor);
+        m_uut = new PiNode::PictureParseHTTPRequestHandler(m_nodes, m_uart, m_cvExeuctor, m_eventExecutor);
 
         POINTERS_EQUAL(m_uut->m_cvExecutor, m_cvExeuctor);
         POINTERS_EQUAL(m_uut->m_eventExecutor, m_eventExecutor);
@@ -26,8 +30,12 @@ TEST_GROUP(PictureParserHTTPRequestHandlerTest) {
         delete m_cvExeuctor;
         delete m_request;
         delete m_response;
+        delete m_uart;
+        delete m_nodes;
     }
 
+    testing::StrictMock<CTSNCommon::MockNodeContainer> *m_nodes;
+    testing::StrictMock<CTSNCommon::MockUart> *m_uart;
     testing::StrictMock<MockPoco::Net::MockHTTPServerRequest> *m_request;
     testing::StrictMock<MockPoco::Net::MockHTTPServerResponse> *m_response;
     testing::StrictMock<MockEventExecutor> *m_cvExeuctor;
@@ -55,6 +63,8 @@ TEST(PictureParserHTTPRequestHandlerTest, handlePostRequestRemoveFalseTest) {
 
     CHECK(picEvent != nullptr);
 
+    POINTERS_EQUAL(picEvent->m_uart, m_uart);
+    POINTERS_EQUAL(picEvent->m_eventExecutor, m_eventExecutor);
     POINTERS_EQUAL(picEvent->m_eventExecutor, m_eventExecutor);
     CHECK(!picEvent->m_removePicture);
     CHECK_EQUAL(picEvent->m_pictureLocation, picLocation);
@@ -83,6 +93,8 @@ TEST(PictureParserHTTPRequestHandlerTest, handlePostRequestRemoveTrueTest) {
 
     CHECK(picEvent != nullptr);
 
+    POINTERS_EQUAL(picEvent->m_nodes, m_nodes);
+    POINTERS_EQUAL(picEvent->m_uart, m_uart);
     POINTERS_EQUAL(picEvent->m_eventExecutor, m_eventExecutor);
     CHECK(picEvent->m_removePicture);
     CHECK_EQUAL(picEvent->m_pictureLocation, picLocation);

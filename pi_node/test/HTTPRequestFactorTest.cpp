@@ -112,6 +112,8 @@ TEST(HTTPRequestFactoryTest, createPictureParseTest) {
     CHECK(ppHandler != nullptr);
     POINTERS_EQUAL(ppHandler->m_cvExecutor, m_cvExecutor);
     POINTERS_EQUAL(ppHandler->m_eventExecutor, m_eventExecutor);
+    POINTERS_EQUAL(ppHandler->m_uart, m_uart);
+    POINTERS_EQUAL(ppHandler->m_eventExecutor, m_eventExecutor);
 
     delete handler;
 }

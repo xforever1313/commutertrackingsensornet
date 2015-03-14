@@ -80,15 +80,18 @@ piLibs = ['z', 'm', 'ssl', 'crypto' ,'dl', 'rt']
 #Libs needed on arch
 archLibs = ['z', 'm', 'ssl', 'crypto', 'dl', 'rt']
 
+#opencv libs
+cvLibs = ['opencv_core', 'opencv_highgui', 'opencv_objdetect']
+
 debugLibs = ['ctsn_common-d', 'CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 releaseLibs = ['ctsn_common', 'CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 
 if (ARGUMENTS.get('pi_build', '0') ==  '1'):
-    debugLibs += piLibs
-    releaseLibs += piLibs
+    debugLibs += piLibs + cvLibs
+    releaseLibs += piLibs + cvLibs
 else:
-    debugLibs += archLibs
-    releaseLibs += archLibs
+    debugLibs += archLibs + cvLibs
+    releaseLibs += archLibs + cvLibs
 
 testLibs = debugLibs
 
