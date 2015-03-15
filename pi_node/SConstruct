@@ -75,9 +75,6 @@ coverageFiles = deepcopy(sourceFiles + [dateVersionFile])
 ###Libs
 
 #Libs needed for the pi
-#piLibs = #['Half', 'gtk-x11-2',
-# 'jasper', 'libIlmImf', 'jpeg', 'png', 'tiff',
-#'Xext', 'X11', 'GL', 'GLU',
 piLibs = ['z', 'm', 'ssl', 'crypto' ,'dl', 'rt']
 
 #Libs needed on arch
@@ -193,7 +190,7 @@ if (os.path.exists(os.path.join(baseDir, 'settings.xml'))):
 else:
     packageFunc += 'cp ' + os.path.join(baseDir, 'settings.xml.to_configure') + ' $pkgdir/etc/ctsn_settings.xml\n'
 
-if (envBase['SYSTEM'] == 'arm-linux-gnuabihf'):
+if (envBase['SYSTEM'] == 'arm-linux-gnuabihf-pi'):
     arch = "any"
 else:
     arch = "x86_64"
