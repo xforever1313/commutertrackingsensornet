@@ -75,23 +75,26 @@ coverageFiles = deepcopy(sourceFiles + [dateVersionFile])
 ###Libs
 
 #Libs needed for the pi
+#piLibs = #['Half', 'gtk-x11-2',
+# 'jasper', 'libIlmImf', 'jpeg', 'png', 'tiff',
+#'Xext', 'X11', 'GL', 'GLU',
 piLibs = ['z', 'm', 'ssl', 'crypto' ,'dl', 'rt']
 
 #Libs needed on arch
 archLibs = ['z', 'm', 'ssl', 'crypto', 'dl', 'rt']
 
 #opencv libs
-cvLibs = ['opencv_core', 'opencv_highgui', 'opencv_objdetect']
+cvLibs = ['opencv_core', 'opencv_highgui', 'opencv_imgproc', 'opencv_objdetect']
 
 debugLibs = ['ctsn_common-d', 'CommonClasses-d', 'SethOS-d', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 releaseLibs = ['ctsn_common', 'CommonClasses', 'SethOS', 'PocoNet', 'PocoFoundation', 'PocoUtil']
 
 if (ARGUMENTS.get('pi_build', '0') ==  '1'):
-    debugLibs += piLibs + cvLibs
-    releaseLibs += piLibs + cvLibs
+    debugLibs += cvLibs + piLibs
+    releaseLibs += cvLibs +  piLibs
 else:
-    debugLibs += archLibs + cvLibs
-    releaseLibs += archLibs + cvLibs
+    debugLibs += cvLibs + archLibs
+    releaseLibs += cvLibs + cvLibs
 
 testLibs = debugLibs
 
@@ -119,6 +122,10 @@ createTestOutputFolder(envBase)
 
 def addFlags(env):
     env.Append(CCFLAGS = additionalFlags)
+
+    if (ARGUMENTS.get('pi_build', '0') ==  '1'):
+        env.Append(LINKFLAGS = ['-Wl,--unresolved-symbols=ignore-in-shared-libs'])
+
     for p in systemPaths:
         env.Append(CCFLAGS = ['-isystem', p])
 
@@ -213,7 +220,7 @@ Alias(DEBUG_ALIAS, debugTarget)
 Alias(RUN_DEBUG_ALIAS, runDebugTarget)
 Alias(RELEASE_ALIAS, releaseTarget)
 Alias(RUN_RELEASE_ALIAS, runReleaseTarget)
-Alias(CREATE_LIB_ALIAS, [debugTarget, releaseTarget])
+Alias(CREATE_LIB_ALIAS, [debugTarget, archPackage])
 Alias(DOXYGEN_ALIAS, doxygenTarget)
 Alias(CPP_CHECK_ALIAS, cppCheckTarget)
 Alias(UNIT_TEST_ALIAS, unitTestTarget)
