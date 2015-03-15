@@ -113,6 +113,7 @@ void  PiNode::start() {
         }
         // Parent Process
         else if (pid > 0) {
+            Common::IO::ConsoleLogger::err.writeLine("Running CTSN Node...");
             m_shutdownCV.wait();
             // SIGINT will gracefully terminate the python process.
             ::kill(pid, SIGINT);

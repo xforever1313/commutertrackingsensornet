@@ -39,7 +39,6 @@ PictureParseEvent::~PictureParseEvent() {
 }
 
 std::vector<cv::Rect> PictureParseEvent::parsePicture() {
-
     cv::Mat img = cv::imread(m_pictureLocation.c_str());
     if (!img.data) {
         throw std::runtime_error("Could not open" + m_pictureLocation);
@@ -64,7 +63,9 @@ int PictureParseEvent::getNumObjects() {
     // if something repeats n number of times, throw it out,
     // etc.
 
+    m_errLogger.writeLineWithTimeStamp("parsing picture...");
     const std::vector<cv::Rect> rect = parsePicture();
+    m_errLogger.writeLineWithTimeStamp("parsing picture...Done!");
     return rect.size();
 }
 
